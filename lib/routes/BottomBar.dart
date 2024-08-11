@@ -17,19 +17,19 @@ class BottomBar extends StatelessWidget {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '推荐',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Found',
+            label: '发现',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.timeline),
-            label: 'Timeline',
+            label: '社区',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Mine',
+            label: '我的',
           ),
         ],
       ),
