@@ -1,5 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:netease_cloud_music_app/controllers/auth_controller.dart';
 import 'package:netease_cloud_music_app/pages/Found.dart';
 import 'package:netease_cloud_music_app/pages/Home.dart';
 import 'package:netease_cloud_music_app/pages/login/Login.dart';
@@ -10,7 +14,7 @@ import 'package:netease_cloud_music_app/routes/BottomBar.dart';
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter routes = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/login',
     navigatorKey: rootNavigatorKey,
     routes: <RouteBase>[
       ShellRoute(
@@ -20,7 +24,7 @@ final GoRouter routes = GoRouter(
         },
         routes: <RouteBase>[
           GoRoute(
-            path: '/',
+            path: '/home',
             builder: (context, state) => const Home(),
           ),
           GoRoute(
@@ -40,5 +44,14 @@ final GoRouter routes = GoRouter(
       GoRoute(path: '/login', builder: (context, state) => const Login()),
     ],
     redirect: (context, state) {
-
+      AuthController authController = Get.find();
+      final isLoggedIn = authController.isLoggedIn.value; // 检查拼写
+      final isLoggingIn = state.uri.toString() == '/login';
+      if (!isLoggedIn && !isLoggingIn) {
+        return '/login';
+      }
+      if (isLoggedIn && isLoggingIn) {
+        return '/home';
+      }
+      return null;
     });

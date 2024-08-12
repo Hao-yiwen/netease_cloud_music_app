@@ -82,7 +82,7 @@ packages:
     source: hosted
     version: "3.1.1"
   cookie_jar:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cookie_jar
       sha256: a6ac027d3ed6ed756bfce8f3ff60cb479e266f3b0fdabd6242b804b6765e52de
@@ -182,6 +182,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.3"
+  flutter_svg:
+    dependency: "direct main"
+    description:
+      name: flutter_svg
+      sha256: "7b4ca6cf3304575fe9c8ec64813c8d02ee41d2afe60bcfe0678bcb5375d596a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.10+1"
+  flutter_tabler_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_tabler_icons
+      sha256: "27b257b577f0f982c2ffbe57d5892c3ceac3fedc2917f0e3cec2de4a045525b3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.36.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -360,6 +376,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      sha256: e3e67b1629e6f7e8100b367d3db6ba6af4b1f0bb80f64db18ef1fbabd2fa9ccf
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   path_provider:
     dependency: transitive
     description:
@@ -408,6 +432,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      sha256: c15605cd28af66339f8eb6fbe0e541bfe2d1b72d5825efc6598f3e0a31b9ad27
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.2"
   platform:
     dependency: transitive
     description:
@@ -432,6 +464,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.1"
+  pretty_dio_logger:
+    dependency: "direct main"
+    description:
+      name: pretty_dio_logger
+      sha256: "36f2101299786d567869493e2f5731de61ce130faa14679473b26905a92b6407"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   provider:
     dependency: "direct main"
     description:
@@ -597,6 +637,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.4.2"
+  vector_graphics:
+    dependency: transitive
+    description:
+      name: vector_graphics
+      sha256: "32c3c684e02f9bc0afb0ae0aa653337a2fe022e8ab064bcd7ffda27a74e288e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
+  vector_graphics_codec:
+    dependency: transitive
+    description:
+      name: vector_graphics_codec
+      sha256: c86987475f162fadff579e7320c7ddda04cd2fdeffbe1129227a85d9ac9e03da
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
+  vector_graphics_compiler:
+    dependency: transitive
+    description:
+      name: vector_graphics_compiler
+      sha256: "12faff3f73b1741a36ca7e31b292ddeb629af819ca9efe9953b70bd63fc8cd81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
   vector_math:
     dependency: transitive
     description:
@@ -629,6 +693,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      sha256: b015a8ad1c488f66851d762d3090a21c600e479dc75e68328c52774040cf9226
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.0"
 sdks:
   dart: ">=3.4.4 <4.0.0"
   flutter: ">=3.22.0"
