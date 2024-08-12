@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/controllers/auth_controller.dart';
 
 import '../../widgets/custom_field.dart';
@@ -43,7 +44,7 @@ class _LoginState extends State<Login> {
               SizedBox(height: 16),
               CustomField(
                 iconData: TablerIcons.phone,
-                textEditingController: password,
+                textEditingController: phone,
                 hitText: "输入邮箱/手机号",
               ),
               SizedBox(height: 16),
@@ -51,6 +52,7 @@ class _LoginState extends State<Login> {
                 iconData: TablerIcons.lock,
                 textEditingController: password,
                 hitText: "请输入密码",
+                pass: true,
               ),
               SizedBox(height: 16),
               GestureDetector(
@@ -65,12 +67,20 @@ class _LoginState extends State<Login> {
                     style: TextStyle(fontSize: 28.w, color: Colors.white),
                   ),
                 ),
-                onTap: () {},
+                onTap: () => loginCallPhone(context),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  loginCallPhone(BuildContext context) {
+    if (phone.text.isEmpty || password.text.isEmpty) {
+      // WidgetUtil.showToast('账号和密码为必填项，请检查');
+      WidgetUtil.showLoadingDialog(context);
+      return;
+    }
   }
 }
