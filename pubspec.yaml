@@ -52,6 +52,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   flutter_tabler_icons: ^1.36.0
   fluttertoast: ^8.2.6
+  connectivity_plus: ^6.0.5
 
 dev_dependencies:
   flutter_test:

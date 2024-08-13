@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/instance_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:netease_cloud_music_app/api/http_utils.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
 import 'common/constants/colors.dart';
@@ -10,6 +11,9 @@ import 'controllers/auth_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // https://docs-neteasecloudmusicapi.vercel.app/docs/#/?id=_1-%e6%89%8b%e6%9c%ba%e7%99%bb%e5%bd%95
+  // 本地服务
+  HttpUtils.init(baseUrl: 'http://localhost:3000');
   Get.put(AuthController());
 
   runApp(ScreenUtilInit(
