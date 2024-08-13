@@ -2,6 +2,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 import 'error_interceptor.dart';
 
@@ -49,7 +50,17 @@ class Http {
     // 错误处理
     _dio.interceptors.add(ErrorInterceptor());
 
-    // 请求缓存 todo
+    // 请求缓存
+    final cacheStore = MemCacheStore(maxSize: 10485760, maxEntrySize: 1048576);
+    final cacheOptions = CacheOptions(
+      store: cacheStore,
+      policy: CachePolicy.request,
+      hitCacheOnErrorExcept: [401, 403],
+      priority: CachePriority.high,
+      maxStale: const Duration(days: 7),
+      allowPostMethod: false,
+    );
+    _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
   }
 
   Future<void> init({
@@ -60,8 +71,10 @@ class Http {
   }) async {
     _dio.options = dio.options.copyWith(
         baseUrl: baseUrl,
-        connectTimeout: Duration(milliseconds: connectTimeout ?? CONNECT_TIMEOUT),
-        receiveTimeout: Duration(milliseconds: receiveTimeout ?? RECEIVE_TIMEOUT),
+        connectTimeout:
+            Duration(milliseconds: connectTimeout ?? CONNECT_TIMEOUT),
+        receiveTimeout:
+            Duration(milliseconds: receiveTimeout ?? RECEIVE_TIMEOUT),
         contentType: 'application/json; charset=utf-8',
         headers: {});
     if (interceptors != null && interceptors.isNotEmpty) {
@@ -121,10 +134,12 @@ class Http {
   }) async {
     Options requestOptions = options ?? Options();
 
-    var response = await dio.put(path,
-        data: data,
-        queryParameters: params,
-        options: requestOptions,);
+    var response = await dio.put(
+      path,
+      data: data,
+      queryParameters: params,
+      options: requestOptions,
+    );
     return response.data;
   }
 
@@ -137,11 +152,12 @@ class Http {
   }) async {
     Options requestOptions = options ?? Options();
 
-    var response = await dio.delete(path,
-        data: data,
-        queryParameters: params,
-        options: requestOptions,
-        );
+    var response = await dio.delete(
+      path,
+      data: data,
+      queryParameters: params,
+      options: requestOptions,
+    );
     return response.data;
   }
 }
