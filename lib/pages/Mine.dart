@@ -26,7 +26,6 @@ class _MineState extends State<Mine> {
           child: ElevatedButton(
         onPressed: () {
           print('Logout button was pressed!');
-          authController.logout();
           context.replace("/login");
         },
         child: const Text('Logout'),

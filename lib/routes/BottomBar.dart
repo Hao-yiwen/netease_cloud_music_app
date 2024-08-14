@@ -49,7 +49,7 @@ class BottomBar extends StatelessWidget {
 
   void _onItemTapped(BuildContext context, int index) {
     if (index == 0) {
-      context.go('/');
+      context.go('/home');
     } else if (index == 1) {
       context.go('/found');
     } else if (index == 2) {

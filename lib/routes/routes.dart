@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:netease_cloud_music_app/controllers/auth_controller.dart';
 import 'package:netease_cloud_music_app/pages/Found.dart';
 import 'package:netease_cloud_music_app/pages/Home.dart';
-import 'package:netease_cloud_music_app/pages/login/Login.dart';
+import 'package:netease_cloud_music_app/pages/Login.dart';
 import 'package:netease_cloud_music_app/pages/Mine.dart';
 import 'package:netease_cloud_music_app/pages/Timeline.dart';
 import 'package:netease_cloud_music_app/routes/BottomBar.dart';
@@ -43,8 +43,9 @@ final GoRouter routes = GoRouter(
       ),
       GoRoute(path: '/login', builder: (context, state) => const Login()),
     ],
-    redirect: (context, state) {
+    redirect: (context, state) async {
       AuthController authController = Get.find();
+      await authController.statusCheck();
       final isLoggedIn = authController.isLoggedIn.value; // 检查拼写
       final isLoggingIn = state.uri.toString() == '/login';
       if (!isLoggedIn && !isLoggingIn) {

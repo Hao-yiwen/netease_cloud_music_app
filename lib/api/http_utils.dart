@@ -2,12 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:netease_cloud_music_app/api/http.dart';
 
 class HttpUtils {
-  static void init(
+  static final Http _http = Http();
+
+  static Future<void> init(
       {required String baseUrl,
       int? connectTimeout,
       int? receiveTimeout,
-      List<Interceptor>? interceptors}) {
-    Http().init(
+      List<Interceptor>? interceptors}) async {
+    await _http.init(
         baseUrl: baseUrl,
         connectTimeout: connectTimeout,
         receiveTimeout: receiveTimeout,
@@ -15,7 +17,7 @@ class HttpUtils {
   }
 
   static void setHeaders(Map<String, dynamic> map) {
-    Http().setHeaders(map);
+    _http.setHeaders(map);
   }
 
   static Future get(
@@ -24,7 +26,7 @@ class HttpUtils {
     Options? options,
     bool refresh = false,
   }) async {
-    return await Http().get(
+    return await _http.get(
       path,
       params: params,
       options: options,
@@ -38,7 +40,7 @@ class HttpUtils {
     Map<String, dynamic>? params,
     Options? options,
   }) async {
-    return await Http().post(
+    return await _http.post(
       path,
       data: data,
       params: params,
@@ -52,7 +54,7 @@ class HttpUtils {
     Map<String, dynamic>? params,
     Options? options,
   }) async {
-    return await Http().put(
+    return await _http.put(
       path,
       data: data,
       params: params,
@@ -66,11 +68,19 @@ class HttpUtils {
     Map<String, dynamic>? params,
     Options? options,
   }) async {
-    return await Http().delete(
+    return await _http.delete(
       path,
       data: data,
       params: params,
       options: options,
     );
+  }
+
+  static Future<bool> checkCookie() async {
+    return await _http.checkCookie();
+  }
+
+  static Future<void> clearCookie() async {
+    await _http.clearCookie();
   }
 }
