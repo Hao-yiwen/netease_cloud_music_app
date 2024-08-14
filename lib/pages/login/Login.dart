@@ -82,5 +82,10 @@ class _LoginState extends State<Login> {
       WidgetUtil.showLoadingDialog(context);
       return;
     }
+    if(phone.text.contains("@")){
+
+    } else {
+
+    }
   }
 }

@@ -1,24 +1,27 @@
-import 'package:netease_cloud_music_app/api/app_exception.dart';
+class ApiResponse<T> {
+  final int code;
+  final bool? more;
+  final T? data;
+  final String? message;
 
-class ApiResponse<T> implements Exception {
-  Status status;
-  AppException? exception;
-  T? data;
+  ApiResponse({required this.code, this.more, this.data, this.message});
 
-  // 完成的构造函数
-  ApiResponse.completed(this.data) : status = Status.COMPLETED;
+  factory ApiResponse.fromJson(Map<String, dynamic> json, T Function(Map<String, dynamic>) create) {
+    return ApiResponse(
+      code: json['code'],
+      more: json['more'] ?? false,
+      data: json.containsKey('data') ? create(json['data']) : null,
+      message: json['message'],
+    );
+  }
 
-  // 其他可能的构造函数
-  ApiResponse.loading() : status = Status.LOADING;
-
-  ApiResponse.error(this.exception) : status = Status.ERROR;
-
-  // 便利方法
-  bool get isSuccess => status == Status.COMPLETED;
-}
-
-enum Status {
-  COMPLETED,
-  LOADING,
-  ERROR,
+  // 方便创建没有data的响应
+  factory ApiResponse.withoutData(Map<String, dynamic> json) {
+    return ApiResponse(
+      code: json['code'],
+      more: json['more'] ?? false,
+      data: null,
+      message: json['message'],
+    );
+  }
 }

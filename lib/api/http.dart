@@ -20,7 +20,6 @@ class Http {
   final CookieJar cookieJar = CookieJar();
 
   Http._internal() {
-    if (_dio != null) return;
 
     _dio = Dio(BaseOptions(
         baseUrl: baseUrl,
