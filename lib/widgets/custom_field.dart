@@ -14,6 +14,7 @@ class CustomField extends StatefulWidget {
   final TextInputType? textInputType;
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
+  final BorderRadiusGeometry? borderRadius;
 
   const CustomField(
       {super.key,
@@ -27,7 +28,8 @@ class CustomField extends StatefulWidget {
       this.margin,
       this.textInputType,
       this.onSubmitted,
-      this.textInputAction});
+      this.textInputAction,
+      this.borderRadius});
 
   @override
   State<CustomField> createState() => _CustomFieldState();
@@ -50,7 +52,7 @@ class _CustomFieldState extends State<CustomField> {
       margin: widget.margin ?? EdgeInsets.symmetric(vertical: 10.w),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondary.withOpacity(.6),
-        borderRadius: BorderRadius.circular(50.w),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(50.w),
       ),
       child: Row(
         children: [

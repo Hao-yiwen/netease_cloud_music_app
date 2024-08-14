@@ -27,4 +27,8 @@ class WidgetUtil {
               fit: BoxFit.fitWidth,
             )));
   }
+
+  static closeLoadingDialog(BuildContext context) {
+    Navigator.of(context).pop();
+  }
 }
