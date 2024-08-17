@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:netease_cloud_music_app/api/app_exception.dart';
+import 'package:netease_cloud_music_app/http/app_exception.dart';
 
 class ErrorInterceptor extends Interceptor {
   @override

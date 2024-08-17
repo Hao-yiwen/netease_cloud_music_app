@@ -6,12 +6,13 @@ import 'package:get/instance_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:netease_cloud_music_app/api/http_utils.dart';
+import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/bindings/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
-import 'package:netease_cloud_music_app/pages/mine/mine_controller.dart';
 import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart';
+import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
+import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
 import 'common/constants/colors.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       HomeBinding().dependencies();
+      UserBinding().dependencies();
       return GetMaterialApp.router(
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
@@ -51,10 +53,10 @@ class MyObserver extends AutoRouterObserver {
   _clearOrPutController(name, {bool del = false}) {
     if (name.isEmpty) return;
     switch (name) {
-      case 'Mine':
+      case 'User':
         del
-            ? Get.delete<MineController>()
-            : Get.lazyPut(() => MineController());
+            ? Get.delete<UserController>()
+            : Get.lazyPut(() => UserController());
         break;
       case 'Main':
         del

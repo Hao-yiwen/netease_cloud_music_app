@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:netease_cloud_music_app/routes/auth_guard.dart';
 import 'routes.gr.dart';
 
 abstract class Routes {
@@ -9,7 +10,8 @@ abstract class Routes {
   static const main = _Paths.main;
   static const found = _Paths.found;
   static const timeline = _Paths.timeline;
-  static const mine = _Paths.mine;
+  static const user = _Paths.user;
+  static const splash = _Paths.splash;
 }
 
 abstract class _Paths {
@@ -20,10 +22,11 @@ abstract class _Paths {
   static const String main = 'main';
   static const String found = 'found';
   static const String timeline = 'timeline';
-  static const String mine = 'mine';
+  static const String user = 'user';
+  static const String splash = '/splash';
 }
 
-@AutoRouterConfig()
+@AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
   @override
   RouteType get defaultRouteType => const RouteType.material();
@@ -37,10 +40,11 @@ class AppRouter extends RootStackRouter {
             AutoRoute(path: Routes.main, page: Main.page, initial: true),
             AutoRoute(path: Routes.found, page: Found.page),
             AutoRoute(path: Routes.timeline, page: Timeline.page),
-            AutoRoute(path: Routes.mine, page: Mine.page),
+            AutoRoute(path: Routes.user, page: User.page),
           ],
         ),
-        AutoRoute(path: Routes.login, page: Login.page, initial: true),
+        AutoRoute(path: Routes.login, page: Login.page, guards: [AuthGuard()]),
+        AutoRoute(path: Routes.splash, page: SplashRoute.page, initial: true),
       ];
 
   @override

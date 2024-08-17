@@ -1,19 +1,22 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:netease_cloud_music_app/api/http.dart';
+import 'package:netease_cloud_music_app/http/http.dart';
 
 class HttpUtils {
-  static final Http _http = Http();
+  static late final Http _http;
 
   static Future<void> init(
       {required String baseUrl,
       int? connectTimeout,
       int? receiveTimeout,
       List<Interceptor>? interceptors}) async {
-    await _http.init(
+    await Http.init(
         baseUrl: baseUrl,
         connectTimeout: connectTimeout,
         receiveTimeout: receiveTimeout,
         interceptors: interceptors);
+    _http = Http();
   }
 
   static void setHeaders(Map<String, dynamic> map) {
@@ -77,10 +80,15 @@ class HttpUtils {
   }
 
   static Future<bool> checkCookie() async {
-    return await _http.checkCookie();
+    return await Http.checkCookie();
   }
 
   static Future<void> clearCookie() async {
-    await _http.clearCookie();
+    await Http.clearCookie();
+  }
+
+  static Future<List<Cookie>> loadCookies({Uri? host}) async {
+    host ??= Uri.parse(Http.baseUrl);
+    return await Http.loadCookies(host: host);
   }
 }

@@ -2,14 +2,14 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
-class Mine extends StatefulWidget {
-  const Mine({super.key});
+class User extends StatefulWidget {
+  const User({super.key});
 
   @override
-  State<Mine> createState() => _MineState();
+  State<User> createState() => _MineState();
 }
 
-class _MineState extends State<Mine> {
+class _MineState extends State<User> {
   @override
   void initState() {
     super.initState();
