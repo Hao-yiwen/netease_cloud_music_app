@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
         Main(),
         Timeline(),
         Found(),
-        Mine(),
+        User(),
       ],
       bottomNavigationBuilder: (_, tabsRouter) {
         return BottomNavigationBar(

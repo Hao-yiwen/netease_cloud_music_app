@@ -1,30 +1,60 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 import 'error_interceptor.dart';
+import 'api/login/dto/login_status_dto.dart';
 
 class Http {
   ///超时时间
   static const int CONNECT_TIMEOUT = 30000;
   static const int RECEIVE_TIMEOUT = 30000;
 
-  static Http _instance = Http._internal();
+  static Http? _instance;
 
-  factory Http() => _instance;
+  factory Http(){
+    return _instance ??= Http._internal();
+  }
 
-  late Dio _dio;
-  final String baseUrl = "http://127.0.0.1:3000";
+  static late Dio _dio;
+  static final String baseUrl = "http://127.0.0.1:3000";
 
   static late CookieManager cookieManager;
   static late PathProvider pathProvider;
 
+  UserLoginStateController usc = UserLoginStateController();
+
   Http._internal() {
+    // 初始化userController
+    usc.init();
+  }
+
+  static Future<void> _initializeCookieManager() async {
+    pathProvider = PathProvider();
+    await pathProvider.init();
+
+    // 初始化 cookieManager
+    cookieManager = CookieManager(PersistCookieJar(
+        storage: FileStorage(pathProvider.getCookieSavedPath())));
+
+    // 添加到 Dio 的拦截器中
+    _dio.interceptors.add(cookieManager);
+  }
+
+  static Future<void> init({
+    required String baseUrl,
+    int? connectTimeout,
+    int? receiveTimeout,
+    List<Interceptor>? interceptors,
+  }) async {
     _dio = Dio(BaseOptions(
         baseUrl: baseUrl,
         connectTimeout: Duration(milliseconds: CONNECT_TIMEOUT),
@@ -61,26 +91,7 @@ class Http {
       allowPostMethod: false,
     );
     _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
-  }
 
-  Future<void> _initializeCookieManager() async {
-    pathProvider = PathProvider();
-    await pathProvider.init();
-
-    // 初始化 cookieManager
-    cookieManager = CookieManager(PersistCookieJar(
-        storage: FileStorage(pathProvider.getCookieSavedPath())));
-
-    // 添加到 Dio 的拦截器中
-    _dio.interceptors.add(cookieManager);
-  }
-
-  Future<void> init({
-    required String baseUrl,
-    int? connectTimeout,
-    int? receiveTimeout,
-    List<Interceptor>? interceptors,
-  }) async {
     await _initializeCookieManager(); // Initialize CookieManager
 
     _dio.options = dio.options.copyWith(
@@ -100,15 +111,20 @@ class Http {
     _dio.options.headers.addAll(map);
   }
 
-  Dio get dio => _dio;
+  static Dio get dio => _dio;
 
-  Future<bool> checkCookie() async {
+  static Future<bool> checkCookie() async {
     var cookies =
         await cookieManager.cookieJar.loadForRequest(Uri.parse(baseUrl));
     return cookies.isNotEmpty;
   }
 
-  Future<void> clearCookie() async {
+  static Future<List<Cookie>> loadCookies({Uri? host}) async {
+    return await cookieManager.cookieJar
+        .loadForRequest(host ?? Uri.parse(baseUrl));
+  }
+
+  static Future<void> clearCookie() async {
     await cookieManager.cookieJar.deleteAll();
   }
 
@@ -184,6 +200,98 @@ class Http {
     );
     return response.data;
   }
+}
+
+class UserLoginStateController {
+  LoginState? _curLoginState;
+
+  StreamController? _controller;
+
+  UserLoginStateController();
+
+  Future<void> init() async {
+    _checkCreateSavePath();
+    await _readAccountInfo();
+    _refreshLoginStatus(
+        (await HttpUtils.loadCookies()).isNotEmpty && _accountInfo != null
+            ? LoginState.Logined
+            : LoginState.Logout);
+  }
+
+  bool get isLogined {
+    return _curLoginState == LoginState.Logined;
+  }
+
+  StreamSubscription listenLoginState(
+      void Function(LoginState event, LoginStatusDto? accountInfoWrap)
+          onChange) {
+    var controller = _controller;
+    if (controller == null) {
+      _controller = controller = StreamController.broadcast(sync: true);
+    }
+    return controller.stream.listen((t) {
+      onChange(t, accountInfo);
+    });
+  }
+
+  _checkCreateSavePath() {
+    var file = _saveFile();
+    if (!file.existsSync()) {
+      file.createSync(recursive: true);
+    }
+  }
+
+  File _saveFile() {
+    return File(Http.pathProvider.getDataSavedPath() + "_accountInfo.json");
+  }
+
+  void onLogined(LoginStatusDto info) {
+    _accountInfo = info;
+    _refreshLoginStatus(LoginState.Logined);
+    _saveAccountInfo(info);
+  }
+
+  LoginStatusDto? _accountInfo;
+
+  LoginStatusDto? get accountInfo => _accountInfo;
+
+  Future<void> _readAccountInfo() async {
+    try {
+      String accountInfo = _saveFile().readAsStringSync();
+      _accountInfo = LoginStatusDto.fromJson(jsonDecode(accountInfo));
+    } catch (e) {
+      print('login info error');
+      await onLogout();
+    }
+  }
+
+  onLogout() async {
+    await HttpUtils.clearCookie();
+    _accountInfo = null;
+    _saveAccountInfo(null);
+    _refreshLoginStatus(LoginState.Logout);
+  }
+
+  void _saveAccountInfo(LoginStatusDto? loginStatus) {
+    _saveFile().writeAsStringSync(jsonEncode(loginStatus?.toJson()), flush: true);
+  }
+
+  void _refreshLoginStatus(LoginState logout) {
+    var controller = _controller;
+    if (controller != null && _curLoginState != logout) {
+      controller.add(logout);
+    }
+    _curLoginState = logout;
+  }
+
+  void destory() {
+    _controller?.close();
+  }
+}
+
+enum LoginState {
+  Logined,
+  Logout,
 }
 
 class PathProvider {

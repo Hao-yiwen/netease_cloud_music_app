@@ -5,12 +5,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:netease_cloud_music_app/api/api_response.dart';
-import 'package:netease_cloud_music_app/api/src/login_api.dart';
+import 'package:hive/hive.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
+import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
+import '../../common/constants/keys.dart';
+import '../../http/api/login/login_api.dart';
 import '../../widgets/custom_field.dart';
 
 @RoutePage()
@@ -124,13 +128,14 @@ class _LoginState extends State<Login> {
       return;
     }
     WidgetUtil.showLoadingDialog(context);
-    ApiResponse res =
+    var res =
         await LoginApi.loginWithPhone(phone: phone.text, captcha: captcha.text);
     WidgetUtil.closeLoadingDialog(context);
     if (res.code != 200) {
       WidgetUtil.showToast(res.message ?? '未知错误');
       return;
     } else {
+      UserController.to.getUserState();
       AutoRouter.of(context).pushNamed('/home');
     }
   }
@@ -141,7 +146,7 @@ class _LoginState extends State<Login> {
       return;
     }
     WidgetUtil.showLoadingDialog(context);
-    ApiResponse res = await LoginApi.captcha(phone.text);
+    var res = await LoginApi.captcha(phone.text);
     WidgetUtil.closeLoadingDialog(context);
     if (res.code != 200) {
       WidgetUtil.showToast(res.message ?? '未知错误');
