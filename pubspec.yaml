@@ -56,6 +56,13 @@ dependencies:
   dio_cache_interceptor: ^3.5.0
   path_provider: ^2.1.4
   json_annotation: ^4.9.0
+  hive: ^2.2.3
+  isar_flutter_libs: ^4.0.0-dev.3
+  hive_flutter: ^1.1.0
+  auto_route: ^9.2.1+1
+
+dependency_overrides:
+  web: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +76,7 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   build_runner: ^2.4.11
   json_serializable: ^6.8.0
+  auto_route_generator: ^9.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

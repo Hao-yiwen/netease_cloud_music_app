@@ -6,4 +6,8 @@ flutter版本网易云音乐
 
 - 参考项目：https://github.com/2697a/bujuan
 
-- 技术栈：
+- 技术栈：getx, getit, gorouter/autoRouter
+
+## 项目周期
+
+- 0817：goRouter -> autoRouter

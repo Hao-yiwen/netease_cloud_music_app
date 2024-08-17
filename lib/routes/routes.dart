@@ -1,58 +1,48 @@
-import 'dart:ffi';
+import 'package:auto_route/auto_route.dart';
+import 'routes.gr.dart';
 
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
-import 'package:netease_cloud_music_app/controllers/auth_controller.dart';
-import 'package:netease_cloud_music_app/pages/Found.dart';
-import 'package:netease_cloud_music_app/pages/Home.dart';
-import 'package:netease_cloud_music_app/pages/Login.dart';
-import 'package:netease_cloud_music_app/pages/Mine.dart';
-import 'package:netease_cloud_music_app/pages/Timeline.dart';
-import 'package:netease_cloud_music_app/routes/BottomBar.dart';
+abstract class Routes {
+  Routes._();
 
-final rootNavigatorKey = GlobalKey<NavigatorState>();
+  static const home = _Paths.home;
+  static const login = _Paths.login;
+  static const main = _Paths.main;
+  static const found = _Paths.found;
+  static const timeline = _Paths.timeline;
+  static const mine = _Paths.mine;
+}
 
-final GoRouter routes = GoRouter(
-    initialLocation: '/login',
-    navigatorKey: rootNavigatorKey,
-    routes: <RouteBase>[
-      ShellRoute(
-        navigatorKey: GlobalKey<NavigatorState>(),
-        builder: (context, state, child) {
-          return BottomBar(state: state, child: child);
-        },
-        routes: <RouteBase>[
-          GoRoute(
-            path: '/home',
-            builder: (context, state) => const Home(),
-          ),
-          GoRoute(
-            path: '/found',
-            builder: (context, state) => const Found(),
-          ),
-          GoRoute(
-            path: '/timeline',
-            builder: (context, state) => const Timeline(),
-          ),
-          GoRoute(
-            path: '/mine',
-            builder: (context, state) => const Mine(),
-          ),
-        ],
-      ),
-      GoRoute(path: '/login', builder: (context, state) => const Login()),
-    ],
-    redirect: (context, state) async {
-      AuthController authController = Get.find();
-      await authController.statusCheck();
-      final isLoggedIn = authController.isLoggedIn.value; // 检查拼写
-      final isLoggingIn = state.uri.toString() == '/login';
-      if (!isLoggedIn && !isLoggingIn) {
-        return '/login';
-      }
-      if (isLoggedIn && isLoggingIn) {
-        return '/home';
-      }
-      return null;
-    });
+abstract class _Paths {
+  _Paths._();
+
+  static const String home = '/home';
+  static const String login = '/login';
+  static const String main = 'main';
+  static const String found = 'found';
+  static const String timeline = 'timeline';
+  static const String mine = 'mine';
+}
+
+@AutoRouterConfig()
+class AppRouter extends RootStackRouter {
+  @override
+  RouteType get defaultRouteType => const RouteType.material();
+
+  @override
+  List<AutoRoute> get routes => [
+        AutoRoute(
+          path: Routes.home,
+          page: Home.page,
+          children: [
+            AutoRoute(path: Routes.main, page: Main.page, initial: true),
+            AutoRoute(path: Routes.found, page: Found.page),
+            AutoRoute(path: Routes.timeline, page: Timeline.page),
+            AutoRoute(path: Routes.mine, page: Mine.page),
+          ],
+        ),
+        AutoRoute(path: Routes.login, page: Login.page, initial: true),
+      ];
+
+  @override
+  late final List<AutoRouteGuard> guards = [];
+}
