@@ -1,3 +1,5 @@
+import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,10 +9,11 @@ import 'package:go_router/go_router.dart';
 import 'package:netease_cloud_music_app/api/api_response.dart';
 import 'package:netease_cloud_music_app/api/src/login_api.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
-import 'package:netease_cloud_music_app/controllers/auth_controller.dart';
+import 'package:netease_cloud_music_app/routes/routes.dart';
 
-import '../widgets/custom_field.dart';
+import '../../widgets/custom_field.dart';
 
+@RoutePage()
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -19,14 +22,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  late AuthController authController;
   final TextEditingController phone = TextEditingController();
   final TextEditingController captcha = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    authController = Get.find<AuthController>();
   }
 
   @override
@@ -123,13 +124,14 @@ class _LoginState extends State<Login> {
       return;
     }
     WidgetUtil.showLoadingDialog(context);
-    ApiResponse res = await LoginApi.loginWithPhone(phone: phone.text, captcha: captcha.text);
+    ApiResponse res =
+        await LoginApi.loginWithPhone(phone: phone.text, captcha: captcha.text);
     WidgetUtil.closeLoadingDialog(context);
     if (res.code != 200) {
       WidgetUtil.showToast(res.message ?? '未知错误');
       return;
     } else {
-      GoRouter.of(context).push('/home');
+      AutoRouter.of(context).pushNamed('/home');
     }
   }
 
