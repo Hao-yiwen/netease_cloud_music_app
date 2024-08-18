@@ -11,6 +11,7 @@ abstract class Routes {
   static const found = _Paths.found;
   static const timeline = _Paths.timeline;
   static const user = _Paths.user;
+  static const roaming = _Paths.roaming;
   static const splash = _Paths.splash;
 }
 
@@ -23,6 +24,7 @@ abstract class _Paths {
   static const String found = 'found';
   static const String timeline = 'timeline';
   static const String user = 'user';
+  static const String roaming = 'roaming';
   static const String splash = '/splash';
 }
 
@@ -39,6 +41,7 @@ class AppRouter extends RootStackRouter {
           children: [
             AutoRoute(path: Routes.main, page: Main.page, initial: true),
             AutoRoute(path: Routes.found, page: Found.page),
+            AutoRoute(path: Routes.roaming, page: Roaming.page),
             AutoRoute(path: Routes.timeline, page: Timeline.page),
             AutoRoute(path: Routes.user, page: User.page),
           ],

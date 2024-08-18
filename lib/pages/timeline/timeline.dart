@@ -8,7 +8,7 @@ class Timeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('This is Feed Page!'),
+      child: Text('This is Timeline Page!'),
     );
   }
 }

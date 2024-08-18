@@ -10,6 +10,8 @@ import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/bindings/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
+import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
 import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
@@ -27,7 +29,7 @@ Future<void> main() async {
   // 全局依赖共享
   final getIt = GetIt.instance;
   await _initGetService(getIt);
-  final _appRouter = AppRouter();
+  final _appRouter = getIt<AppRouter>();
 
   runApp(ScreenUtilInit(
     designSize: const Size(750, 1334),
@@ -68,10 +70,20 @@ class MyObserver extends AutoRouterObserver {
             ? Get.delete<FoundController>()
             : Get.lazyPut(() => FoundController());
         break;
+      case 'Roaming':
+        del
+            ? Get.delete<RoamingController>()
+            : Get.lazyPut(() => RoamingController());
+        break;
       case 'Timeline':
         del
             ? Get.delete<TimelineController>()
             : Get.lazyPut(() => TimelineController());
+        break;
+      case 'SplashRoute':
+        del
+            ? Get.delete<SplashController>()
+            : Get.lazyPut(() => SplashController());
         break;
     }
   }
@@ -109,6 +121,7 @@ class MyObserver extends AutoRouterObserver {
 }
 
 Future<void> _initGetService(GetIt getIt) async {
+  getIt.registerSingleton<AppRouter>(AppRouter());
   await Hive.initFlutter('music');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
 }
