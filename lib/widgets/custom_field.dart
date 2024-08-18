@@ -52,7 +52,7 @@ class _CustomFieldState extends State<CustomField> {
       margin: widget.margin ?? EdgeInsets.symmetric(vertical: 10.w),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondary.withOpacity(.6),
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(50.w),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(20.w),
       ),
       child: Row(
         children: [

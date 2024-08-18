@@ -39,17 +39,20 @@ class _LoginState extends State<Login> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(35.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                'assets/images/login_top.svg',
-                fit: BoxFit.contain, // 确保图片填充整个容器
-                height: 200,
+              Padding(
+                padding: const EdgeInsets.only(top: 180),
+                child: Image.asset(
+                  'assets/images/erq.png',
+                  height: 150.w,
+                  width: 150.w,
+                ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 330.w),
               IntrinsicHeight(
                 child: Row(
                   children: [
@@ -107,14 +110,16 @@ class _LoginState extends State<Login> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(20.w)),
+                      borderRadius: BorderRadius.circular(50.w)),
                   child: Text(
                     '立即登录',
-                    style: TextStyle(fontSize: 28.w, color: Colors.white),
+                    style: TextStyle(fontSize: 32.w, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
                 onTap: () => loginCallPhone(context),
               ),
+              SizedBox(height: 16),
+
             ],
           ),
         ),

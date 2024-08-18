@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'colours.dart';
+
 class AppTheme {
   static ThemeData light = ThemeData.light().copyWith(
       colorScheme: ThemeData.light().colorScheme.copyWith(
@@ -18,7 +20,7 @@ class AppTheme {
       }),
       cardColor: const Color(0xFF2C2C2C),
       iconTheme: const IconThemeData(color: Color(0xFF4D4D4D)),
-      primaryColor: const Color(0xffe56260),
+      primaryColor: Colours.app_main_light,
       textTheme: const TextTheme(
         titleLarge: TextStyle(color: Color(0xFF4D4D4D)),
         titleMedium: TextStyle(color: Color(0xFF4D4D4D)),
@@ -54,7 +56,7 @@ class AppTheme {
         TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
       }),
       cardColor: const Color(0xFFECEBEB),
-      primaryColor: const Color(0xffe56260),
+      primaryColor: Colours.app_main_light,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(
