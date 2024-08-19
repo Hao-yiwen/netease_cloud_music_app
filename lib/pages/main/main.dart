@@ -2,12 +2,18 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get/get.dart';
-import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
+import 'package:get_it/get_it.dart';
 
 @RoutePage()
-class Main extends GetView<MainController> {
+class Main extends StatefulWidget {
   const Main({super.key});
+
+  @override
+  State<Main> createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
+  final scaffoldKey = GetIt.instance<GlobalKey<ScaffoldState>>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +34,10 @@ class Main extends GetView<MainController> {
               TablerIcons.menu_2,
               size: 40.w,
             ),
+            onTap: () {
+              print('open drawer');
+              scaffoldKey.currentState?.openDrawer();
+            },
           ),
           SizedBox(width: 10),
           Expanded(child: _buildSearchBar()),
