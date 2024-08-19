@@ -8,20 +8,21 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i9;
+import 'package:auto_route/auto_route.dart' as _i10;
 import 'package:netease_cloud_music_app/pages/found/found.dart' as _i1;
 import 'package:netease_cloud_music_app/pages/home/home.dart' as _i2;
 import 'package:netease_cloud_music_app/pages/login/login.dart' as _i3;
 import 'package:netease_cloud_music_app/pages/main/main.dart' as _i4;
 import 'package:netease_cloud_music_app/pages/roaming/roaming.dart' as _i5;
-import 'package:netease_cloud_music_app/pages/splash/splash_page.dart' as _i6;
-import 'package:netease_cloud_music_app/pages/timeline/timeline.dart' as _i7;
-import 'package:netease_cloud_music_app/pages/user/user.dart' as _i8;
+import 'package:netease_cloud_music_app/pages/search/search.dart' as _i6;
+import 'package:netease_cloud_music_app/pages/splash/splash_page.dart' as _i7;
+import 'package:netease_cloud_music_app/pages/timeline/timeline.dart' as _i8;
+import 'package:netease_cloud_music_app/pages/user/user.dart' as _i9;
 
 /// generated route for
 /// [_i1.Found]
-class Found extends _i9.PageRouteInfo<void> {
-  const Found({List<_i9.PageRouteInfo>? children})
+class Found extends _i10.PageRouteInfo<void> {
+  const Found({List<_i10.PageRouteInfo>? children})
       : super(
           Found.name,
           initialChildren: children,
@@ -29,7 +30,7 @@ class Found extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Found';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i1.Found();
@@ -39,8 +40,8 @@ class Found extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.Home]
-class Home extends _i9.PageRouteInfo<void> {
-  const Home({List<_i9.PageRouteInfo>? children})
+class Home extends _i10.PageRouteInfo<void> {
+  const Home({List<_i10.PageRouteInfo>? children})
       : super(
           Home.name,
           initialChildren: children,
@@ -48,7 +49,7 @@ class Home extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Home';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i2.Home();
@@ -58,8 +59,8 @@ class Home extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.Login]
-class Login extends _i9.PageRouteInfo<void> {
-  const Login({List<_i9.PageRouteInfo>? children})
+class Login extends _i10.PageRouteInfo<void> {
+  const Login({List<_i10.PageRouteInfo>? children})
       : super(
           Login.name,
           initialChildren: children,
@@ -67,7 +68,7 @@ class Login extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Login';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i3.Login();
@@ -77,8 +78,8 @@ class Login extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.Main]
-class Main extends _i9.PageRouteInfo<void> {
-  const Main({List<_i9.PageRouteInfo>? children})
+class Main extends _i10.PageRouteInfo<void> {
+  const Main({List<_i10.PageRouteInfo>? children})
       : super(
           Main.name,
           initialChildren: children,
@@ -86,7 +87,7 @@ class Main extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Main';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i4.Main();
@@ -96,8 +97,8 @@ class Main extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i5.Roaming]
-class Roaming extends _i9.PageRouteInfo<void> {
-  const Roaming({List<_i9.PageRouteInfo>? children})
+class Roaming extends _i10.PageRouteInfo<void> {
+  const Roaming({List<_i10.PageRouteInfo>? children})
       : super(
           Roaming.name,
           initialChildren: children,
@@ -105,7 +106,7 @@ class Roaming extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Roaming';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
       return const _i5.Roaming();
@@ -114,9 +115,28 @@ class Roaming extends _i9.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i6.SplashPage]
-class SplashRoute extends _i9.PageRouteInfo<void> {
-  const SplashRoute({List<_i9.PageRouteInfo>? children})
+/// [_i6.Search]
+class Search extends _i10.PageRouteInfo<void> {
+  const Search({List<_i10.PageRouteInfo>? children})
+      : super(
+          Search.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'Search';
+
+  static _i10.PageInfo page = _i10.PageInfo(
+    name,
+    builder: (data) {
+      return const _i6.Search();
+    },
+  );
+}
+
+/// generated route for
+/// [_i7.SplashPage]
+class SplashRoute extends _i10.PageRouteInfo<void> {
+  const SplashRoute({List<_i10.PageRouteInfo>? children})
       : super(
           SplashRoute.name,
           initialChildren: children,
@@ -124,18 +144,18 @@ class SplashRoute extends _i9.PageRouteInfo<void> {
 
   static const String name = 'SplashRoute';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i6.SplashPage();
+      return const _i7.SplashPage();
     },
   );
 }
 
 /// generated route for
-/// [_i7.Timeline]
-class Timeline extends _i9.PageRouteInfo<void> {
-  const Timeline({List<_i9.PageRouteInfo>? children})
+/// [_i8.Timeline]
+class Timeline extends _i10.PageRouteInfo<void> {
+  const Timeline({List<_i10.PageRouteInfo>? children})
       : super(
           Timeline.name,
           initialChildren: children,
@@ -143,18 +163,18 @@ class Timeline extends _i9.PageRouteInfo<void> {
 
   static const String name = 'Timeline';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i7.Timeline();
+      return const _i8.Timeline();
     },
   );
 }
 
 /// generated route for
-/// [_i8.User]
-class User extends _i9.PageRouteInfo<void> {
-  const User({List<_i9.PageRouteInfo>? children})
+/// [_i9.User]
+class User extends _i10.PageRouteInfo<void> {
+  const User({List<_i10.PageRouteInfo>? children})
       : super(
           User.name,
           initialChildren: children,
@@ -162,10 +182,10 @@ class User extends _i9.PageRouteInfo<void> {
 
   static const String name = 'User';
 
-  static _i9.PageInfo page = _i9.PageInfo(
+  static _i10.PageInfo page = _i10.PageInfo(
     name,
     builder: (data) {
-      return const _i8.User();
+      return const _i9.User();
     },
   );
 }

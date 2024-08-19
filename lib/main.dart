@@ -85,6 +85,11 @@ class MyObserver extends AutoRouterObserver {
             ? Get.delete<SplashController>()
             : Get.lazyPut(() => SplashController());
         break;
+      case 'Search':
+        del
+            ? Get.delete<SearchController>()
+            : Get.lazyPut(() => SearchController());
+        break;
     }
   }
 
@@ -124,6 +129,4 @@ Future<void> _initGetService(GetIt getIt) async {
   getIt.registerSingleton<AppRouter>(AppRouter());
   await Hive.initFlutter('music');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
-  // 注册全局drawer key，任何地方都可以通过getit获取打开
-  getIt.registerSingleton<GlobalKey<ScaffoldState>>(GlobalKey<ScaffoldState>());
 }

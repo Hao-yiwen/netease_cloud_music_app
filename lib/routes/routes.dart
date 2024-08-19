@@ -13,6 +13,7 @@ abstract class Routes {
   static const user = _Paths.user;
   static const roaming = _Paths.roaming;
   static const splash = _Paths.splash;
+  static const search = _Paths.search;
 }
 
 abstract class _Paths {
@@ -26,6 +27,7 @@ abstract class _Paths {
   static const String user = 'user';
   static const String roaming = 'roaming';
   static const String splash = '/splash';
+  static const String search = 'search';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -44,6 +46,7 @@ class AppRouter extends RootStackRouter {
             AutoRoute(path: Routes.roaming, page: Roaming.page),
             AutoRoute(path: Routes.timeline, page: Timeline.page),
             AutoRoute(path: Routes.user, page: User.page),
+            AutoRoute(path: Routes.search, page: Search.page),
           ],
         ),
         AutoRoute(path: Routes.login, page: Login.page, guards: [AuthGuard()]),

@@ -18,7 +18,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    final scaffoldKey = GetIt.instance<GlobalKey<ScaffoldState>>();
+    // 注册全局drawer key，任何地方都可以通过getit获取打开
+    var scaffoldKey = GetIt.instance.registerSingleton<GlobalKey<ScaffoldState>>(GlobalKey<ScaffoldState>());
     return AutoTabsScaffold(
       scaffoldKey: scaffoldKey,
       drawer: Drawer(
@@ -70,6 +71,38 @@ class _HomeState extends State<Home> {
         Timeline(),
         User(),
       ],
+      bottomSheet: Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            // bottom border
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.withOpacity(0.2),
+                width: 0.5,
+              ),
+            )
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(width: 20.w),
+              Icon(
+                TablerIcons.brand_netease_music,
+                size: 40,
+              ),
+              SizedBox(width: 10),
+              Text('播放条占位~',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Spacer(),
+              Icon(TablerIcons.player_play, size: 20),
+              SizedBox(width: 10),
+              Icon(TablerIcons.music, size: 20),
+              SizedBox(width: 20),
+            ],
+          )),
       bottomNavigationBuilder: (_, tabsRouter) {
         return BottomNavigationBar(
           currentIndex: tabsRouter.activeIndex,
