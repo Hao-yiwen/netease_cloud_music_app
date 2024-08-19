@@ -4,6 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../routes/routes.dart';
+import '../../widgets/songs_big_cards.dart';
+import '../../widgets/songs_list.dart';
+import '../../widgets/songs_small_cards.dart';
+
 @RoutePage()
 class Main extends StatefulWidget {
   const Main({super.key});
@@ -27,29 +32,32 @@ class _MainState extends State<Main> {
   _buildHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: (Row(
-        children: [
-          GestureDetector(
-            child: Icon(
-              TablerIcons.menu_2,
-              size: 40.w,
+      child: SizedBox(
+        height: 70.w,
+        child: (Row(
+          children: [
+            GestureDetector(
+              child: Icon(
+                TablerIcons.menu_2,
+                size: 40.w,
+              ),
+              onTap: () {
+                print('open drawer');
+                scaffoldKey.currentState?.openDrawer();
+              },
             ),
-            onTap: () {
-              print('open drawer');
-              scaffoldKey.currentState?.openDrawer();
-            },
-          ),
-          SizedBox(width: 10),
-          Expanded(child: _buildSearchBar()),
-          SizedBox(width: 10),
-          GestureDetector(
-            child: Icon(
-              TablerIcons.microphone,
-              size: 40.w,
+            SizedBox(width: 10),
+            Expanded(child: _buildSearchBar()),
+            SizedBox(width: 10),
+            GestureDetector(
+              child: Icon(
+                TablerIcons.microphone,
+                size: 40.w,
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        )),
+      ),
     );
   }
 
@@ -64,23 +72,25 @@ class _MainState extends State<Main> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search,
-            size: 40.w,
-          ),
-          SizedBox(width: 10),
           Expanded(
-            child: Container(
-              height: 25,
-              child: TextField(
-                textAlign: TextAlign.start,
-                textAlignVertical: TextAlignVertical.center,
-                // todo http://127.0.0.1:3000/search/hot
-                decoration: InputDecoration(
-                  hintText: '搜索歌曲、歌手、专辑',
-                  border: InputBorder.none,
-                ),
-                style: TextStyle(fontSize: 25.sp),
+            child: GestureDetector(
+              onTap: () {
+                GetIt.instance<AppRouter>().pushNamed('/home/search');
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 40.w,
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '搜索歌曲、歌手、专辑',
+                        style: TextStyle(fontSize: 25.sp),
+                      )),
+                ],
               ),
             ),
           ),
@@ -108,7 +118,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: _buildContentCard(),
+              child: SongsBigCards(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -119,42 +129,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: 300, // 固定的高度，每列高度
-                child: PageView.builder(
-                  controller: PageController(
-                    viewportFraction: 0.9, // 每列占90%的宽度
-                    initialPage: -1, // 通过设置负的初始页面，消除初始空白
-                  ),
-                  itemCount: 6, // 总共6列
-                  itemBuilder: (context, pageIndex) {
-                    return Transform.translate(
-                      offset: Offset(-ScreenUtil().screenWidth * 0.05, 0),
-                      // 通过偏移纠正显示
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Column(
-                          children: List.generate(3, (rowIndex) {
-                            return Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.blueAccent.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                      '歌曲 ${pageIndex * 3 + rowIndex + 1}'),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              child: SongsList(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -165,42 +140,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: 300, // 固定的高度，每列高度
-                child: PageView.builder(
-                  controller: PageController(
-                    viewportFraction: 0.9, // 每列占90%的宽度
-                    initialPage: -1, // 通过设置负的初始页面，消除初始空白
-                  ),
-                  itemCount: 6, // 总共6列
-                  itemBuilder: (context, pageIndex) {
-                    return Transform.translate(
-                      offset: Offset(-ScreenUtil().screenWidth * 0.05, 0),
-                      // 通过偏移纠正显示
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Column(
-                          children: List.generate(3, (rowIndex) {
-                            return Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.blueAccent.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                      '歌曲 ${pageIndex * 3 + rowIndex + 1}'),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              child: SongsList(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -211,28 +151,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                    height: 198.w,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            width: 168.w,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(20.w),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: 10,
-                      scrollDirection: Axis.horizontal,
-                    )),
-              ),
+              child: SongsSmallCards(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -243,28 +162,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                    height: 198.w,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            width: 168.w,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.brown,
-                              borderRadius: BorderRadius.circular(20.w),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: 10,
-                      scrollDirection: Axis.horizontal,
-                    )),
-              ),
+              child: SongsSmallCards(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -275,28 +173,7 @@ class _MainState extends State<Main> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                    height: 198.w,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Container(
-                            width: 168.w,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.pink,
-                              borderRadius: BorderRadius.circular(20.w),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: 10,
-                      scrollDirection: Axis.horizontal,
-                    )),
-              ),
+              child: SongsSmallCards(),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -306,72 +183,10 @@ class _MainState extends State<Main> {
                         fontSize: 30.sp, fontWeight: FontWeight.bold)),
               ),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 300, // 固定的高度，每列高度
-                child: PageView.builder(
-                  controller: PageController(
-                    viewportFraction: 0.9, // 每列占90%的宽度
-                    initialPage: -1, // 通过设置负的初始页面，消除初始空白
-                  ),
-                  itemCount: 6, // 总共6列
-                  itemBuilder: (context, pageIndex) {
-                    return Transform.translate(
-                      offset: Offset(-ScreenUtil().screenWidth * 0.05, 0),
-                      // 通过偏移纠正显示
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Column(
-                          children: List.generate(3, (rowIndex) {
-                            return Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 10.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.blueAccent.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                      '歌曲 ${pageIndex * 3 + rowIndex + 1}'),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            SliverToBoxAdapter(child: SongsList()),
           ],
         ),
       ),
-    );
-  }
-
-  _buildContentCard() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Container(
-          height: 280.w,
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: Container(
-                  width: 250.w,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(20.w),
-                  ),
-                ),
-              );
-            },
-            itemCount: 10,
-            scrollDirection: Axis.horizontal,
-          )),
     );
   }
 }
