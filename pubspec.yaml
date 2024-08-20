@@ -62,6 +62,7 @@ dependencies:
   auto_route: ^9.2.1+1
   carousel_slider: ^5.0.0
   dots_indicator: ^3.0.0
+  easy_refresh: ^3.4.0
 
 dependency_overrides:
   web: ^1.0.0
