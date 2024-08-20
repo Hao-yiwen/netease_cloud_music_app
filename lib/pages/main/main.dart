@@ -1,13 +1,17 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../routes/routes.dart';
 import '../../widgets/songs_big_cards.dart';
 import '../../widgets/songs_list.dart';
 import '../../widgets/songs_small_cards.dart';
+import '../home/home_controller.dart';
 
 @RoutePage()
 class Main extends StatefulWidget {
@@ -18,7 +22,6 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  final scaffoldKey = GetIt.instance<GlobalKey<ScaffoldState>>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +45,7 @@ class _MainState extends State<Main> {
                 size: 40.w,
               ),
               onTap: () {
-                print('open drawer');
-                scaffoldKey.currentState?.openDrawer();
+                HomeController.to.scaffoldKey.value.currentState?.openDrawer();
               },
             ),
             SizedBox(width: 10),
@@ -75,7 +77,7 @@ class _MainState extends State<Main> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                GetIt.instance<AppRouter>().pushNamed('/home/search');
+                AutoRouter.of(context).pushNamed(Routes.search);
               },
               child: Row(
                 children: [

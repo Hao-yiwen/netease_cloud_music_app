@@ -4,6 +4,7 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list.dart';
 import 'package:netease_cloud_music_app/widgets/songs_small_cards.dart';
 
@@ -62,9 +63,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             SizedBox(
               width: 10,
             ),
-            Icon(
-              TablerIcons.menu_2,
-              size: 40.w,
+            GestureDetector(
+              onTap: (){
+                HomeController.to.scaffoldKey.value.currentState!.openDrawer();
+              },
+              child: Icon(
+                TablerIcons.menu_2,
+                size: 40.w,
+              ),
             ),
             SizedBox(
               width: 10,

@@ -13,9 +13,9 @@ class HomeController extends SuperController {
   static HomeController get to => Get.find();
 
   Box box = GetIt.instance<Box>();
-
   Rx<LoginStatusDto> userData = LoginStatusDto().obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
+  Rx<GlobalKey<ScaffoldState>> scaffoldKey = GlobalKey<ScaffoldState>().obs;
 
   initUserData() {
     String userDataStr = box.get(loginData) ?? '';
@@ -23,6 +23,10 @@ class HomeController extends SuperController {
       loginStatus.value = LoginStatus.login;
       userData.value = LoginStatusDto.fromJson(jsonDecode(userDataStr));
     }
+  }
+
+  setScaffoldKey(GlobalKey<ScaffoldState> key) {
+    scaffoldKey.value = key;
   }
 
   @override
