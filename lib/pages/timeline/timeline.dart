@@ -74,8 +74,11 @@ class _TimelineState extends State<Timeline> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     height: 100,
-                    color: Colors.blue,
                     child: Center(
                       child: Text(
                         'Banner',

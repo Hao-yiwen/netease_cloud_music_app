@@ -36,4 +36,9 @@ class LoginApi {
     Http().usc.onLogined(info);
     return info;
   }
+
+  static Future<void> logout() async {
+    await HttpUtils.get('/logout');
+    Http().usc.onLogout();
+  }
 }

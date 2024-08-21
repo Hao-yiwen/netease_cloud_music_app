@@ -42,4 +42,8 @@ class UserController extends GetxController {
       print(e);
     }
   }
+
+  Future<void> logout() async {
+    HomeController.to.box.delete(loginData);
+  }
 }
