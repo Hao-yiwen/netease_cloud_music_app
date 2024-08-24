@@ -9,19 +9,38 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i11;
-import 'package:netease_cloud_music_app/pages/found/found.dart' as _i1;
-import 'package:netease_cloud_music_app/pages/home/home.dart' as _i2;
-import 'package:netease_cloud_music_app/pages/login/login.dart' as _i3;
-import 'package:netease_cloud_music_app/pages/main/main.dart' as _i4;
-import 'package:netease_cloud_music_app/pages/new_songs/news_songs.dart' as _i5;
-import 'package:netease_cloud_music_app/pages/roaming/roaming.dart' as _i6;
+import 'package:netease_cloud_music_app/pages/empty_page.dart' as _i1;
+import 'package:netease_cloud_music_app/pages/found/found.dart' as _i2;
+import 'package:netease_cloud_music_app/pages/home/home.dart' as _i3;
+import 'package:netease_cloud_music_app/pages/login/login.dart' as _i4;
+import 'package:netease_cloud_music_app/pages/main/main.dart' as _i5;
+import 'package:netease_cloud_music_app/pages/new_songs/news_songs.dart' as _i6;
 import 'package:netease_cloud_music_app/pages/search/search.dart' as _i7;
 import 'package:netease_cloud_music_app/pages/splash/splash_page.dart' as _i8;
 import 'package:netease_cloud_music_app/pages/timeline/timeline.dart' as _i9;
 import 'package:netease_cloud_music_app/pages/user/user.dart' as _i10;
 
 /// generated route for
-/// [_i1.Found]
+/// [_i1.EmptyPage]
+class EmptyRoute extends _i11.PageRouteInfo<void> {
+  const EmptyRoute({List<_i11.PageRouteInfo>? children})
+      : super(
+          EmptyRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'EmptyRoute';
+
+  static _i11.PageInfo page = _i11.PageInfo(
+    name,
+    builder: (data) {
+      return _i1.EmptyPage();
+    },
+  );
+}
+
+/// generated route for
+/// [_i2.Found]
 class Found extends _i11.PageRouteInfo<void> {
   const Found({List<_i11.PageRouteInfo>? children})
       : super(
@@ -34,13 +53,13 @@ class Found extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i1.Found();
+      return const _i2.Found();
     },
   );
 }
 
 /// generated route for
-/// [_i2.Home]
+/// [_i3.Home]
 class Home extends _i11.PageRouteInfo<void> {
   const Home({List<_i11.PageRouteInfo>? children})
       : super(
@@ -53,13 +72,13 @@ class Home extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i2.Home();
+      return const _i3.Home();
     },
   );
 }
 
 /// generated route for
-/// [_i3.Login]
+/// [_i4.Login]
 class Login extends _i11.PageRouteInfo<void> {
   const Login({List<_i11.PageRouteInfo>? children})
       : super(
@@ -72,13 +91,13 @@ class Login extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i3.Login();
+      return const _i4.Login();
     },
   );
 }
 
 /// generated route for
-/// [_i4.Main]
+/// [_i5.Main]
 class Main extends _i11.PageRouteInfo<void> {
   const Main({List<_i11.PageRouteInfo>? children})
       : super(
@@ -91,13 +110,13 @@ class Main extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i4.Main();
+      return const _i5.Main();
     },
   );
 }
 
 /// generated route for
-/// [_i5.NewsSongs]
+/// [_i6.NewsSongs]
 class NewsSongs extends _i11.PageRouteInfo<void> {
   const NewsSongs({List<_i11.PageRouteInfo>? children})
       : super(
@@ -110,26 +129,7 @@ class NewsSongs extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i5.NewsSongs();
-    },
-  );
-}
-
-/// generated route for
-/// [_i6.Roaming]
-class Roaming extends _i11.PageRouteInfo<void> {
-  const Roaming({List<_i11.PageRouteInfo>? children})
-      : super(
-          Roaming.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'Roaming';
-
-  static _i11.PageInfo page = _i11.PageInfo(
-    name,
-    builder: (data) {
-      return const _i6.Roaming();
+      return const _i6.NewsSongs();
     },
   );
 }
@@ -155,10 +155,13 @@ class Search extends _i11.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.SplashPage]
-class SplashRoute extends _i11.PageRouteInfo<void> {
-  const SplashRoute({List<_i11.PageRouteInfo>? children})
-      : super(
+class SplashRoute extends _i11.PageRouteInfo<SplashRouteArgs> {
+  SplashRoute({
+    dynamic key,
+    List<_i11.PageRouteInfo>? children,
+  }) : super(
           SplashRoute.name,
+          args: SplashRouteArgs(key: key),
           initialChildren: children,
         );
 
@@ -167,9 +170,22 @@ class SplashRoute extends _i11.PageRouteInfo<void> {
   static _i11.PageInfo page = _i11.PageInfo(
     name,
     builder: (data) {
-      return const _i8.SplashPage();
+      final args =
+          data.argsAs<SplashRouteArgs>(orElse: () => const SplashRouteArgs());
+      return _i8.SplashPage(key: args.key);
     },
   );
+}
+
+class SplashRouteArgs {
+  const SplashRouteArgs({this.key});
+
+  final dynamic key;
+
+  @override
+  String toString() {
+    return 'SplashRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for

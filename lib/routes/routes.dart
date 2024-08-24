@@ -15,6 +15,7 @@ abstract class Routes {
   static const splash = _Paths.splash;
   static const search = _Paths.search;
   static const newSongs = _Paths.newSongs;
+  static const empty = _Paths.empty;
 }
 
 abstract class _Paths {
@@ -30,6 +31,7 @@ abstract class _Paths {
   static const String splash = '/splash';
   static const String search = '/search';
   static const String newSongs = 'newSongs';
+  static const String empty = 'empty';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -45,7 +47,7 @@ class AppRouter extends RootStackRouter {
           children: [
             AutoRoute(path: Routes.main, page: Main.page, initial: true),
             AutoRoute(path: Routes.found, page: Found.page),
-            AutoRoute(path: Routes.roaming, page: Roaming.page),
+            AutoRoute(path: Routes.empty, page: EmptyRoute.page),
             AutoRoute(path: Routes.timeline, page: Timeline.page),
             AutoRoute(path: Routes.user, page: User.page),
             AutoRoute(path: Routes.newSongs, page: NewsSongs.page),
