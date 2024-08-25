@@ -3,13 +3,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
-import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
-
-import '../../http/api/login/login_api.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
+import 'drawer_home.dart';
+import '../roaming/roaming.dart';
 
 @RoutePage()
 class Home extends StatefulWidget {
@@ -28,7 +26,6 @@ class _HomeState extends State<Home> {
     return AutoTabsRouter(
       transitionBuilder: (context, child, animation) => FadeTransition(
         opacity: animation,
-        // the passed child is technically our animated selected-tab page
         child: child,
       ),
       builder: (context, chiild) {
@@ -42,53 +39,7 @@ class _HomeState extends State<Home> {
               // Add a ListView to the drawer. This ensures the user can scroll
               // through the options in the drawer if there isn't enough vertical
               // space to fit everything.
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      // Important: Remove any padding from the ListView.
-                      padding: EdgeInsets.zero,
-                      children: [
-                        ListTile(
-                          title: const Text('Home'),
-                          onTap: () {
-                            // Update the state of the app
-                            // Then close the drawer
-                            Navigator.pop(context);
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Business'),
-                          onTap: () {
-                            // Update the state of the app
-                            // Then close the drawer
-                            Navigator.pop(context);
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('School'),
-                          onTap: () {
-                            // Update the state of the app
-                            // Then close the drawer
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 200.w,
-                    color: Colors.amber,
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () => _logout(),
-                        child: Text('退出登录'),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+              child: DrawerHome(),
             ),
             bottomSheet: Hero(
               tag: 'test',
@@ -96,7 +47,15 @@ class _HomeState extends State<Home> {
             ),
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: tabsRouter.activeIndex,
-              onTap: tabsRouter.setActiveIndex,
+              onTap: (index) {
+                if (index == 2) {
+                  // 当点击的是“漫游”Tab时，弹出底部页面
+                  Roaming.showBottomPlayer(context);
+                } else {
+                  // 对于其他 Tabs，正常切换页面
+                  tabsRouter.setActiveIndex(index);
+                }
+              },
               backgroundColor: Colors.white,
               selectedItemColor: Colors.red,
               unselectedItemColor: Colors.grey,
@@ -144,17 +103,11 @@ class _HomeState extends State<Home> {
       routes: const [
         Main(),
         Found(),
-        Roaming(),
+        EmptyRoute(), // 这里只是占位
         Timeline(),
         User(),
       ],
     );
-  }
-
-  Future<void> _logout() async {
-    await LoginApi.logout();
-    UserController.to.logout();
-    AutoRouter.of(context).replaceNamed('/login');
   }
 }
 

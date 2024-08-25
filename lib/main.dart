@@ -32,12 +32,15 @@ Future<void> main() async {
   final _appRouter = getIt<AppRouter>();
 
   runApp(ScreenUtilInit(
+    // 750想当与iphone6/7/8 plus的设计尺寸 375相当于iphone6/7/8的设计尺寸
+    // flutter中的逻辑像素 / 375 约等于 1
     designSize: const Size(750, 1334),
     minTextAdapt: true,
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       HomeBinding().dependencies();
       UserBinding().dependencies();
+      print("获取屏幕宽高 ${ScreenUtil().screenWidth} ${ScreenUtil().screenHeight}");
       return GetMaterialApp.router(
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
