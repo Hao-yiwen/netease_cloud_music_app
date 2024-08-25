@@ -2,6 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 
 @RoutePage()
@@ -240,7 +241,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
             SizedBox(
               width: 6,
             ),
-            Image.asset("assets/images/vip_tag.png", width: 60),
+            Image.asset(ImageUtils.getImagePath('vip_tag'), width: 60),
           ],
         ),
         SizedBox(

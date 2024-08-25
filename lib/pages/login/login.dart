@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
+import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
@@ -47,7 +48,7 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.only(top: 180),
                 child: Image.asset(
-                  'assets/images/erq.png',
+                  ImageUtils.getImagePath('erq'),
                   height: 150.w,
                   width: 150.w,
                 ),
@@ -113,13 +114,15 @@ class _LoginState extends State<Login> {
                       borderRadius: BorderRadius.circular(50.w)),
                   child: Text(
                     '立即登录',
-                    style: TextStyle(fontSize: 32.w, color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 32.w,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 onTap: () => loginCallPhone(context),
               ),
               SizedBox(height: 16),
-
             ],
           ),
         ),

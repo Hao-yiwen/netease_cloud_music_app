@@ -1,9 +1,12 @@
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
+import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 
 class Roaming extends GetView<Roaming> {
   const Roaming({super.key});
@@ -36,7 +39,27 @@ class Roaming extends GetView<Roaming> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [_buildPlayerHeader(context)],
+      children: [
+        _buildPlayerHeader(context),
+        SizedBox(
+          height: 60.w,
+        ),
+        PlayAlbumCover(
+          rotating: true,
+          pading: 40.w,
+        ),
+        SizedBox(
+          height: 60.w,
+        ),
+        // 歌曲信息
+        _buildPlayerMusicInfo(),
+        // 进度条
+        _buildProgressBar(),
+        // 播放按钮
+        _buildPlayerControl(context),
+        // 底部按钮
+        _buildBottomButton(context),
+      ],
     );
   }
 
@@ -68,6 +91,171 @@ class Roaming extends GetView<Roaming> {
           ),
         ),
       ],
+    );
+  }
+
+  _buildPlayerMusicInfo() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Faraway',
+                style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
+              ),
+              SizedBox(
+                height: 10.w,
+              ),
+              Text(
+                'Gala',
+                style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  TablerIcons.heart_plus,
+                  color: Colors.grey[400],
+                  size: 60.w,
+                ),
+                onPressed: () {},
+              ),
+              SizedBox(
+                width: 60.w,
+              ),
+              Image.asset(ImageUtils.getImagePath('detail_icn_cmt'),
+                  width: 60.w, height: 60.w),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildProgressBar() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
+      child: ProgressBar(
+        progress: Duration(milliseconds: 500),
+        buffered: Duration(milliseconds: 2000),
+        total: Duration(milliseconds: 5000),
+        onSeek: (duration) {
+          print('User selected a new time: $duration');
+        },
+        thumbColor: Colors.white,
+        barHeight: 2.0,
+        thumbRadius: 5.0,
+        timeLabelTextStyle: TextStyle(color: Colors.white, fontSize: 18.w),
+        timeLabelPadding: 14.w,
+      ),
+    );
+  }
+
+  _buildPlayerControl(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () {},
+          child: Image.asset(
+            ImageUtils.getImagePath('play_btn_shuffle'),
+            width: 50.w,
+            height: 50.w,
+            color: Colors.grey[400],
+          ),
+        ),
+        SizedBox(
+          width: 55.w,
+        ),
+        IconButton(
+          icon: Icon(
+            TablerIcons.player_skip_back_filled,
+            color: Colors.grey[400],
+            size: 55.w,
+          ),
+          onPressed: () {},
+        ),
+        SizedBox(
+          width: 60.w,
+        ),
+        IconButton(
+          icon: Icon(
+            TablerIcons.player_play_filled,
+            color: Colors.grey[400],
+            size: 80.w,
+          ),
+          onPressed: () {},
+        ),
+        SizedBox(
+          width: 55.w,
+        ),
+        IconButton(
+          icon: Icon(
+            TablerIcons.player_skip_forward_filled,
+            color: Colors.grey[400],
+            size: 55.w,
+          ),
+          onPressed: () {},
+        ),
+        SizedBox(
+          width: 60.w,
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Image.asset(
+            ImageUtils.getImagePath('epj'),
+            width: 70.w,
+            height: 70.w,
+          ),
+        )
+      ],
+    );
+  }
+
+  _buildBottomButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: Icon(
+              TablerIcons.devices,
+              color: Colors.grey[500],
+              size: 40.w,
+            ),
+            onPressed: () {},
+          ),
+          SizedBox(
+            width: 140.w,
+          ),
+          IconButton(
+            icon: Icon(
+              TablerIcons.info_square,
+              color: Colors.grey[500],
+              size: 40.w,
+            ),
+            onPressed: () {},
+          ),
+          SizedBox(
+            width: 140.w,
+          ),
+          IconButton(
+            icon: Icon(
+              TablerIcons.dots,
+              color: Colors.grey[500],
+              size: 40.w,
+            ),
+            onPressed: () {},
+          ),
+        ],
+      ),
     );
   }
 }
