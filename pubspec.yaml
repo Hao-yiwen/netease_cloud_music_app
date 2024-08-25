@@ -64,6 +64,10 @@ dependencies:
   dots_indicator: ^3.0.0
   easy_refresh: ^3.4.0
   audio_video_progress_bar: ^2.0.3
+  gap: ^3.0.1
+  skeletonizer: ^1.4.2
+  cached_network_image: ^3.4.1
+  flutter_blurhash: ^0.8.2
 
 dependency_overrides:
   web: ^1.0.0
