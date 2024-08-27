@@ -6,7 +6,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
-import 'drawer_home.dart';
+import 'drawer/drawer_home.dart';
 import '../roaming/roaming.dart';
 
 @RoutePage()
@@ -35,7 +35,8 @@ class _HomeState extends State<Home> {
             body: chiild,
             key: scaffoldState,
             drawer: Drawer(
-              width: ScreenUtil().screenWidth * 0.8,
+
+              width: ScreenUtil().screenWidth * 0.85,
               // Add a ListView to the drawer. This ensures the user can scroll
               // through the options in the drawer if there isn't enough vertical
               // space to fit everything.
