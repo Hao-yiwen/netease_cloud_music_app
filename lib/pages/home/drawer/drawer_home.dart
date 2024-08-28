@@ -16,7 +16,8 @@ class DrawerHome extends StatefulWidget {
 class _DrawerHomeState extends State<DrawerHome> {
   var _listTop = [
     DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: "99"),
-    DrawerItem(icon: TablerIcons.currency_ethereum, text: "云贝中心", badge: ""),
+    DrawerItem(
+        icon: TablerIcons.currency_ethereum, text: "云贝中心", badge: ""),
     DrawerItem(icon: TablerIcons.shirt, text: "装扮中心", badge: ""),
     DrawerItem(icon: TablerIcons.rosette, text: "徽章中心", badge: ""),
     DrawerItem(icon: TablerIcons.bulb, text: "创作者中心", badge: ""),
@@ -31,7 +32,44 @@ class _DrawerHomeState extends State<DrawerHome> {
     DrawerItem(icon: TablerIcons.flame, text: "云推歌", badge: ""),
     DrawerItem(icon: TablerIcons.brand_tiktok, text: "彩铃专区", badge: ""),
     DrawerItem(
-        icon: TablerIcons.building_broadcast_tower, text: "免流量听歌", badge: ""),
+        icon: TablerIcons.building_broadcast_tower,
+        text: "免流量听歌",
+        badge: ""),
+  ];
+
+  var _listSettings = [
+    DrawerItem(icon: TablerIcons.settings, text: "设置", badge: ""),
+    DrawerItem(icon: TablerIcons.moon_stars, text: "深色模式", badge: ""),
+    DrawerItem(icon: TablerIcons.stopwatch, text: "定时关闭", badge: ""),
+    DrawerItem(icon: TablerIcons.headphones, text: "边听边存", badge: ""),
+    DrawerItem(icon: TablerIcons.gavel, text: "音乐收藏家", badge: ""),
+    DrawerItem(icon: TablerIcons.shield, text: "青少年模式", badge: ""),
+    DrawerItem(icon: TablerIcons.alarm, text: "音乐闹钟", badge: ""),
+    DrawerItem(
+        icon: TablerIcons.file_invoice,
+        text: "个人信息收集与使用清单",
+        badge: ""),
+    DrawerItem(
+        icon: TablerIcons.notes,
+        text: "个人信息收集与第三方共享清单",
+        badge: ""),
+    DrawerItem(
+        icon: TablerIcons.shield_check,
+        text: "个人信息与隐私保护",
+        badge: ""),
+    DrawerItem(
+        icon: TablerIcons.info_circle, text: "关于", badge: ""),
+  ];
+
+  var _listBottomInfo = [
+    DrawerItem(
+        icon: TablerIcons.switch_horizontal,
+        text: "切换账号",
+        badge: ""),
+    DrawerItem(
+        icon: TablerIcons.logout,
+        text: "退出登录",
+        badge: ""),
   ];
 
   @override
@@ -117,10 +155,9 @@ class _DrawerHomeState extends State<DrawerHome> {
         child: CustomScrollView(
           slivers: [
             _buildCardContent(list: _listTop),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 30.w),
-            ),
-            _buildCardContent(list: _listMusicService)
+            _buildCardContent(list: _listMusicService),
+            _buildCardContent(list: _listSettings),
+            _buildCardContent(list: _listBottomInfo)
           ],
         ),
       ),
@@ -128,9 +165,12 @@ class _DrawerHomeState extends State<DrawerHome> {
   }
 
   Widget _buildListItem(BuildContext context,
-      {required IconData icon, required String text, Widget? trailing}) {
+      {required IconData icon,
+        required String text,
+        Widget? trailing,
+        Function()? onTap}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap ?? () {},
       child: Padding(
         padding: EdgeInsets.all(20.w),
         child: Row(
@@ -145,13 +185,13 @@ class _DrawerHomeState extends State<DrawerHome> {
             Spacer(),
             trailing != null
                 ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      trailing!,
-                      SizedBox(width: 10.w),
-                      Icon(Icons.chevron_right, color: Colors.grey[300])
-                    ],
-                  )
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                trailing!,
+                SizedBox(width: 10.w),
+                Icon(Icons.chevron_right, color: Colors.grey[300])
+              ],
+            )
                 : Icon(Icons.chevron_right, color: Colors.grey[300]),
             SizedBox(width: 10.w),
           ],
