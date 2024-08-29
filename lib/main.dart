@@ -18,12 +18,13 @@ import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
 import 'common/constants/colors.dart';
+import 'common/constants/url.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // https://docs-neteasecloudmusicapi.vercel.app/docs/#/?id=_1-%e6%89%8b%e6%9c%ba%e7%99%bb%e5%bd%95
   // 全局dio封装
-  await HttpUtils.init(baseUrl: 'http://127.0.0.1:3000');
+  await HttpUtils.init(baseUrl: base_url);
   // 初始化权限校验 del 在这里初始化是否有必要
   // Get.put(AuthController());
   // 全局依赖共享

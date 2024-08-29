@@ -68,6 +68,8 @@ dependencies:
   skeletonizer: ^1.4.2
   cached_network_image: ^3.4.1
   flutter_blurhash: ^0.8.2
+  package_info_plus: ^8.0.2
+  webview_flutter: ^4.9.0
 
 dependency_overrides:
   web: ^1.0.0
