@@ -16,6 +16,8 @@ abstract class Routes {
   static const search = _Paths.search;
   static const newSongs = _Paths.newSongs;
   static const empty = _Paths.empty;
+  static const about = _Paths.about;
+  static const webview = _Paths.webview;
 }
 
 abstract class _Paths {
@@ -32,6 +34,8 @@ abstract class _Paths {
   static const String search = '/search';
   static const String newSongs = 'newSongs';
   static const String empty = 'empty';
+  static const String about = '/about';
+  static const String webview = '/webview';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -56,6 +60,16 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: Routes.search, page: Search.page),
         AutoRoute(path: Routes.login, page: Login.page, guards: [AuthGuard()]),
         AutoRoute(path: Routes.splash, page: SplashRoute.page, initial: true),
+        CustomRoute(
+            page: About.page,
+            transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
+            durationInMilliseconds: 200,
+            path: Routes.about),
+        CustomRoute(
+            page: WebViewRoute.page,
+            transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
+            durationInMilliseconds: 200,
+            path: Routes.webview),
       ];
 
   @override

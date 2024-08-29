@@ -35,11 +35,10 @@ class _HomeState extends State<Home> {
             body: chiild,
             key: scaffoldState,
             drawer: Drawer(
-
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero
+              ),
               width: ScreenUtil().screenWidth * 0.85,
-              // Add a ListView to the drawer. This ensures the user can scroll
-              // through the options in the drawer if there isn't enough vertical
-              // space to fit everything.
               child: DrawerHome(),
             ),
             bottomSheet: Hero(
