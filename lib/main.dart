@@ -1,14 +1,17 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:netease_cloud_music_app/common/service/theme_binding.dart';
+import 'package:netease_cloud_music_app/common/service/theme_service.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
-import 'package:netease_cloud_music_app/bindings/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
+import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
+import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
@@ -24,7 +27,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // https://docs-neteasecloudmusicapi.vercel.app/docs/#/?id=_1-%e6%89%8b%e6%9c%ba%e7%99%bb%e5%bd%95
   // 全局dio封装
-  await HttpUtils.init(baseUrl: base_url);
+  await HttpUtils.init(baseUrl: BASE_URL);
   // 初始化权限校验 del 在这里初始化是否有必要
   // Get.put(AuthController());
   // 全局依赖共享
@@ -41,16 +44,19 @@ Future<void> main() async {
     builder: (BuildContext context, Widget? child) {
       HomeBinding().dependencies();
       UserBinding().dependencies();
+      ThemeBinding().dependencies();
       print("获取屏幕宽高 ${ScreenUtil().screenWidth} ${ScreenUtil().screenHeight}");
-      return GetMaterialApp.router(
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        routerDelegate: _appRouter.delegate(
-          navigatorObservers: () => [MyObserver()],
-        ),
-        routeInformationParser: _appRouter.defaultRouteParser(),
-      );
+      return Obx(() {
+        return GetMaterialApp.router(
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: ThemeService.to.currentThemeMode,
+          routerDelegate: _appRouter.delegate(
+            navigatorObservers: () => [MyObserver()],
+          ),
+          routeInformationParser: _appRouter.defaultRouteParser(),
+        );
+      });
     },
   ));
 }
