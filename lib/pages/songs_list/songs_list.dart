@@ -2,6 +2,8 @@ import 'package:auto_route/annotations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_songs_dto.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
 @RoutePage()
 class SongsList extends StatelessWidget {
@@ -17,14 +19,22 @@ class SongsList extends StatelessWidget {
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(recommendSongsDto.dailySongs![index].name!),
-            trailing: Image(
-              // 缓存图片加速
-              image: CachedNetworkImageProvider(
-                  recommendSongsDto.dailySongs![index].al!.picUrl!),
+          return GestureDetector(
+            onTap: () {
+              RoamingController.to.currentSongId.value =
+                  recommendSongsDto.dailySongs![index].id!;
+              RoamingController.to.getMusicInfo();
+              Roaming.showBottomPlayer(context);
+            },
+            child: ListTile(
+              title: Text(recommendSongsDto.dailySongs![index].name!),
+              trailing: Image(
+                // 缓存图片加速
+                image: CachedNetworkImageProvider(
+                    recommendSongsDto.dailySongs![index].al!.picUrl!),
+              ),
+              subtitle: Text(recommendSongsDto.dailySongs![index].ar![0].name!),
             ),
-            subtitle: Text(recommendSongsDto.dailySongs![index].ar![0].name!),
           );
         },
         itemCount: recommendSongsDto.dailySongs!.length,
