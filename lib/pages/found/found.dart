@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
-import 'package:netease_cloud_music_app/widgets/songs_list.dart';
+import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/songs_small_cards.dart';
 
 import '../../widgets/custom_tag.dart';
@@ -280,7 +280,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: SongsList(),
+                  child: SongsListWidget(),
                 ),
                 SliverToBoxAdapter(
                   child: Padding(

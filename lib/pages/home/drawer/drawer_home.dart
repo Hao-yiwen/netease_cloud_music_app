@@ -25,10 +25,9 @@ class _DrawerHomeState extends State<DrawerHome> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         // 如果有 borderRadius，需要移除或设置为 zero
         borderRadius: BorderRadius.zero,
       ),
@@ -100,16 +99,13 @@ class _DrawerHomeState extends State<DrawerHome> {
 
   _buildContent() {
     return Expanded(
-      child: Container(
-        color: const Color(0xfff3f4f7),
-        child: CustomScrollView(
-          slivers: [
-            _buildCardContent(list: getTopItem(context)),
-            _buildCardContent(list: getListMusicService(context)),
-            _buildCardContent(list: getListSettings(context)),
-            _buildCardContent(list: getListBottomInfo(context))
-          ],
-        ),
+      child: CustomScrollView(
+        slivers: [
+          _buildCardContent(list: getTopItem(context)),
+          _buildCardContent(list: getListMusicService(context)),
+          _buildCardContent(list: getListSettings(context)),
+          _buildCardContent(list: getListBottomInfo(context))
+        ],
       ),
     );
   }
@@ -184,7 +180,7 @@ class _DrawerHomeState extends State<DrawerHome> {
         padding: EdgeInsets.all(24.w),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24.w),
           ),
           child: Padding(

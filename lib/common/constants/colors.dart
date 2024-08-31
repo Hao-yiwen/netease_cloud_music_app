@@ -18,7 +18,7 @@ class AppTheme {
         TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
         TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
       }),
-      cardColor: const Color(0xFF2C2C2C),
+      cardColor: const Color(0xFFECEBEB),
       iconTheme: const IconThemeData(color: Color(0xFF4D4D4D)),
       primaryColor: Colours.app_main_light,
       textTheme: const TextTheme(
@@ -55,7 +55,7 @@ class AppTheme {
         TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
         TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
       }),
-      cardColor: const Color(0xFFECEBEB),
+      cardColor: const Color(0xFF2C2C2C),
       primaryColor: Colours.app_main_light,
       scaffoldBackgroundColor: const Color(0xFF2C2B2B),
       appBarTheme: const AppBarTheme(

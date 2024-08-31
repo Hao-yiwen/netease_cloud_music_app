@@ -42,8 +42,6 @@ Future<void> main() async {
     minTextAdapt: true,
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
-      HomeBinding().dependencies();
-      UserBinding().dependencies();
       ThemeBinding().dependencies();
       print("获取屏幕宽高 ${ScreenUtil().screenWidth} ${ScreenUtil().screenHeight}");
       return Obx(() {
@@ -54,6 +52,10 @@ Future<void> main() async {
           routerDelegate: _appRouter.delegate(
             navigatorObservers: () => [MyObserver()],
           ),
+          initialBinding: BindingsBuilder((){
+            HomeBinding().dependencies();
+            UserBinding().dependencies();
+          }),
           routeInformationParser: _appRouter.defaultRouteParser(),
         );
       });
@@ -69,26 +71,6 @@ class MyObserver extends AutoRouterObserver {
         del
             ? Get.delete<UserController>()
             : Get.lazyPut(() => UserController());
-        break;
-      case 'Main':
-        del
-            ? Get.delete<MainController>()
-            : Get.lazyPut(() => MainController());
-        break;
-      case 'Found':
-        del
-            ? Get.delete<FoundController>()
-            : Get.lazyPut(() => FoundController());
-        break;
-      case 'Roaming':
-        del
-            ? Get.delete<RoamingController>()
-            : Get.lazyPut(() => RoamingController());
-        break;
-      case 'Timeline':
-        del
-            ? Get.delete<TimelineController>()
-            : Get.lazyPut(() => TimelineController());
         break;
       case 'SplashRoute':
         del

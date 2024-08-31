@@ -18,6 +18,7 @@ abstract class Routes {
   static const empty = _Paths.empty;
   static const about = _Paths.about;
   static const webview = _Paths.webview;
+  static const songsList = _Paths.songsList;
 }
 
 abstract class _Paths {
@@ -36,6 +37,7 @@ abstract class _Paths {
   static const String empty = 'empty';
   static const String about = '/about';
   static const String webview = '/webview';
+  static const String songsList = '/songsList';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -70,6 +72,7 @@ class AppRouter extends RootStackRouter {
             transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
             durationInMilliseconds: 200,
             path: Routes.webview),
+        AutoRoute(path: Routes.songsList, page: SongsList.page),
       ];
 
   @override
