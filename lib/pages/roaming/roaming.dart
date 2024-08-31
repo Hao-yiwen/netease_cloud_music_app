@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,8 +6,10 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
+import 'package:just_audio/just_audio.dart';
 
-class Roaming extends GetView<Roaming> {
+class Roaming extends StatefulWidget {
   const Roaming({super.key});
 
   static void showBottomPlayer(BuildContext hostContext) {
@@ -37,30 +38,69 @@ class Roaming extends GetView<Roaming> {
   }
 
   @override
+  State<Roaming> createState() => _RoamingState();
+}
+
+class _RoamingState extends State<Roaming> {
+  final RoamingController controller = Get.find<RoamingController>();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void playMusic() async {
+    await _audioPlayer.setUrl(controller.songInfo.value.url ?? '');
+    _audioPlayer.play();
+    controller.playStatus.value = 1;
+  }
+
+  void pauseMusic() {
+    _audioPlayer.pause();
+    controller.playStatus.value = 0;
+  }
+
+  void stopMusic() {
+    _audioPlayer.stop();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildPlayerHeader(context),
-        SizedBox(
-          height: 60.w,
+    return Obx(() {
+      return Visibility(
+        visible: !controller.loading.value,
+        child: Column(
+          children: [
+            _buildPlayerHeader(context),
+            SizedBox(
+              height: 60.w,
+            ),
+            PlayAlbumCover(
+              rotating: true,
+              pading: 40.w,
+            ),
+            SizedBox(
+              height: 60.w,
+            ),
+            // 歌曲信息
+            _buildPlayerMusicInfo(),
+            // 进度条
+            _buildProgressBar(),
+            // 播放按钮
+            _buildPlayerControl(context),
+            // 底部按钮
+            _buildBottomButton(context),
+          ],
         ),
-        PlayAlbumCover(
-          rotating: true,
-          pading: 40.w,
-        ),
-        SizedBox(
-          height: 60.w,
-        ),
-        // 歌曲信息
-        _buildPlayerMusicInfo(),
-        // 进度条
-        _buildProgressBar(),
-        // 播放按钮
-        _buildPlayerControl(context),
-        // 底部按钮
-        _buildBottomButton(context),
-      ],
-    );
+      );
+    });
   }
 
   _buildPlayerHeader(BuildContext context) {
@@ -185,12 +225,22 @@ class Roaming extends GetView<Roaming> {
           width: 60.w,
         ),
         IconButton(
-          icon: Icon(
-            TablerIcons.player_play_filled,
-            color: Colors.grey[400],
-            size: 80.w,
-          ),
-          onPressed: () {},
+          icon: Obx(() {
+            return Icon(
+              controller.playStatus.value == 1
+                  ? TablerIcons.player_pause_filled
+                  : TablerIcons.player_play_filled,
+              color: Colors.grey[400],
+              size: 80.w,
+            );
+          }),
+          onPressed: () {
+            if (controller.playStatus.value == 1) {
+              pauseMusic();
+            } else {
+              playMusic();
+            }
+          },
         ),
         SizedBox(
           width: 55.w,

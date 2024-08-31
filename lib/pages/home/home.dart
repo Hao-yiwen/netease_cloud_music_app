@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_binding.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
 import '../found/found_controller.dart';
@@ -30,7 +32,10 @@ class _HomeState extends State<Home> {
     // 注册全局drawer key，任何地方都可以通过getit获取打开
     var scaffoldState = GlobalKey<ScaffoldState>();
     HomeController.to.setScaffoldKey(scaffoldState);
+    // 首页加载
     MainBinding().dependencies();
+    // 播放器加载
+    RoamingBinding().dependencies();
     return AutoTabsRouter(
       transitionBuilder: (context, child, animation) => FadeTransition(
         opacity: animation,
