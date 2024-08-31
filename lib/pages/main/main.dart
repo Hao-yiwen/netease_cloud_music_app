@@ -20,14 +20,16 @@ class Main extends GetView<MainController> {
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: controller.loading.value,
-      child: SafeArea(
-        child: (Column(
-          children: [_buildHeader(context), _buildContent(context)],
-        )),
-      ),
-    );
+    return Obx(() {
+      return Visibility(
+        visible: !controller.loading.value,
+        child: SafeArea(
+          child: (Column(
+            children: [_buildHeader(context), _buildContent(context)],
+          )),
+        ),
+      );
+    });
   }
 
   _buildHeader(BuildContext context) {
