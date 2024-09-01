@@ -22,7 +22,7 @@ class SongInfoDto extends ServerStatusBean {
 }
 
 @JsonSerializable()
-class SongInfoListDto  extends ServerStatusBean {
+class SongInfoListDto extends ServerStatusBean {
   List<SongInfoDto>? data;
 
   SongInfoListDto();

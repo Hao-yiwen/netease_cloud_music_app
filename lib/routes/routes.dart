@@ -78,3 +78,32 @@ class AppRouter extends RootStackRouter {
   @override
   late final List<AutoRouteGuard> guards = [];
 }
+
+enum TAB_ENUM {
+  main(0),
+  found(1),
+  roaming(2),
+  timeline(3),
+  user(4);
+
+  final int value;
+
+  const TAB_ENUM(this.value);
+
+  static TAB_ENUM fromValue(int value) {
+    switch (value) {
+      case 0:
+        return main;
+      case 1:
+        return found;
+      case 2:
+        return roaming;
+      case 3:
+        return timeline;
+      case 4:
+        return user;
+      default:
+        return main;
+    }
+  }
+}

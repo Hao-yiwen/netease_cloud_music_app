@@ -8,7 +8,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_binding.dart';
-import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
+import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
 import '../found/found_controller.dart';
@@ -43,6 +43,7 @@ class _HomeState extends State<Home> {
       ),
       builder: (context, chiild) {
         final tabsRouter = AutoTabsRouter.of(context);
+        HomeController.to.setTabsRouter(tabsRouter);
 
         return Scaffold(
             body: chiild,
@@ -52,102 +53,77 @@ class _HomeState extends State<Home> {
               width: ScreenUtil().screenWidth * 0.85,
               child: DrawerHome(),
             ),
-            bottomSheet: Hero(
+            bottomSheet: const Hero(
               tag: 'test',
               child: BottomPlayerBar(),
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: tabsRouter.activeIndex,
-              onTap: (index) {
-                // 先删除上一个页面的控制器（如果需要）
-                if (tabsRouter.activeIndex != index) {
-                  switch (tabsRouter.activeIndex) {
-                    case 0:
-                      Get.delete<MainController>();
-                      break;
-                    case 1:
-                      Get.delete<FoundController>();
-                      break;
-                    case 3:
-                      Get.delete<TimelineController>();
-                      break;
-                    case 4:
-                      Get.delete<UserController>();
-                      break;
-                  }
-                }
-
-                // 根据选择的页面懒加载控制器
-                switch (index) {
-                  case 0:
-                    Get.lazyPut<MainController>(() => MainController());
-                    break;
-                  case 1:
-                    Get.lazyPut<FoundController>(() => FoundController());
-                    break;
-                  case 3:
-                    Get.lazyPut<TimelineController>(() => TimelineController());
-                    break;
-                  case 4:
-                    Get.lazyPut<UserController>(() => UserController());
-                    break;
-                }
-                if (index == 2) {
-                  // 当点击的是“漫游”Tab时，弹出底部页面
-                  Roaming.showBottomPlayer(context);
-                } else {
-                  // 对于其他 Tabs，正常切换页面
-                  tabsRouter.setActiveIndex(index);
-                }
-              },
-              backgroundColor: Colors.white,
-              selectedItemColor: Colors.red,
-              unselectedItemColor: Colors.grey,
-              selectedFontSize: 10,
-              unselectedFontSize: 10,
-              type: BottomNavigationBarType.fixed,
-              showUnselectedLabels: true,
-              selectedLabelStyle: const TextStyle(
-                // fontWeight: FontWeight.bold, // 选中时的字体粗细
-                fontSize: 9.0, // 选中时的字体大小
-              ),
-              unselectedLabelStyle: const TextStyle(
-                // fontWeight: FontWeight.bold, // 未选中时的字体粗细
-                fontSize: 9.0, // 未选中时的字体大小
-              ),
-              items: [
-                _buildBottomNavigationBarItem(
-                  context,
-                  icon: TablerIcons.brand_netease_music,
-                  label: '推荐',
-                  isSelected: tabsRouter.activeIndex == 0,
+            bottomNavigationBar: Obx(() {
+              return BottomNavigationBar(
+                currentIndex:
+                    HomeController.to.tabsRouter.value?.activeIndex ?? 0,
+                onTap: (index) {
+                  _changeTabIndex(
+                      context, index, HomeController.to.tabsRouter.value!);
+                },
+                backgroundColor: Colors.white,
+                selectedItemColor: Colors.red,
+                unselectedItemColor: Colors.grey,
+                selectedFontSize: 10,
+                unselectedFontSize: 10,
+                type: BottomNavigationBarType.fixed,
+                showUnselectedLabels: true,
+                selectedLabelStyle: const TextStyle(
+                  // fontWeight: FontWeight.bold, // 选中时的字体粗细
+                  fontSize: 9.0, // 选中时的字体大小
                 ),
-                _buildBottomNavigationBarItem(
-                  context,
-                  icon: TablerIcons.brand_safari,
-                  label: '发现',
-                  isSelected: tabsRouter.activeIndex == 1,
+                unselectedLabelStyle: const TextStyle(
+                  // fontWeight: FontWeight.bold, // 未选中时的字体粗细
+                  fontSize: 9.0, // 未选中时的字体大小
                 ),
-                _buildBottomNavigationBarItem(
-                  context,
-                  icon: TablerIcons.radio,
-                  label: '漫游',
-                  isSelected: tabsRouter.activeIndex == 2,
-                ),
-                _buildBottomNavigationBarItem(
-                  context,
-                  icon: TablerIcons.message_circle_user,
-                  label: '动态',
-                  isSelected: tabsRouter.activeIndex == 3,
-                ),
-                _buildBottomNavigationBarItem(
-                  context,
-                  icon: TablerIcons.user,
-                  label: '我的',
-                  isSelected: tabsRouter.activeIndex == 4,
-                ),
-              ],
-            ));
+                items: [
+                  _buildBottomNavigationBarItem(
+                    context,
+                    icon: TablerIcons.brand_netease_music,
+                    label: '推荐',
+                    isSelected:
+                        HomeController.to.tabsRouter.value!.activeIndex ==
+                            TAB_ENUM.main.value,
+                  ),
+                  _buildBottomNavigationBarItem(
+                    context,
+                    icon: TablerIcons.brand_safari,
+                    label: '发现',
+                    isSelected:
+                        HomeController.to.tabsRouter.value!.activeIndex ==
+                            TAB_ENUM.found.value,
+                  ),
+                  _buildBottomNavigationBarItem(
+                    context,
+                    icon: TablerIcons.radio,
+                    label: '漫游',
+                    isSelected:
+                        HomeController.to.tabsRouter.value!.activeIndex ==
+                            TAB_ENUM.roaming.value,
+                  ),
+                  _buildBottomNavigationBarItem(
+                    context,
+                    icon: TablerIcons.message_circle_user,
+                    label: '动态',
+                    isSelected:
+                        HomeController.to.tabsRouter.value!.activeIndex ==
+                            TAB_ENUM.timeline.value,
+                  ),
+                  _buildBottomNavigationBarItem(
+                    context,
+                    icon: TablerIcons.user,
+                    label: '我的',
+                    isSelected:
+                        HomeController.to.tabsRouter.value!.activeIndex ==
+                            TAB_ENUM.user.value,
+                  ),
+                ],
+              );
+            }));
       },
       routes: const [
         Main(),
@@ -157,6 +133,53 @@ class _HomeState extends State<Home> {
         User(),
       ],
     );
+  }
+
+  _changeTabIndex(BuildContext context, int index, TabsRouter tabsRouter) {
+    // 先删除上一个页面的控制器（如果需要）
+    if (tabsRouter.activeIndex != index) {
+      switch (TAB_ENUM.fromValue(tabsRouter.activeIndex)) {
+        case TAB_ENUM.main:
+          Get.delete<MainController>();
+          break;
+        case TAB_ENUM.found:
+          Get.delete<FoundController>();
+          break;
+        case TAB_ENUM.timeline:
+          Get.delete<TimelineController>();
+          break;
+        case TAB_ENUM.user:
+          Get.delete<UserController>();
+          break;
+        case TAB_ENUM.roaming:
+          break;
+      }
+    }
+
+    // 根据选择的页面懒加载控制器
+    switch (TAB_ENUM.fromValue(index)) {
+      case TAB_ENUM.main:
+        Get.lazyPut<MainController>(() => MainController());
+        break;
+      case TAB_ENUM.found:
+        Get.lazyPut<FoundController>(() => FoundController());
+        break;
+      case TAB_ENUM.timeline:
+        Get.lazyPut<TimelineController>(() => TimelineController());
+        break;
+      case TAB_ENUM.user:
+        Get.lazyPut<UserController>(() => UserController());
+        break;
+      case TAB_ENUM.roaming:
+        break;
+    }
+    if (index == TAB_ENUM.roaming.value) {
+      // 当点击的是“漫游”Tab时，弹出底部页面
+      Roaming.showBottomPlayer(context);
+    } else {
+      // 对于其他 Tabs，正常切换页面
+      tabsRouter.setActiveIndex(index);
+    }
   }
 }
 
