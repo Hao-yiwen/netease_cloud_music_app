@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/routes/routes.dart';
 import 'drawer_item.dart';
 import 'item_settings.dart';
 
@@ -43,56 +46,62 @@ class _DrawerHomeState extends State<DrawerHome> {
   _buildHeader() {
     return Padding(
       padding: EdgeInsets.all(20.w),
-      child: Row(
-        children: [
-          // 头像
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50.w),
-              border: Border.all(
-                color: Colors.white,
-                width: 2.w,
-              ),
-            ),
-            child: ClipOval(
-              child: Image.network(
-                "http://g.hiphotos.baidu.com/image/pic/item/55e736d12f2eb938d5277fd5d0628535e5dd6f4a.jpg",
-                fit: BoxFit.cover,
-                height: 60.w, // 图片的尺寸比外层的Container略小
-                width: 60.w,
-              ),
-            ),
-          ),
-          // 用户名
-          SizedBox(width: 20.w),
-          GestureDetector(
-            child: Row(
-              children: [
-                Text(
-                  "老死在撒哈拉",
-                  style: TextStyle(
-                    fontSize: 35.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                  ),
+      child: GestureDetector(
+        onTap: () {
+          HomeController.to.switchTab(TAB_ENUM.user.value);
+          Navigator.of(context).pop();
+        },
+        child: Row(
+          children: [
+            // 头像
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.w),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2.w,
                 ),
-                Icon(
-                  TablerIcons.chevron_right,
-                  size: 40.w,
-                  color: Colors.black54,
-                )
-              ],
+              ),
+              child: ClipOval(
+                child: Image.network(
+                  "http://g.hiphotos.baidu.com/image/pic/item/55e736d12f2eb938d5277fd5d0628535e5dd6f4a.jpg",
+                  fit: BoxFit.cover,
+                  height: 60.w, // 图片的尺寸比外层的Container略小
+                  width: 60.w,
+                ),
+              ),
             ),
-          ),
-          Spacer(),
-          GestureDetector(
-            child: Icon(
-              TablerIcons.scan,
-              color: Colors.black54,
+            // 用户名
+            SizedBox(width: 20.w),
+            GestureDetector(
+              child: Row(
+                children: [
+                  Text(
+                    "老死在撒哈拉",
+                    style: TextStyle(
+                      fontSize: 35.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(
+                    TablerIcons.chevron_right,
+                    size: 40.w,
+                    color: Colors.black54,
+                  )
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: 20.w),
-        ],
+            Spacer(),
+            GestureDetector(
+              child: Icon(
+                TablerIcons.scan,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(width: 20.w),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -10,12 +11,12 @@ import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import '../../http/api/login/dto/login_status_dto.dart';
 
 class HomeController extends SuperController {
-  static HomeController get to => Get.find();
-
   Box box = GetIt.instance<Box>();
+  // todo 迁移到user模块
   Rx<LoginStatusDto> userData = LoginStatusDto().obs;
   Rx<LoginStatus> loginStatus = LoginStatus.noLogin.obs;
   Rx<GlobalKey<ScaffoldState>> scaffoldKey = GlobalKey<ScaffoldState>().obs;
+  Rx<TabsRouter?> tabsRouter = Rx<TabsRouter?>(null);
 
   initUserData() {
     String userDataStr = box.get(loginData) ?? '';
@@ -30,6 +31,14 @@ class HomeController extends SuperController {
 
   setScaffoldKey(GlobalKey<ScaffoldState> key) {
     scaffoldKey.value = key;
+  }
+
+  void setTabsRouter(TabsRouter router) {
+    tabsRouter.value = router;
+  }
+
+  void switchTab(int index) {
+    tabsRouter.value?.setActiveIndex(index);
   }
 
   @override
@@ -69,4 +78,6 @@ class HomeController extends SuperController {
   void onResumed() {
     // TODO: implement onResumed
   }
+
+  static HomeController get to => Get.find();
 }
