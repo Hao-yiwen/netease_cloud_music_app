@@ -4,10 +4,13 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:just_audio/just_audio.dart';
+
+import '../../common/music_handler.dart';
 
 class Roaming extends StatefulWidget {
   const Roaming({super.key});
@@ -43,7 +46,7 @@ class Roaming extends StatefulWidget {
 
 class _RoamingState extends State<Roaming> {
   final RoamingController controller = Get.find<RoamingController>();
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final audioHandler = GetIt.instance<MusicHandler>();
 
   @override
   void initState() {
@@ -52,23 +55,22 @@ class _RoamingState extends State<Roaming> {
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
     super.dispose();
   }
 
   void playMusic() async {
-    await _audioPlayer.setUrl(controller.songInfo.value.url ?? '');
-    _audioPlayer.play();
+    await audioHandler.setUrl(controller.songInfo.value.url ?? '');
+    audioHandler.play();
     controller.playStatus.value = 1;
   }
 
   void pauseMusic() {
-    _audioPlayer.pause();
+    audioHandler.pause();
     controller.playStatus.value = 0;
   }
 
   void stopMusic() {
-    _audioPlayer.stop();
+    audioHandler.stop();
   }
 
   @override

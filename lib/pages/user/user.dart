@@ -1,9 +1,16 @@
 import 'package:auto_route/annotations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
+
+import '../../common/constants/location_map.dart';
+import '../../common/utils/birthday.dart';
+import '../../http/api/login/dto/login_status_dto.dart';
 
 @RoutePage()
 class User extends StatefulWidget {
@@ -14,6 +21,7 @@ class User extends StatefulWidget {
 }
 
 class _MineState extends State<User> with TickerProviderStateMixin {
+  final UserController controller = UserController.to;
   ScrollController _scrollController = ScrollController();
   Color _appBarBackgroundColor = Colors.transparent;
   Color _iconColor = Colors.white;
@@ -64,6 +72,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     // 获取安全区的顶部高度
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double headerHeight = statusBarHeight + 120.w; // 保证header的高度考虑了状态栏的高度
+    final useData = HomeController.to.userData.value!;
 
     return NestedScrollView(
       physics: BouncingScrollPhysics(),
@@ -87,8 +96,9 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                 child: SizedBox(
                   height: imageHeight,
                   width: double.infinity,
-                  child: Image.network(
-                    'http://b.hiphotos.baidu.com/image/pic/item/e824b899a9014c08878b2c4c0e7b02087af4f4a3.jpg',
+                  child: Image(
+                    image: CachedNetworkImageProvider(
+                        useData.profile?.backgroundUrl ?? ""),
                     fit: BoxFit.cover,
                     color: Colors.black.withOpacity(0.3),
                     colorBlendMode: BlendMode.colorBurn,
@@ -99,7 +109,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                 children: [
                   Container(
                     height: 700.w,
-                    child: _buildUserInfo(),
+                    child: _buildUserInfo(context, useData),
                   ),
                   Transform.translate(
                     offset: Offset(0, -80),
@@ -204,7 +214,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     );
   }
 
-  _buildUserInfo() {
+  _buildUserInfo(BuildContext context, LoginStatusDto userInfo) {
     return Column(
       children: [
         // avatar
@@ -217,7 +227,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
           ),
           child: ClipOval(
             child: Image.network(
-              "http://g.hiphotos.baidu.com/image/pic/item/55e736d12f2eb938d5277fd5d0628535e5dd6f4a.jpg",
+              userInfo.profile?.avatarUrl ?? "",
               fit: BoxFit.cover,
               height: 80, // 图片的尺寸比外层的Container略小
               width: 80,
@@ -231,7 +241,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "老死在撒哈拉",
+              userInfo.profile?.nickname ?? "",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 48.w,
@@ -248,7 +258,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
           height: 10.w,
         ),
         Text(
-          "这个人很懒，什么也没留下。",
+          userInfo.profile?.signature ?? "",
           style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
         ),
         SizedBox(
@@ -279,81 +289,100 @@ class _MineState extends State<User> with TickerProviderStateMixin {
             SizedBox(
               width: 20.w,
             ),
-            Text(
-              "北京市",
-              style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "·",
-              style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Icon(
-              TablerIcons.gender_male,
-              color: Colors.blue[200],
-              size: 30.w,
-            ),
-            Text(
-              "95后 巨蟹座",
-              style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "·",
-              style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "北京邮电大学",
-              style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
-            ),
+            if (userInfo.profile?.province != null &&
+                provinceMap[userInfo.profile?.province.toString()] != null)
+              Row(
+                children: [
+                  Text(
+                    provinceMap[userInfo.profile?.province.toString()]!,
+                    style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    "·",
+                    style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
+                  ),
+                ],
+              ),
+            if (userInfo.profile?.gender != null &&
+                userInfo.profile?.birthday != null)
+              Row(
+                children: [
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Icon(
+                    userInfo.profile!.gender == GENDER_STATUS.MEAL.value
+                        ? TablerIcons.gender_male
+                        : TablerIcons.gender_female,
+                    color: userInfo.profile!.gender == GENDER_STATUS.MEAL.value
+                        ? Colors.blue[200]
+                        : Colors.pink[200],
+                    size: 30.w,
+                  ),
+                  Text(
+                    "${getGenerationLabel(calculateBirthYear(userInfo.profile!.birthday.toString()))} ${calculateZodiacSign(userInfo.profile!.birthday.toString())}",
+                    style: TextStyle(color: Colors.grey[200], fontSize: 22.sp),
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                ],
+              ),
           ],
         ),
-        SizedBox(
-          height: 25.w,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "55 关注",
-              style: TextStyle(color: Colors.grey[200], fontSize: 24.sp),
+        Obx(() {
+          return Visibility(
+            visible: controller.loding.value == false &&
+                controller.userAccount.value.profile != null,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 25.w,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${controller.userAccount.value.profile?.follows} 关注",
+                      style:
+                          TextStyle(color: Colors.grey[200], fontSize: 24.sp),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Text(
+                      "${controller.userAccount.value.profile?.followeds} 粉丝",
+                      style:
+                          TextStyle(color: Colors.grey[200], fontSize: 24.sp),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Text(
+                      "Lv.${controller.userAccount.value.level}等级",
+                      style:
+                          TextStyle(color: Colors.grey[200], fontSize: 24.sp),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Text(
+                      "听过 ${controller.userAccount.value.listenSongs} 首歌",
+                      style:
+                          TextStyle(color: Colors.grey[200], fontSize: 24.sp),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "10 粉丝",
-              style: TextStyle(color: Colors.grey[200], fontSize: 24.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "Lv.9等级",
-              style: TextStyle(color: Colors.grey[200], fontSize: 24.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Text(
-              "3632时 听歌",
-              style: TextStyle(color: Colors.grey[200], fontSize: 24.sp),
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-          ],
-        ),
+          );
+        }),
         SizedBox(
           height: 40.w,
         ),

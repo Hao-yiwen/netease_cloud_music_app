@@ -9,10 +9,11 @@ import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';
 
 import '../../routes/routes.dart';
-import '../../widgets/songs_big_cards.dart';
+import '../../widgets/song_card.dart';
 import '../../widgets/songs_list_widget.dart';
 import '../../widgets/songs_small_cards.dart';
 import '../home/home_controller.dart';
+import '../roaming/roaming.dart';
 
 @RoutePage()
 class Main extends GetView<MainController> {
@@ -122,54 +123,74 @@ class Main extends GetView<MainController> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: GestureDetector(
-                  onTap: () {
-                    GetIt.instance<AppRouter>().push(SongsList(
-                        recommendSongsDto: controller.recommendSongsDto.value));
-                  },
-                  child: Container(
-                      height: 280.w,
-                      child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 20),
-                              child: Container(
-                                width: 250.w,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(20.w),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text("每日推荐",
-                                            style: TextStyle(
-                                                fontSize: 30.sp,
-                                                color: Colors.white))),
-                                    Icon(TablerIcons.calendar, size: 100.w),
-                                    Spacer(),
-                                    Align(
-                                        alignment: Alignment.center,
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 20.w),
-                                          child: Text(
-                                            "符合你口味的新鲜好歌",
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        )),
-                                    SizedBox(
-                                      height: 20.w,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ])),
+                child: Container(
+                  height: 280.w,
+                  child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: <Widget>[
+                        MusicCard(
+                          title: "每日推荐",
+                          subTitle: "符合你口味的新鲜好歌",
+                          icon: TablerIcons.calendar,
+                          onTapHandle: () {
+                            GetIt.instance<AppRouter>().push(SongsList(
+                                recommendSongsDto:
+                                    controller.recommendSongsDto.value));
+                          },
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        MusicCard(
+                          title: "私人漫游",
+                          subTitle: "多种听歌模式随心播放",
+                          icon: TablerIcons.radio,
+                          onTapHandle: () {
+                            Roaming.showBottomPlayer(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        MusicCard(
+                          title: "私人雷达",
+                          subTitle: "你爱的歌值得反复聆听",
+                          icon: TablerIcons.radio,
+                          onTapHandle: () {
+                            Roaming.showBottomPlayer(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        MusicCard(
+                          title: "相似歌曲",
+                          subTitle: "从你喜欢的歌听起",
+                          onTapHandle: () {
+                            Roaming.showBottomPlayer(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        MusicCard(
+                          title: "相似艺人",
+                          subTitle: "从你喜欢的艺人听起",
+                          onTapHandle: () {
+                            Roaming.showBottomPlayer(context);
+                          },
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        MusicCard(
+                          title: "每日博客",
+                          subTitle: "【白噪音】初秋傍晚，写写画画，虫鸣唧唧，...",
+                          onTapHandle: () {
+                            Roaming.showBottomPlayer(context);
+                          },
+                        ),
+                      ]),
                 ),
               ),
             ),

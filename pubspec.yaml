@@ -70,6 +70,8 @@ dependencies:
   flutter_blurhash: ^0.8.2
   package_info_plus: ^8.0.2
   webview_flutter: ^4.9.0
+  intl: ^0.19.0
+  audio_service: ^0.18.15
 
 dependency_overrides:
   web: ^1.0.0

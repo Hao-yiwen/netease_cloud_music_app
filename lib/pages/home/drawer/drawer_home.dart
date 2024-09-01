@@ -44,6 +44,7 @@ class _DrawerHomeState extends State<DrawerHome> {
   }
 
   _buildHeader() {
+    final useData = HomeController.to.userData.value;
     return Padding(
       padding: EdgeInsets.all(20.w),
       child: GestureDetector(
@@ -64,7 +65,7 @@ class _DrawerHomeState extends State<DrawerHome> {
               ),
               child: ClipOval(
                 child: Image.network(
-                  "http://g.hiphotos.baidu.com/image/pic/item/55e736d12f2eb938d5277fd5d0628535e5dd6f4a.jpg",
+                  useData.profile?.avatarUrl ?? "",
                   fit: BoxFit.cover,
                   height: 60.w, // 图片的尺寸比外层的Container略小
                   width: 60.w,
@@ -77,7 +78,7 @@ class _DrawerHomeState extends State<DrawerHome> {
               child: Row(
                 children: [
                   Text(
-                    "老死在撒哈拉",
+                    useData.profile?.nickname ?? "",
                     style: TextStyle(
                       fontSize: 35.sp,
                       color: Colors.black,
