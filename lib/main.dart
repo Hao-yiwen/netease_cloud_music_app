@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,8 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:netease_cloud_music_app/common/music_handler.dart';
 import 'package:netease_cloud_music_app/common/service/theme_binding.dart';
 import 'package:netease_cloud_music_app/common/service/theme_service.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
@@ -52,7 +55,7 @@ Future<void> main() async {
           routerDelegate: _appRouter.delegate(
             navigatorObservers: () => [MyObserver()],
           ),
-          initialBinding: BindingsBuilder((){
+          initialBinding: BindingsBuilder(() {
             HomeBinding().dependencies();
             UserBinding().dependencies();
           }),
@@ -119,6 +122,14 @@ class MyObserver extends AutoRouterObserver {
 
 Future<void> _initGetService(GetIt getIt) async {
   getIt.registerSingleton<AppRouter>(AppRouter());
+  getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   await Hive.initFlutter('music');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
+  final audioPlayer = getIt<AudioPlayer>();
+  getIt.registerSingleton<MusicHandler>(
+    await AudioService.init<MusicHandler>(
+      builder: () => MusicHandler(audioPlayer),
+      config: const AudioServiceConfig(),
+    ),
+  );
 }
