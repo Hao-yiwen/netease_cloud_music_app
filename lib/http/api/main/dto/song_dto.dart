@@ -11,6 +11,8 @@ class SongDto {
   List<String>? alia;
   List<ArtistDto>? ar;
   Al? al;
+  int? mv;
+  VideoInfo? videoInfo;
 
   SongDto();
 
@@ -33,4 +35,32 @@ class Al {
   factory Al.fromJson(Map<String, dynamic> json) => _$AlFromJson(json);
 
   Map<String, dynamic> toJson() => _$AlToJson(this);
+}
+
+@JsonSerializable()
+class VideoInfo {
+  Video? video;
+  bool? moreThanOne;
+
+  VideoInfo();
+
+  factory VideoInfo.fromJson(Map<String, dynamic> json) =>
+      _$VideoInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VideoInfoToJson(this);
+}
+
+@JsonSerializable()
+class Video {
+  String? vid;
+  int? type;
+  String? title;
+  int? playTime;
+  String? coverUrl;
+
+  Video();
+
+  factory Video.fromJson(Map<String, dynamic> json) => _$VideoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VideoToJson(this);
 }

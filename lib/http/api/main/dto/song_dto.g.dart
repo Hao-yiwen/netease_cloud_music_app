@@ -15,7 +15,11 @@ SongDto _$SongDtoFromJson(Map<String, dynamic> json) => SongDto()
       .toList()
   ..al = json['al'] == null
       ? null
-      : Al.fromJson(json['al'] as Map<String, dynamic>);
+      : Al.fromJson(json['al'] as Map<String, dynamic>)
+  ..mv = (json['mv'] as num?)?.toInt()
+  ..videoInfo = json['videoInfo'] == null
+      ? null
+      : VideoInfo.fromJson(json['videoInfo'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$SongDtoToJson(SongDto instance) => <String, dynamic>{
       'name': instance.name,
@@ -23,6 +27,8 @@ Map<String, dynamic> _$SongDtoToJson(SongDto instance) => <String, dynamic>{
       'alia': instance.alia,
       'ar': instance.ar,
       'al': instance.al,
+      'mv': instance.mv,
+      'videoInfo': instance.videoInfo,
     };
 
 Al _$AlFromJson(Map<String, dynamic> json) => Al()
@@ -38,4 +44,30 @@ Map<String, dynamic> _$AlToJson(Al instance) => <String, dynamic>{
       'picUrl': instance.picUrl,
       'pic_str': instance.pic_str,
       'pic': instance.pic,
+    };
+
+VideoInfo _$VideoInfoFromJson(Map<String, dynamic> json) => VideoInfo()
+  ..video = json['video'] == null
+      ? null
+      : Video.fromJson(json['video'] as Map<String, dynamic>)
+  ..moreThanOne = json['moreThanOne'] as bool?;
+
+Map<String, dynamic> _$VideoInfoToJson(VideoInfo instance) => <String, dynamic>{
+      'video': instance.video,
+      'moreThanOne': instance.moreThanOne,
+    };
+
+Video _$VideoFromJson(Map<String, dynamic> json) => Video()
+  ..vid = json['vid'] as String?
+  ..type = (json['type'] as num?)?.toInt()
+  ..title = json['title'] as String?
+  ..playTime = (json['playTime'] as num?)?.toInt()
+  ..coverUrl = json['coverUrl'] as String?;
+
+Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
+      'vid': instance.vid,
+      'type': instance.type,
+      'title': instance.title,
+      'playTime': instance.playTime,
+      'coverUrl': instance.coverUrl,
     };
