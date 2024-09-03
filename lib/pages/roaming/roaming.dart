@@ -84,9 +84,12 @@ class _RoamingState extends State<Roaming> {
             SizedBox(
               height: 60.w,
             ),
-            PlayAlbumCover(
-              rotating: true,
-              pading: 40.w,
+            Hero(
+              tag: "test",
+              child: PlayAlbumCover(
+                rotating: true,
+                pading: 40.w,
+              ),
             ),
             SizedBox(
               height: 60.w,
