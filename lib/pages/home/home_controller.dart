@@ -23,6 +23,7 @@ class HomeController extends SuperController {
     if (userDataStr.isNotEmpty) {
       loginStatus.value = LoginStatus.login;
       userData.value = LoginStatusDto.fromJson(jsonDecode(userDataStr));
+      // 刷新用户信息 todo
     } else {
       loginStatus.value = LoginStatus.noLogin;
       userData.value = LoginStatusDto();

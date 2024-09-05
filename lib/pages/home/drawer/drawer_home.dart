@@ -64,12 +64,16 @@ class _DrawerHomeState extends State<DrawerHome> {
                 ),
               ),
               child: ClipOval(
-                child: Image.network(
-                  useData.profile?.avatarUrl ?? "",
-                  fit: BoxFit.cover,
-                  height: 60.w, // 图片的尺寸比外层的Container略小
-                  width: 60.w,
-                ),
+                child: Image.network(useData.profile?.avatarUrl ?? "",
+                    fit: BoxFit.cover,
+                    height: 60.w, // 图片的尺寸比外层的Container略小
+                    width: 60.w, errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.account_circle,
+                    size: 60.w,
+                    color: Colors.grey[300],
+                  );
+                }),
               ),
             ),
             // 用户名

@@ -8,4 +8,8 @@ class UserApi {
     });
     return UserAccount.fromJson(res);
   }
+
+  static Future<void> loginRefresh() async {
+    await HttpUtils.get("/login/refresh");
+  }
 }

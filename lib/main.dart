@@ -15,6 +15,7 @@ import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
@@ -22,6 +23,7 @@ import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart'
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
+import 'package:netease_cloud_music_app/routes/routes.gr.dart';
 
 import 'common/constants/colors.dart';
 import 'common/constants/url.dart';
@@ -46,6 +48,10 @@ Future<void> main() async {
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       ThemeBinding().dependencies();
+      // 全局存一份appContext
+      if(getIt.isRegistered<BuildContext>()) {
+        getIt.registerSingleton<BuildContext>(context);
+      }
       print("获取屏幕宽高 ${ScreenUtil().screenWidth} ${ScreenUtil().screenHeight}");
       return Obx(() {
         return GetMaterialApp.router(
@@ -70,17 +76,22 @@ class MyObserver extends AutoRouterObserver {
   _clearOrPutController(name, {bool del = false}) {
     if (name.isEmpty) return;
     switch (name) {
-      case 'User':
+      case Login.name:
+        del
+            ? Get.delete<LoginController>()
+            : Get.lazyPut(() => LoginController());
+        break;
+      case User.name:
         del
             ? Get.delete<UserController>()
             : Get.lazyPut(() => UserController());
         break;
-      case 'SplashRoute':
+      case SplashRoute.name:
         del
             ? Get.delete<SplashController>()
             : Get.lazyPut(() => SplashController());
         break;
-      case 'Search':
+      case Search.name:
         del
             ? Get.delete<SearchController>()
             : Get.lazyPut(() => SearchController());
