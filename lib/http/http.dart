@@ -15,8 +15,8 @@ import 'api/login/dto/login_status_dto.dart';
 
 class Http {
   ///超时时间
-  static const int CONNECT_TIMEOUT = 30000;
-  static const int RECEIVE_TIMEOUT = 30000;
+  static const int CONNECT_TIMEOUT = 10000;
+  static const int RECEIVE_TIMEOUT = 10000;
 
   static Http? _instance;
 

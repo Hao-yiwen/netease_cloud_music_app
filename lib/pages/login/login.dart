@@ -17,6 +17,7 @@ import 'package:netease_cloud_music_app/routes/routes.dart';
 import '../../common/constants/keys.dart';
 import '../../http/api/login/login_api.dart';
 import '../../widgets/custom_field.dart';
+import 'login_controller.dart';
 
 @RoutePage()
 class Login extends StatefulWidget {
@@ -27,6 +28,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final LoginController controller = LoginController.to;
   final TextEditingController phone = TextEditingController();
   final TextEditingController captcha = TextEditingController();
 
@@ -37,6 +39,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    controller.buildContext = context;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -75,7 +78,7 @@ class _LoginState extends State<Login> {
                     Expanded(
                       flex: 1,
                       child: GestureDetector(
-                        onTap: () => sendCaptcha(context),
+                        onTap: () => controller.sendCaptcha(phone.text),
                         child: Container(
                           decoration: BoxDecoration(
                               color: Theme.of(context).primaryColor,
@@ -120,7 +123,7 @@ class _LoginState extends State<Login> {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                onTap: () => loginCallPhone(context),
+                onTap: () => controller.loginCallPhone(phone.text, captcha.text),
               ),
               SizedBox(height: 16),
             ],
@@ -128,39 +131,5 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
-  }
-
-  loginCallPhone(BuildContext context) async {
-    if (phone.text.isEmpty || captcha.text.isEmpty) {
-      WidgetUtil.showToast('账号和密码为必填项，请检查');
-      return;
-    }
-    WidgetUtil.showLoadingDialog(context);
-    var res =
-        await LoginApi.loginWithPhone(phone: phone.text, captcha: captcha.text);
-    WidgetUtil.closeLoadingDialog(context);
-    if (res.code != 200) {
-      WidgetUtil.showToast(res.message ?? '未知错误');
-      return;
-    } else {
-      UserController.to.getUserState();
-      AutoRouter.of(context).pushNamed('/home');
-    }
-  }
-
-  sendCaptcha(BuildContext context) async {
-    if (phone.text.isEmpty) {
-      WidgetUtil.showToast('手机号为必填项，请检查');
-      return;
-    }
-    WidgetUtil.showLoadingDialog(context);
-    var res = await LoginApi.captcha(phone.text);
-    WidgetUtil.closeLoadingDialog(context);
-    if (res.code != 200) {
-      WidgetUtil.showToast(res.message ?? '未知错误');
-      return;
-    } else {
-      WidgetUtil.showToast('验证码发送成功');
-    }
   }
 }

@@ -69,7 +69,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // 获取安全区的顶部高度
+    // 获取安全区的顶部高度;
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double headerHeight = statusBarHeight + 120.w; // 保证header的高度考虑了状态栏的高度
     final useData = HomeController.to.userData.value!;
@@ -97,12 +97,18 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                   height: imageHeight,
                   width: double.infinity,
                   child: Image(
-                    image: CachedNetworkImageProvider(
-                        useData.profile?.backgroundUrl ?? ""),
-                    fit: BoxFit.cover,
-                    color: Colors.black.withOpacity(0.3),
-                    colorBlendMode: BlendMode.colorBurn,
-                  ),
+                      image: CachedNetworkImageProvider(
+                          useData.profile?.backgroundUrl ?? ""),
+                      fit: BoxFit.cover,
+                      color: Colors.black.withOpacity(0.3),
+                      colorBlendMode: BlendMode.colorBurn,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.account_circle,
+                          size: 60.w,
+                          color: Colors.grey[300],
+                        );
+                      }),
                 ),
               ),
               Column(
@@ -226,12 +232,16 @@ class _MineState extends State<User> with TickerProviderStateMixin {
             border: Border.all(color: Colors.white, width: 2), // 边框
           ),
           child: ClipOval(
-            child: Image.network(
-              userInfo.profile?.avatarUrl ?? "",
-              fit: BoxFit.cover,
-              height: 80, // 图片的尺寸比外层的Container略小
-              width: 80,
-            ),
+            child: Image.network(userInfo.profile?.avatarUrl ?? "",
+                fit: BoxFit.cover,
+                height: 80, // 图片的尺寸比外层的Container略小
+                width: 80, errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.account_circle,
+                size: 60.w,
+                color: Colors.grey[300],
+              );
+            }),
           ),
         ),
         // nickname
