@@ -2,20 +2,20 @@ import 'package:logger/logger.dart';
 
 class LogBox {
   static var logger = Logger(
-    printer: PrettyPrinter(
+    printer: PrefixPrinter(PrettyPrinter(
       methodCount: 2,
-      // 显示堆栈追踪行数
+      // Number of method calls to be displayed
       errorMethodCount: 8,
-      // 错误时显示的堆栈追踪行数
+      // Number of method calls if stacktrace is provided
       lineLength: 120,
-      // 每行长度
+      // Width of the output
       colors: true,
-      // 日志带颜色
-      printEmojis: true, // 日志中显示表情符号
-    ),
+      // Colorful log messages
+      printEmojis: true,
+    )),
   );
 
-  static void log(String message) {
+  static void debug(String message) {
     logger.d(message);
   }
 
@@ -23,8 +23,10 @@ class LogBox {
     logger.i(message);
   }
 
-  static void error(String message) {
-    logger.e(message);
+  static void error(Object error, {
+    dynamic? msg,
+  }) {
+    logger.e(msg ?? "", error: error);
   }
 
   static void warning(String message) {

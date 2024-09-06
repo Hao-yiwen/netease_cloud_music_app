@@ -23,7 +23,7 @@ class MainController extends GetxController {
       loading.value = true;
       recommendSongsDto?.value = await MainApi.getRecommendSongs();
     } catch (e) {
-      LogBox.error(e.toString());
+      LogBox.error(e);
     } finally {
       loading.value = false;
     }
@@ -43,7 +43,7 @@ class MainController extends GetxController {
         }
       }
     } catch (e) {
-      LogBox.error(e.toString());
+      LogBox.error(e);
     } finally {
       loading.value = false;
     }

@@ -2,20 +2,8 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hive/hive.dart';
-import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
-import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
-import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
-import 'package:netease_cloud_music_app/routes/routes.dart';
-
-import '../../common/constants/keys.dart';
-import '../../http/api/login/login_api.dart';
 import '../../widgets/custom_field.dart';
 import 'login_controller.dart';
 

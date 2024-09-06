@@ -49,7 +49,7 @@ Future<void> main() async {
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       ThemeBinding().dependencies();
-      LogBox.info('Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
+      LogBox.debug('Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
       return Obx(() {
         return GetMaterialApp.router(
           theme: AppTheme.light,
