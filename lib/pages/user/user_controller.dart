@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/keys.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/dialog_utils.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/login/dto/login_status_dto.dart';
 import 'package:netease_cloud_music_app/http/api/login/login_api.dart';
 import 'package:netease_cloud_music_app/http/api/user/dto/user_account.dart';
@@ -46,12 +48,18 @@ class UserController extends GetxController {
       }
     } catch (e) {
       HomeController.to.loginStatus.value = LoginStatus.noLogin;
-      print(e);
+      LogBox.error(e.toString());
     }
   }
 
-  Future<void> logout() async {
-    HomeController.to.box.delete(loginData);
+  Future<void> logout(BuildContext context) async {
+    try{
+      HomeController.to.box.delete(loginData);
+      AutoRouter.of(context).replaceNamed('/login');
+      await LoginApi.logout();
+    }catch(e){
+      LogBox.error(e.toString());
+    }
   }
 
   static UserController get to => Get.find();
@@ -62,19 +70,21 @@ class UserController extends GetxController {
       userAccount.value = await UserApi.getUserAccount(
           HomeController.to.userData.value.profile!.userId);
     } catch (e) {
-      print(e);
+      LogBox.error(e.toString());
     } finally {
       loding.value = false;
     }
   }
 
-  Future<void> refreshLoginStatus() async {
+  Future<void> refreshLoginStatus(BuildContext? context) async {
     try {
       await UserApi.loginRefresh();
     } catch (e) {
-      // 弹出弹窗提示用户登录信息已过期需要重新登录
-      await DialogUtils.showModal(
-          GetIt.instance<BuildContext>(), "当前用户信息已过期，请重新登录", () {}, () {});
+      if (context != null) {
+        DialogUtils.showModal(context, "登录信息已过期，请重新登录", () {
+          logout(context);
+        }, () {});
+      }
     }
   }
 }

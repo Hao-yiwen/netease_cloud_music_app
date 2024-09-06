@@ -11,6 +11,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:netease_cloud_music_app/common/music_handler.dart';
 import 'package:netease_cloud_music_app/common/service/theme_binding.dart';
 import 'package:netease_cloud_music_app/common/service/theme_service.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
@@ -48,11 +49,7 @@ Future<void> main() async {
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       ThemeBinding().dependencies();
-      // 全局存一份appContext
-      if(getIt.isRegistered<BuildContext>()) {
-        getIt.registerSingleton<BuildContext>(context);
-      }
-      print("获取屏幕宽高 ${ScreenUtil().screenWidth} ${ScreenUtil().screenHeight}");
+      LogBox.info('Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
       return Obx(() {
         return GetMaterialApp.router(
           theme: AppTheme.light,
@@ -101,33 +98,33 @@ class MyObserver extends AutoRouterObserver {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    print('New route pushed: ${route.settings.name}');
+    LogBox.info('Route pushed: ${route.settings.name}');
     _clearOrPutController(route.settings.name ?? '');
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    print('Route popped: ${route.settings.name}');
+    LogBox.info('Route popped: ${route.settings.name}');
     _clearOrPutController(route.settings.name ?? '', del: true);
   }
 
   @override
   void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
-    print('Route removed: ${route.settings.name}');
+    LogBox.info('Route removed: ${route.settings.name}');
     _clearOrPutController(route.settings.name ?? '', del: true);
   }
 
   // only override to observer tab routes
   @override
   void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
-    print('Tab route visited: ${route.name}');
+    LogBox.info('Tab route initialized: ${route.name}');
   }
 
   @override
   void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {
-    print('Tab route re-visited: ${route.name}');
+    LogBox.info('Tab route changed: ${route.name}');
   }
 }
 

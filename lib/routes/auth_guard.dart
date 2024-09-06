@@ -11,6 +11,7 @@ class AuthGuard extends AutoRouteGuard {
 
     if (loginStatus.value == LoginStatus.login) {
       router.replaceNamed('/home');
+      UserController.to.refreshLoginStatus(router.navigatorKey.currentContext);
     } else {
       resolver.next(true);
     }

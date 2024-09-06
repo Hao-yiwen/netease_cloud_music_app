@@ -156,13 +156,7 @@ List<DrawerItem> getListBottomInfo(BuildContext context) {
         text: "退出登录",
         color: Colors.red,
         onTap: () {
-          _logout(context);
+          UserController.to.logout(context);
         }),
   ];
-}
-
-Future<void> _logout(BuildContext context) async {
-  await LoginApi.logout();
-  UserController.to.logout();
-  AutoRouter.of(context).replaceNamed('/login');
 }

@@ -9,6 +9,7 @@ import 'package:netease_cloud_music_app/common/constants/keys.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 
 import '../../http/api/login/dto/login_status_dto.dart';
+import '../../http/api/login/login_api.dart';
 
 class HomeController extends SuperController {
   Box box = GetIt.instance<Box>();
@@ -23,7 +24,6 @@ class HomeController extends SuperController {
     if (userDataStr.isNotEmpty) {
       loginStatus.value = LoginStatus.login;
       userData.value = LoginStatusDto.fromJson(jsonDecode(userDataStr));
-      // 刷新用户信息 todo
     } else {
       loginStatus.value = LoginStatus.noLogin;
       userData.value = LoginStatusDto();
