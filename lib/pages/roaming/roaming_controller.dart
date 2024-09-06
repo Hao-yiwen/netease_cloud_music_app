@@ -28,7 +28,7 @@ class RoamingController extends GetxController {
         songInfo.value = songInfoListDto.data![0];
       }
     } catch (e) {
-      LogBox.error(e.toString());
+      LogBox.error(e);
     } finally {
       loading.value = false;
     }

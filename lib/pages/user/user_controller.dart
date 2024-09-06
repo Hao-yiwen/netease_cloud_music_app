@@ -48,7 +48,7 @@ class UserController extends GetxController {
       }
     } catch (e) {
       HomeController.to.loginStatus.value = LoginStatus.noLogin;
-      LogBox.error(e.toString());
+      LogBox.error(e);
     }
   }
 
@@ -58,7 +58,7 @@ class UserController extends GetxController {
       AutoRouter.of(context).replaceNamed('/login');
       await LoginApi.logout();
     }catch(e){
-      LogBox.error(e.toString());
+      LogBox.error(e);
     }
   }
 
@@ -70,7 +70,7 @@ class UserController extends GetxController {
       userAccount.value = await UserApi.getUserAccount(
           HomeController.to.userData.value.profile!.userId);
     } catch (e) {
-      LogBox.error(e.toString());
+      LogBox.error(e);
     } finally {
       loding.value = false;
     }

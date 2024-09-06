@@ -261,7 +261,7 @@ class UserLoginStateController {
       String accountInfo = _saveFile().readAsStringSync();
       _accountInfo = LoginStatusDto.fromJson(jsonDecode(accountInfo));
     } catch (e) {
-      LogBox.error(e.toString());
+      LogBox.error(e);
       await onLogout();
     }
   }
