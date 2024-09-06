@@ -1,5 +1,6 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/song_info_dto.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/roaming_api.dart';
 
@@ -27,7 +28,7 @@ class RoamingController extends GetxController {
         songInfo.value = songInfoListDto.data![0];
       }
     } catch (e) {
-      print(e);
+      LogBox.error(e.toString());
     } finally {
       loading.value = false;
     }

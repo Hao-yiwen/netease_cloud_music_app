@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:path_provider/path_provider.dart';
@@ -260,7 +261,7 @@ class UserLoginStateController {
       String accountInfo = _saveFile().readAsStringSync();
       _accountInfo = LoginStatusDto.fromJson(jsonDecode(accountInfo));
     } catch (e) {
-      print('login info error');
+      LogBox.error(e.toString());
       await onLogout();
     }
   }

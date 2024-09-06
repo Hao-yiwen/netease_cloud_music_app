@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_songs_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
@@ -22,7 +23,7 @@ class MainController extends GetxController {
       loading.value = true;
       recommendSongsDto?.value = await MainApi.getRecommendSongs();
     } catch (e) {
-      print(e);
+      LogBox.error(e.toString());
     } finally {
       loading.value = false;
     }
@@ -42,7 +43,7 @@ class MainController extends GetxController {
         }
       }
     } catch (e) {
-      print(e);
+      LogBox.error(e.toString());
     } finally {
       loading.value = false;
     }
