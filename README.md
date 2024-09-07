@@ -26,4 +26,6 @@ flutter版本网易云音乐
 - 0822: 实现网易云音乐我的页面中头部下拉底部图片拉伸效果，并且附带头部渐变效果
 - 0908: 封装网易云音乐图片请求专用组件，解决部分情况下图片403问题
 
-[![GitHub stars](https://img.shields.io/github/stars/username/repository.svg?style=social&label=Star&maxAge=2592000)](https://github.com/Hao-yiwen/netease_cloud_music_app/stargazers)
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Hao-yiwen/netease_cloud_music_app&type=Date)](https://star-history.com/#Hao-yiwen/netease_cloud_music_app)
