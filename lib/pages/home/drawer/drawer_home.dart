@@ -4,6 +4,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
+import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'drawer_item.dart';
 import 'item_settings.dart';
 
@@ -64,16 +65,10 @@ class _DrawerHomeState extends State<DrawerHome> {
                 ),
               ),
               child: ClipOval(
-                child: Image.network(useData.profile?.avatarUrl ?? "",
-                    fit: BoxFit.cover,
-                    height: 60.w, // 图片的尺寸比外层的Container略小
-                    width: 60.w, errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.account_circle,
-                    size: 60.w,
-                    color: Colors.grey[300],
-                  );
-                }),
+                child: NeteaseCacheImage(
+                  picUrl: useData.profile?.avatarUrl ?? "",
+                  size: Size(60.w, 60.w),
+                ),
               ),
             ),
             // 用户名

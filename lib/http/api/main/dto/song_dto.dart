@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:netease_cloud_music_app/http/api/bean.dart';
 
 import 'artist_dto.dart';
 
@@ -20,6 +21,18 @@ class SongDto {
       _$SongDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$SongDtoToJson(this);
+}
+
+@JsonSerializable()
+class SongsDetailDto extends ServerStatusBean{
+  List<SongDto>? songs;
+
+  SongsDetailDto();
+
+  factory SongsDetailDto.fromJson(Map<String, dynamic> json) =>
+      _$SongsDetailDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SongsDetailDtoToJson(this);
 }
 
 @JsonSerializable()

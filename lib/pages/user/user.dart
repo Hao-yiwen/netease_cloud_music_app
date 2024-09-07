@@ -11,6 +11,7 @@ import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import '../../common/constants/location_map.dart';
 import '../../common/utils/birthday.dart';
 import '../../http/api/login/dto/login_status_dto.dart';
+import '../../widgets/netease_cache_image.dart';
 
 @RoutePage()
 class User extends StatefulWidget {
@@ -94,22 +95,11 @@ class _MineState extends State<User> with TickerProviderStateMixin {
               Transform.translate(
                 offset: Offset(0, -((imageHeight - 850.w) + headerHeight)),
                 child: SizedBox(
-                  height: imageHeight,
-                  width: double.infinity,
-                  child: Image(
-                      image: CachedNetworkImageProvider(
-                          useData.profile?.backgroundUrl ?? ""),
-                      fit: BoxFit.cover,
-                      color: Colors.black.withOpacity(0.3),
-                      colorBlendMode: BlendMode.colorBurn,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.account_circle,
-                          size: 60.w,
-                          color: Colors.grey[300],
-                        );
-                      }),
-                ),
+                    height: imageHeight,
+                    width: double.infinity,
+                    child: NeteaseCacheImage(
+                      picUrl: useData.profile?.backgroundUrl ?? "",
+                    )),
               ),
               Column(
                 children: [
@@ -232,16 +222,8 @@ class _MineState extends State<User> with TickerProviderStateMixin {
             border: Border.all(color: Colors.white, width: 2), // 边框
           ),
           child: ClipOval(
-            child: Image.network(userInfo.profile?.avatarUrl ?? "",
-                fit: BoxFit.cover,
-                height: 80, // 图片的尺寸比外层的Container略小
-                width: 80, errorBuilder: (context, error, stackTrace) {
-              return Icon(
-                Icons.account_circle,
-                size: 60.w,
-                color: Colors.grey[300],
-              );
-            }),
+            child: NeteaseCacheImage(
+                picUrl: userInfo.profile?.avatarUrl ?? "", size: const Size(80, 80)),
           ),
         ),
         // nickname

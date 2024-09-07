@@ -31,6 +31,23 @@ Map<String, dynamic> _$SongDtoToJson(SongDto instance) => <String, dynamic>{
       'videoInfo': instance.videoInfo,
     };
 
+SongsDetailDto _$SongsDetailDtoFromJson(Map<String, dynamic> json) =>
+    SongsDetailDto()
+      ..code = dynamicToInt(json['code'])
+      ..message = json['message'] as String?
+      ..msg = json['msg'] as String?
+      ..songs = (json['songs'] as List<dynamic>?)
+          ?.map((e) => SongDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$SongsDetailDtoToJson(SongsDetailDto instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'message': instance.message,
+      'msg': instance.msg,
+      'songs': instance.songs,
+    };
+
 Al _$AlFromJson(Map<String, dynamic> json) => Al()
   ..id = (json['id'] as num?)?.toInt()
   ..name = json['name'] as String?

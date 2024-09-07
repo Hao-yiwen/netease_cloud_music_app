@@ -197,13 +197,15 @@ class Main extends GetView<MainController> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 15),
-                child: Text('你的红心歌曲和相似推荐',
+                child: Text('你的红心歌曲相似推荐',
                     style: TextStyle(
                         fontSize: 30.sp, fontWeight: FontWeight.bold)),
               ),
             ),
             SliverToBoxAdapter(
-              child: SongsListWidget(),
+              child: SongsListWidget(
+                songs: controller.similarSongs.value,
+              ),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -214,8 +216,8 @@ class Main extends GetView<MainController> {
               ),
             ),
             SliverToBoxAdapter(
-              child: SongsListWidget(),
-            ),
+                // child: SongsListWidget(),
+                ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 15),
@@ -257,7 +259,7 @@ class Main extends GetView<MainController> {
                         fontSize: 30.sp, fontWeight: FontWeight.bold)),
               ),
             ),
-            SliverToBoxAdapter(child: SongsListWidget()),
+            // SliverToBoxAdapter(child: SongsListWidget()),
           ],
         ),
       ),

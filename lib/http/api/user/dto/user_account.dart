@@ -27,7 +27,6 @@ class UserAccount extends ServerStatusBean {
 
 @JsonSerializable()
 class UserProfile {
-  String? avatarDetail;
   int? birthday;
   bool? defaultAvatar;
   String? description;
