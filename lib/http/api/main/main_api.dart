@@ -1,10 +1,11 @@
+import 'package:netease_cloud_music_app/http/api/main/dto/like_song_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/playlist_detail_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_songs_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/simi_songs_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
 
-import '../../http.dart';
 import '../../http_utils.dart';
-import '../login/dto/login_status_dto.dart';
 
 class MainApi {
   //获取每日推荐歌曲
@@ -25,5 +26,21 @@ class MainApi {
     return PlaylistDetailDto.fromJson(res);
   }
 
-// 获取歌曲详情
+  // 获取喜欢的音乐
+  static Future<LikeSongDto> getLikeSongs() async {
+    final res = await HttpUtils.get('/likelist');
+    return LikeSongDto.fromJson(res);
+  }
+
+  // 获取相似音乐
+  static Future<SimiSongsDto> getSimiSongs(int id) async {
+    final res = await HttpUtils.get('/simi/song', params: {"id": id});
+    return SimiSongsDto.fromJson(res);
+  }
+
+  // 获取音乐详情
+  static Future<SongsDetailDto> getSongsDetail(String ids) async {
+    final res = await HttpUtils.get('/song/detail', params: {"ids": ids});
+    return SongsDetailDto.fromJson(res);
+  }
 }

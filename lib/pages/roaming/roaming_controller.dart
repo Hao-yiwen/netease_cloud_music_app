@@ -22,6 +22,7 @@ class RoamingController extends GetxController {
         Fluttertoast.showToast(msg: '歌曲ID为空，无法获取歌曲信息');
         return;
       }
+      // 根据歌曲ID获取歌曲信息
       SongInfoListDto songInfoListDto =
           await RoamingApi.getSongInfo(currentSongId.value);
       if (songInfoListDto.data?.isNotEmpty == true) {

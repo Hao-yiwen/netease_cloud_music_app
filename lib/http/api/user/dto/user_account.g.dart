@@ -43,7 +43,6 @@ Map<String, dynamic> _$UserAccountToJson(UserAccount instance) =>
     };
 
 UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile()
-  ..avatarDetail = json['avatarDetail'] as String?
   ..birthday = (json['birthday'] as num?)?.toInt()
   ..defaultAvatar = json['defaultAvatar'] as bool?
   ..description = json['description'] as String?
@@ -66,7 +65,6 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile()
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
     <String, dynamic>{
-      'avatarDetail': instance.avatarDetail,
       'birthday': instance.birthday,
       'defaultAvatar': instance.defaultAvatar,
       'description': instance.description,

@@ -32,6 +32,9 @@ class SongsList extends StatelessWidget {
                 // 缓存图片加速
                 image: CachedNetworkImageProvider(
                     recommendSongsDto.dailySongs![index].al!.picUrl!),
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.image_not_supported);
+                },
               ),
               subtitle: Text(recommendSongsDto.dailySongs![index].ar![0].name!),
             ),
