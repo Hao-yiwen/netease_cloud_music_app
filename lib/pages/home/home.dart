@@ -139,9 +139,9 @@ class _HomeState extends State<Home> {
     // 先删除上一个页面的控制器（如果需要）
     if (tabsRouter.activeIndex != index) {
       switch (TAB_ENUM.fromValue(tabsRouter.activeIndex)) {
-        case TAB_ENUM.main:
-          Get.delete<MainController>();
-          break;
+        // case TAB_ENUM.main:
+        //   Get.delete<MainController>();
+        //   break;
         case TAB_ENUM.found:
           Get.delete<FoundController>();
           break;
@@ -152,6 +152,8 @@ class _HomeState extends State<Home> {
           Get.delete<UserController>();
           break;
         case TAB_ENUM.roaming:
+          break;
+        default:
           break;
       }
     }

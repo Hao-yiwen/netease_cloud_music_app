@@ -47,7 +47,6 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile()
   ..defaultAvatar = json['defaultAvatar'] as bool?
   ..description = json['description'] as String?
   ..detailDescription = json['detailDescription'] as String?
-  ..expertTags = json['expertTags'] as String?
   ..followed = json['followed'] as bool?
   ..gender = (json['gender'] as num?)?.toInt()
   ..nickname = json['nickname'] as String?
@@ -69,7 +68,6 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'defaultAvatar': instance.defaultAvatar,
       'description': instance.description,
       'detailDescription': instance.detailDescription,
-      'expertTags': instance.expertTags,
       'followed': instance.followed,
       'gender': instance.gender,
       'nickname': instance.nickname,

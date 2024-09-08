@@ -15,7 +15,7 @@ RecommendResourceDto _$RecommendResourceDtoFromJson(
       ..featureFirst = json['featureFirst'] as bool?
       ..haveRcmdSongs = json['haveRcmdSongs'] as bool?
       ..recommend = (json['recommend'] as List<dynamic>?)
-          ?.map((e) => RecommendSong.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => RecommendPlaylist.fromJson(e as Map<String, dynamic>))
           .toList();
 
 Map<String, dynamic> _$RecommendResourceDtoToJson(
@@ -29,8 +29,8 @@ Map<String, dynamic> _$RecommendResourceDtoToJson(
       'recommend': instance.recommend,
     };
 
-RecommendSong _$RecommendSongFromJson(Map<String, dynamic> json) =>
-    RecommendSong()
+RecommendPlaylist _$RecommendPlaylistFromJson(Map<String, dynamic> json) =>
+    RecommendPlaylist()
       ..id = (json['id'] as num?)?.toInt()
       ..type = (json['type'] as num?)?.toInt()
       ..picUrl = json['picUrl'] as String?
@@ -41,7 +41,7 @@ RecommendSong _$RecommendSongFromJson(Map<String, dynamic> json) =>
           ? null
           : UserProfile.fromJson(json['creator'] as Map<String, dynamic>);
 
-Map<String, dynamic> _$RecommendSongToJson(RecommendSong instance) =>
+Map<String, dynamic> _$RecommendPlaylistToJson(RecommendPlaylist instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,

@@ -4,9 +4,12 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
-import 'package:netease_cloud_music_app/widgets/songs_small_cards.dart';
+import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
 import '../../widgets/custom_tag.dart';
 import '../../widgets/uncustom_tag.dart';
@@ -25,6 +28,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   int _currentPageIndex = 0;
   final CarouselSliderController _controller = CarouselSliderController();
   int _currentCarouselIndex = 0;
+  final FoundController foundController = FoundController.to;
 
   @override
   void initState() {
@@ -64,7 +68,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               width: 10,
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 HomeController.to.scaffoldKey.value.currentState!.openDrawer();
               },
               child: Icon(
@@ -85,7 +89,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     controller: _tabController,
                     dividerHeight: 0,
                     labelPadding: EdgeInsets.zero,
-                    tabs: [
+                    tabs: const [
                       Tab(text: '音乐'),
                       Tab(text: '博客'),
                       Tab(text: '直播'),
@@ -102,7 +106,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     ),
                     labelColor: Colors.black,
                     unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
-                    indicator: UnderlineTabIndicator(
+                    indicator: const UnderlineTabIndicator(
                       borderSide: BorderSide(color: Colors.red, width: 2),
                       insets: EdgeInsets.symmetric(horizontal: 22), // 控制指示器的宽度
                     ),
@@ -115,14 +119,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Icon(
               TablerIcons.search,
               size: 40.w,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             )
           ],
@@ -248,113 +252,117 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   }
 
   Widget _buildMusicFound(BuildContext context) {
-    return Column(
-      children: [
-        _buildFixTag(context),
-        SizedBox(
-          height: 10,
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: CustomScrollView(
-              slivers: [
-                _buildCarousel(context),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('甄选歌单',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SongsSmallCards(),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('新歌新碟',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  // child: SongsListWidget(),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('排行榜',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SongsSmallCards(),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('数字专辑',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SongsSmallCards(),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('祝你好梦',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SongsSmallCards(),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text('云村出品',
-                        style: TextStyle(
-                            fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        // 生成10个card
-                        for (int i = 0; i < 10; i++)
-                          Card(
-                            child: Container(
-                              width: 200,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: Colors.amber,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                      ],
+    return Obx(() {
+      return Column(
+        children: [
+          _buildFixTag(context),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: CustomScrollView(
+                slivers: [
+                  if (foundController.banner.value != null &&
+                      foundController.banner.value!.banners != null)
+                    _buildCarousel(context),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('甄选歌单',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 60,
+                  // SliverToBoxAdapter(
+                  //   child: RecommendPlayListCard(),
+                  // ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('新歌新碟',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                )
-              ],
+                  SliverToBoxAdapter(
+                      // child: SongsListWidget(),
+                      ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('排行榜',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  // SliverToBoxAdapter(
+                  //   child: RecommendPlayListCard(),
+                  // ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('数字专辑',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  // SliverToBoxAdapter(
+                  //   child: RecommendPlayListCard(),
+                  // ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('祝你好梦',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  // SliverToBoxAdapter(
+                  //   child: RecommendPlayListCard(),
+                  // ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text('云村出品',
+                          style: TextStyle(
+                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          // 生成10个card
+                          for (int i = 0; i < 10; i++)
+                            Card(
+                              child: Container(
+                                width: 200,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.amber,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 60,
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   _buildCarousel(BuildContext context) {
@@ -369,7 +377,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               _currentCarouselIndex = index;
             });
           }),
-      items: [1, 2, 3, 4, 5].map((i) {
+      items: foundController.banner.value.banners!.map((i) {
         return Builder(
           builder: (BuildContext context) {
             return Container(
@@ -382,16 +390,20 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.amber,
+                          color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: NeteaseCacheImage(picUrl: i.pic!).getImageProvider(),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: 2, left: 4),
+                        padding: const EdgeInsets.only(bottom: 2, left: 4),
                         child: Container(
                           alignment: Alignment.bottomLeft,
                           child: DotsIndicator(
-                            dotsCount: 5,
+                            dotsCount: foundController.banner.value.banners!.length,
                             position: _currentCarouselIndex,
                             decorator: DotsDecorator(
                               activeColor: Colors.red,

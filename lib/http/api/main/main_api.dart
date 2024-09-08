@@ -1,11 +1,16 @@
 import 'package:netease_cloud_music_app/http/api/main/dto/like_song_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/personalized_djprogram_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/personalized_playlists.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/playlist_detail_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_songs_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/simi_songs_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/top_playlists_dto.dart';
+import 'package:netease_cloud_music_app/http/api/main/dto/user_playlists.dart';
 
 import '../../http_utils.dart';
+import 'dto/personal_fm_dto.dart';
 
 class MainApi {
   //获取每日推荐歌曲
@@ -42,5 +47,35 @@ class MainApi {
   static Future<SongsDetailDto> getSongsDetail(String ids) async {
     final res = await HttpUtils.get('/song/detail', params: {"ids": ids});
     return SongsDetailDto.fromJson(res);
+  }
+
+  // 获取私人fm音乐
+  static Future<PersonalFmDto> getPersonalFm() async {
+    final res = await HttpUtils.get('/personal_fm');
+    return PersonalFmDto.fromJson(res);
+  }
+
+  // 获取网友推荐顶级歌单
+  static Future<TopPlaylistsDto> getTopPlayList() async {
+    final res = await HttpUtils.get('/top/playlist', params: {"limit": 10});
+    return TopPlaylistsDto.fromJson(res);
+  }
+
+  // 推荐歌单
+  static Future<PersonalizedPlayLists> getPersonalizedPlaylists() async {
+    final res = await HttpUtils.get('/personalized');
+    return PersonalizedPlayLists.fromJson(res);
+  }
+
+  // 获取用户歌单
+  static Future<UserPlaylists> getUserPlaylists(int uid) async {
+    final res = await HttpUtils.get('/user/playlist', params: {"uid": uid});
+    return UserPlaylists.fromJson(res);
+  }
+
+  // 推荐播客
+  static Future<PersonalizedDjprogramDto> getDjProgramRecommend() async {
+    final res = await HttpUtils.get('/personalized/djprogram');
+    return PersonalizedDjprogramDto.fromJson(res);
   }
 }

@@ -9,7 +9,7 @@ part 'recommend_resource_dto.g.dart';
 class RecommendResourceDto extends ServerStatusBean {
   bool? featureFirst;
   bool? haveRcmdSongs;
-  List<RecommendSong>? recommend;
+  List<RecommendPlaylist>? recommend;
 
   RecommendResourceDto();
 
@@ -20,7 +20,7 @@ class RecommendResourceDto extends ServerStatusBean {
 }
 
 @JsonSerializable()
-class RecommendSong {
+class RecommendPlaylist {
   int? id;
   int? type;
   String? picUrl;
@@ -29,10 +29,10 @@ class RecommendSong {
   String? name;
   UserProfile? creator;
 
-  RecommendSong();
+  RecommendPlaylist();
 
-  factory RecommendSong.fromJson(Map<String, dynamic> json) =>
-      _$RecommendSongFromJson(json);
+  factory RecommendPlaylist.fromJson(Map<String, dynamic> json) =>
+      _$RecommendPlaylistFromJson(json);
 
-  Map<String, dynamic> toJson() => _$RecommendSongToJson(this);
+  Map<String, dynamic> toJson() => _$RecommendPlaylistToJson(this);
 }
