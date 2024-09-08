@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
+
+import '../http/api/main/dto/personalized_djprogram_dto.dart';
 
 class SongsListWidget extends StatelessWidget {
   final List<SongDto> songs;
@@ -42,6 +43,53 @@ class SongsListWidget extends StatelessWidget {
                           artist: song.ar![0].name,
                           picUrl: song.al!.picUrl!,
                         ))
+                    .toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ProgramListWidget extends StatelessWidget {
+  final List<DjProgram> programs;
+
+  const ProgramListWidget({
+    super.key,
+    required this.programs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    int itemCount = programs.length ~/ 3; // 6列
+    List<List<DjProgram>> songsMatrix = [];
+    for (int i = 0; i < itemCount; i++) {
+      songsMatrix.add(programs.sublist(i * 3, i * 3 + 3));
+    }
+    return Container(
+      height: 300.h,
+      child: PageView.builder(
+        controller: PageController(
+          viewportFraction: 0.9, // 每列占90%的宽度
+        ),
+        itemCount: itemCount, // 总共6列
+        itemBuilder: (context, pageIndex) {
+          // 根据 pageIndex 计算偏移量
+          double offsetX = ScreenUtil().screenWidth * 0.05 * (pageIndex - 1);
+
+          return Padding(
+            padding: EdgeInsets.only(right: 10.w),
+            child: Transform.translate(
+              offset: Offset(offsetX, 0),
+              child: Column(
+                children: songsMatrix[pageIndex]
+                    .map((pragma) => SongCell(
+                  title: pragma.name!,
+                  artist: pragma.copywriter!,
+                  picUrl: pragma.picUrl!,
+                ))
                     .toList(),
               ),
             ),

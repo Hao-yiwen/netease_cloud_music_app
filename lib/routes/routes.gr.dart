@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i15;
 import 'package:flutter/material.dart' as _i16;
-import 'package:netease_cloud_music_app/http/api/main/dto/recommend_songs_dto.dart'
+import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart'
     as _i17;
 import 'package:netease_cloud_music_app/pages/about.dart' as _i1;
 import 'package:netease_cloud_music_app/pages/empty_page.dart' as _i2;
@@ -204,13 +204,15 @@ class Search extends _i15.PageRouteInfo<void> {
 class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
   SongsList({
     _i16.Key? key,
-    required _i17.RecommendSongsDto recommendSongsDto,
+    required List<_i17.SongDto> songs,
+    required String title,
     List<_i15.PageRouteInfo>? children,
   }) : super(
           SongsList.name,
           args: SongsListArgs(
             key: key,
-            recommendSongsDto: recommendSongsDto,
+            songs: songs,
+            title: title,
           ),
           initialChildren: children,
         );
@@ -223,7 +225,8 @@ class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
       final args = data.argsAs<SongsListArgs>();
       return _i10.SongsList(
         key: args.key,
-        recommendSongsDto: args.recommendSongsDto,
+        songs: args.songs,
+        title: args.title,
       );
     },
   );
@@ -232,16 +235,19 @@ class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
 class SongsListArgs {
   const SongsListArgs({
     this.key,
-    required this.recommendSongsDto,
+    required this.songs,
+    required this.title,
   });
 
   final _i16.Key? key;
 
-  final _i17.RecommendSongsDto recommendSongsDto;
+  final List<_i17.SongDto> songs;
+
+  final String title;
 
   @override
   String toString() {
-    return 'SongsListArgs{key: $key, recommendSongsDto: $recommendSongsDto}';
+    return 'SongsListArgs{key: $key, songs: $songs, title: $title}';
   }
 }
 

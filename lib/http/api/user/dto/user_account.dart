@@ -31,7 +31,6 @@ class UserProfile {
   bool? defaultAvatar;
   String? description;
   String? detailDescription;
-  String? expertTags;
   bool? followed;
   int? gender;
   String? nickname;
