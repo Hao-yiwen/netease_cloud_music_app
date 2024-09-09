@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/keys.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/dialog_utils.dart';
@@ -67,8 +66,10 @@ class UserController extends GetxController {
   Future<void> _getUserAccount() async {
     try {
       loding.value = true;
-      userAccount.value = await UserApi.getUserAccount(
-          HomeController.to.userData.value.profile!.userId);
+      if(HomeController.to.userData.value.profile != null){
+        userAccount.value = await UserApi.getUserAccount(
+            HomeController.to.userData.value.profile!.userId);
+      }
     } catch (e) {
       LogBox.error(e);
     } finally {
