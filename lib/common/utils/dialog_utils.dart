@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DialogUtils {
@@ -6,7 +7,7 @@ class DialogUtils {
     return showDialog<void>(
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return CupertinoActionSheet(
             title: Text(title),
             actions: [
               TextButton(

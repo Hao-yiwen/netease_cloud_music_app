@@ -7,10 +7,12 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
+import '../../http/api/main/dto/playlist_dto.dart';
 import '../../widgets/custom_tag.dart';
 import '../../widgets/uncustom_tag.dart';
 
@@ -267,17 +269,9 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                   if (foundController.banner.value != null &&
                       foundController.banner.value!.banners != null)
                     _buildCarousel(context),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('甄选歌单',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  // SliverToBoxAdapter(
-                  //   child: RecommendPlayListCard(),
-                  // ),
+                  if (MainController.to.topPlayList.value.isNotEmpty)
+                    _buildPlayList(
+                        context, '甄选歌单', MainController.to.topPlayList.value),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 15),
@@ -393,7 +387,8 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
-                            image: NeteaseCacheImage(picUrl: i.pic!).getImageProvider(),
+                            image: NeteaseCacheImage(picUrl: i.pic!)
+                                .getImageProvider(),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -403,7 +398,8 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                         child: Container(
                           alignment: Alignment.bottomLeft,
                           child: DotsIndicator(
-                            dotsCount: foundController.banner.value.banners!.length,
+                            dotsCount:
+                                foundController.banner.value.banners!.length,
                             position: _currentCarouselIndex,
                             decorator: DotsDecorator(
                               activeColor: Colors.red,
@@ -423,5 +419,24 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         );
       }).toList(),
     ));
+  }
+
+  _buildPlayList(BuildContext context, String title, List<Playlist> playLists) {
+    return SliverToBoxAdapter(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(title,
+                  style:
+                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          PlayListCard(playList: playLists)
+        ],
+      ),
+    );
   }
 }

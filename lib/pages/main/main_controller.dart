@@ -59,6 +59,8 @@ class MainController extends GetxController {
   Rx<PersonalizedDjprogramDto> personalizedDjprogramDto =
       PersonalizedDjprogramDto().obs;
 
+  static MainController get to => Get.find<MainController>();
+
   @override
   void onReady() {
     super.onReady();
