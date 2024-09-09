@@ -1,4 +1,5 @@
 import 'package:netease_cloud_music_app/http/api/found/dto/banner.dart';
+import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
 
 import '../../http_utils.dart';
 
@@ -8,6 +9,15 @@ class FoundApi {
       "type": type,
     });
     return Banner.fromJson(res);
+  }
+
+  static Future<HomeBlock> getHomeBlock() async {
+    final res = await HttpUtils.get('/homepage/block/page');
+    if (res.data != null) {
+      return HomeBlock.fromJson(res.data);
+    } else {
+      throw Exception('Failed to load home block');
+    }
   }
 }
 
