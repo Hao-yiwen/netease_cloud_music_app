@@ -3,3 +3,5 @@ final NETEASE_INFO_LIST =
 
 // final BASE_URL = 'http://192.168.0.102:3000';
 final BASE_URL = 'http://127.0.0.1:3000';
+
+final PLACE_IMAGE_HOLDER = 'https://placehold.it/100x100';

@@ -32,9 +32,6 @@ BlockItem _$BlockItemFromJson(Map<String, dynamic> json) => BlockItem()
   ..canClose = json['canClose'] as bool?
   ..creatives = (json['creatives'] as List<dynamic>?)
       ?.map((e) => Creative.fromJson(e as Map<String, dynamic>))
-      .toList()
-  ..extInfo = (json['extInfo'] as List<dynamic>?)
-      ?.map((e) => Ext.fromJson(e as Map<String, dynamic>))
       .toList();
 
 Map<String, dynamic> _$BlockItemToJson(BlockItem instance) => <String, dynamic>{
@@ -45,30 +42,6 @@ Map<String, dynamic> _$BlockItemToJson(BlockItem instance) => <String, dynamic>{
       'uiElement': instance.uiElement,
       'canClose': instance.canClose,
       'creatives': instance.creatives,
-      'extInfo': instance.extInfo,
-    };
-
-Ext _$ExtFromJson(Map<String, dynamic> json) => Ext()
-  ..liveId = (json['liveId'] as num?)?.toInt()
-  ..title = json['title'] as String?
-  ..forceTitle = json['forceTitle'] as String?
-  ..subTitle = json['subTitle'] as String?
-  ..forceSubTitle = json['forceSubTitle'] as String?
-  ..cover = json['cover'] as String?
-  ..startTime = (json['startTime'] as num?)?.toInt()
-  ..bgCoverUrl = json['bgCoverUrl'] as String?
-  ..verticalCover = json['verticalCover'] as String?;
-
-Map<String, dynamic> _$ExtToJson(Ext instance) => <String, dynamic>{
-      'liveId': instance.liveId,
-      'title': instance.title,
-      'forceTitle': instance.forceTitle,
-      'subTitle': instance.subTitle,
-      'forceSubTitle': instance.forceSubTitle,
-      'cover': instance.cover,
-      'startTime': instance.startTime,
-      'bgCoverUrl': instance.bgCoverUrl,
-      'verticalCover': instance.verticalCover,
     };
 
 Creative _$CreativeFromJson(Map<String, dynamic> json) => Creative()
@@ -114,15 +87,20 @@ Map<String, dynamic> _$ResourceToJson(Resource instance) => <String, dynamic>{
     };
 
 UIElement _$UIElementFromJson(Map<String, dynamic> json) => UIElement()
-  ..mainTitle = json['mainTitle'] as String?
-  ..subTitle = json['subTitle'] as String?
+  ..mainTitle = json['mainTitle'] == null
+      ? null
+      : Title.fromJson(json['mainTitle'] as Map<String, dynamic>)
+  ..subTitle = json['subTitle'] == null
+      ? null
+      : Title.fromJson(json['subTitle'] as Map<String, dynamic>)
   ..button = json['button'] == null
       ? null
       : Button.fromJson(json['button'] as Map<String, dynamic>)
   ..image = json['image'] == null
       ? null
       : Image.fromJson(json['image'] as Map<String, dynamic>)
-  ..labelTexts = json['labelTexts'] as String?;
+  ..labelTexts =
+      (json['labelTexts'] as List<dynamic>?)?.map((e) => e as String).toList();
 
 Map<String, dynamic> _$UIElementToJson(UIElement instance) => <String, dynamic>{
       'mainTitle': instance.mainTitle,

@@ -43,7 +43,6 @@ class FoundController extends GetxController {
     try {
       loading.value = true;
       homeBlock.value = await FoundApi.getHomeBlock();
-      LogBox.debug(homeBlock.value.toString());
     } catch (e) {
       LogBox.error(e);
     }
