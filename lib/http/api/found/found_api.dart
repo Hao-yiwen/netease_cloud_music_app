@@ -13,8 +13,8 @@ class FoundApi {
 
   static Future<HomeBlock> getHomeBlock() async {
     final res = await HttpUtils.get('/homepage/block/page');
-    if (res.data != null) {
-      return HomeBlock.fromJson(res.data);
+    if (res["data"] != null) {
+      return HomeBlock.fromJson(res["data"]);
     } else {
       throw Exception('Failed to load home block');
     }

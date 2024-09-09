@@ -23,32 +23,12 @@ class BlockItem {
   UIElement? uiElement;
   bool? canClose;
   List<Creative>? creatives;
-  List<Ext>? extInfo;
 
   BlockItem();
 
   factory BlockItem.fromJson(Map<String, dynamic> json) => _$BlockItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$BlockItemToJson(this);
-}
-
-@JsonSerializable()
-class Ext{
-  int? liveId;
-  String? title;
-  String? forceTitle;
-  String? subTitle;
-  String? forceSubTitle;
-  String? cover;
-  int? startTime;
-  String? bgCoverUrl;
-  String? verticalCover;
-
-  Ext();
-
-  factory Ext.fromJson(Map<String, dynamic> json) => _$ExtFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ExtToJson(this);
 }
 
 @JsonSerializable()
@@ -86,11 +66,11 @@ class Resource {
 
 @JsonSerializable()
 class UIElement {
-  String? mainTitle;
-  String? subTitle;
+  Title? mainTitle;
+  Title? subTitle;
   Button? button;
   Image? image;
-  String? labelTexts;
+  List<String>? labelTexts;
 
   UIElement();
 

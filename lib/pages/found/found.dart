@@ -2,16 +2,20 @@ import 'package:auto_route/annotations.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
+import 'package:netease_cloud_music_app/pages/found/item_type.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
+import '../../common/constants/url.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
 import '../../widgets/custom_tag.dart';
 import '../../widgets/uncustom_tag.dart';
@@ -31,12 +35,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   final CarouselSliderController _controller = CarouselSliderController();
   int _currentCarouselIndex = 0;
   final FoundController foundController = FoundController.to;
+  late TabController _albumTabController;
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 5, vsync: this);
+    _albumTabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -44,6 +50,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     super.dispose();
     _pageViewController.dispose();
     _tabController.dispose();
+    _albumTabController.dispose();
   }
 
   @override
@@ -269,87 +276,13 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                   if (foundController.banner.value != null &&
                       foundController.banner.value!.banners != null)
                     _buildCarousel(context),
+                  if (foundController.homeBlock.value.blocks != null &&
+                      foundController.homeBlock.value.blocks!.isNotEmpty)
+                    _buildFoundContent(
+                        foundController.homeBlock.value.blocks!, context),
                   if (MainController.to.topPlayList.value.isNotEmpty)
                     _buildPlayList(
                         context, '甄选歌单', MainController.to.topPlayList.value),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('新歌新碟',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                      // child: SongsListWidget(),
-                      ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('排行榜',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  // SliverToBoxAdapter(
-                  //   child: RecommendPlayListCard(),
-                  // ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('数字专辑',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  // SliverToBoxAdapter(
-                  //   child: RecommendPlayListCard(),
-                  // ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('祝你好梦',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  // SliverToBoxAdapter(
-                  //   child: RecommendPlayListCard(),
-                  // ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Text('云村出品',
-                          style: TextStyle(
-                              fontSize: 30.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          // 生成10个card
-                          for (int i = 0; i < 10; i++)
-                            Card(
-                              child: Container(
-                                width: 200,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 60,
-                    ),
-                  )
                 ],
               ),
             ),
@@ -435,6 +368,245 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             ),
           ),
           PlayListCard(playList: playLists)
+        ],
+      ),
+    );
+  }
+
+  _buildFoundContent(List<BlockItem> items, BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+          children: items.map((item) {
+        if (item.showType == ItemTypeEnum.HOMEPAGE_NEW_SONG_NEW_ALBUM.value) {
+          return _buildNewSongNewAlbum(item, context);
+        } else if (item.showType ==
+            ItemTypeEnum.HOMEPAGE_SLIDE_LISTEN_LIVE.value) {
+          return _buildListenLive(item, context);
+        } else if (item.showType ==
+            ItemTypeEnum.HOMEPAGE_SLIDE_PLAYLIST.value) {
+          return _buildPlayListSlide(item, context);
+        } else if (item.showType ==
+            ItemTypeEnum.HOMEPAGE_SLIDE_SONGLIST_ALIGN.value) {
+          return _buildSongListAlign(item, context);
+        } else if (item.showType == ItemTypeEnum.SHUFFLE_MUSIC_CALENDAR.value) {
+          return _buildShuffleMusicCalendar(item, context);
+        } else {
+          return Container();
+        }
+      }).toList()),
+    );
+  }
+
+  Widget _buildNewSongNewAlbum(BlockItem item, BuildContext context) {
+    var creatives = item.creatives;
+    var newSongs = creatives!.where(
+        (el) => el.creativeType == AlbumTypeEnum.NEW_SONG_HOMEPAGE.value);
+    var newAlbums = creatives!.where(
+        (el) => el.creativeType == AlbumTypeEnum.NEW_ALBUM_HOMEPAGE.value);
+    var digitalAlbums = creatives!.where(
+        (el) => el.creativeType == AlbumTypeEnum.DIGITAL_ALBUM_HOMEPAGE.value);
+    return Container(
+      height: 450.w,
+      padding: EdgeInsets.only(top: 20.w),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              tabAlignment: TabAlignment.start,
+              controller: _albumTabController,
+              dividerHeight: 0,
+              labelPadding: EdgeInsets.only(left: 0.w, right: 20.w),
+              // 移除左侧的额外padding
+              labelStyle: TextStyle(
+                fontSize: 32.sp, // 选中的字体大小
+                fontWeight: FontWeight.normal, // 选中的字体加粗
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontSize: 30.sp, // 未选中的字体大小
+                fontWeight: FontWeight.normal, // 未选中的字体常规
+              ),
+              labelColor: Colors.black,
+              unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
+              indicatorColor: Colors.transparent,
+              // 取消进度条
+              isScrollable: true,
+              // 允许Tab根据内容自适应宽度
+              tabs: [
+                Text("新歌"), // 直接使用Text即可，IntrinsicWidth不再必要
+                Text("新碟"),
+                Text("数字专辑"),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10.w,
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _albumTabController,
+              children: [
+                _buildSongList(context, newSongs.toList()),
+                _buildSongList(context, newAlbums.toList()),
+                _buildSongList(context, digitalAlbums.toList()),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSongList(BuildContext context, List<Creative> creatives) {
+    return Container(
+      height: 300.h,
+      child: PageView.builder(
+        controller: PageController(
+          viewportFraction: 0.9, // 每列占90%的宽度
+        ),
+        itemCount: creatives.length, // 总共6列
+        itemBuilder: (context, pageIndex) {
+          // 根据 pageIndex 计算偏移量
+          double offsetX = ScreenUtil().screenWidth * 0.05 * (pageIndex - 1);
+
+          return Padding(
+            padding: EdgeInsets.only(right: 10.w),
+            child: Transform.translate(
+              offset: Offset(offsetX, 0),
+              child: Column(
+                children: creatives[pageIndex]
+                    .resources!
+                    .map((song) => SongCell(
+                          title: song.uiElement?.mainTitle?.title ?? "",
+                          artist: song.uiElement?.subTitle?.title ?? "",
+                          picUrl: song.uiElement?.image?.imageUrl ??
+                              PLACE_IMAGE_HOLDER,
+                        ))
+                    .toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildListenLive(BlockItem item, BuildContext context) {
+    return Container();
+  }
+
+  Widget _buildPlayListSlide(BlockItem item, BuildContext context) {
+    return Container(
+      height: 360.w,
+      padding: EdgeInsets.only(top: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCreativeTitle(item, context),
+          SizedBox(
+            height: 20.w,
+          ),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 20.w),
+                  child: SongCard(
+                    picUrl: item.creatives![index].uiElement!.image!.imageUrl!,
+                    title: item.creatives![index].uiElement!.mainTitle!.title!,
+                  ),
+                );
+              },
+              itemCount: item.creatives!.length,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSongListAlign(BlockItem item, BuildContext context) {
+    return Container(
+      height: 450.w,
+      padding: EdgeInsets.only(top: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCreativeTitle(item, context),
+          SizedBox(
+            height: 10.w,
+          ),
+          _buildSongList(context, item.creatives!),
+        ],
+      ),
+    );
+  }
+
+  _buildCreativeTitle(BlockItem item, BuildContext context) {
+    return Text(
+      item.uiElement!.mainTitle!.title!.isNotEmpty
+          ? item.uiElement!.mainTitle!.title!
+          : (item.uiElement!.subTitle!.title!.isNotEmpty
+              ? item.uiElement!.subTitle!.title!
+              : ""),
+      style: TextStyle(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildShuffleMusicCalendar(BlockItem item, BuildContext context) {
+    final creatives = item.creatives!;
+    var res = [];
+    for (var el in creatives) {
+      for (var al in el.resources!) {
+        res.add(al);
+      }
+    }
+    return Container(
+      padding: EdgeInsets.only(top: 20.w),
+      height: 230.h,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCreativeTitle(item, context),
+          SizedBox(
+            height: 10.w,
+          ),
+          Expanded(
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: EdgeInsets.only(bottom: 20.w),
+                  height: 120.w,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          res[index].uiElement!.mainTitle!.title!,
+                          style: TextStyle(
+                            fontSize: 28.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.w),
+                        child: NeteaseCacheImage(
+                          picUrl: res[index].uiElement!.image!.imageUrl!,
+                          size: Size(100.w, 100.w),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+              itemCount: res.length,
+            ),
+          ),
         ],
       ),
     );

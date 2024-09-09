@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../common/constants/url.dart';
+
 // 图片请求需要带上请求头 否则概率403
 class NeteaseCacheImage extends StatelessWidget {
   final String picUrl;
@@ -35,7 +37,7 @@ class NeteaseCacheImage extends StatelessWidget {
       colorBlendMode: BlendMode.colorBurn,
       errorBuilder: (context, error, stackTrace) {
         return Image.network(
-          'https://placehold.it/100x100',
+          PLACE_IMAGE_HOLDER,
           fit: BoxFit.cover,
         );
       },

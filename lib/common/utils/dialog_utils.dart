@@ -7,7 +7,7 @@ class DialogUtils {
     return showDialog<void>(
         context: context,
         builder: (context) {
-          return CupertinoActionSheet(
+          return AlertDialog(
             title: Text(title),
             actions: [
               TextButton(
