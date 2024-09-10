@@ -21,7 +21,7 @@ class Http {
 
   static Http? _instance;
 
-  factory Http(){
+  factory Http() {
     return _instance ??= Http._internal();
   }
 
@@ -258,7 +258,11 @@ class UserLoginStateController {
 
   Future<void> _readAccountInfo() async {
     try {
-      String accountInfo = _saveFile().readAsStringSync();
+      File file = _saveFile();
+      if (!file.existsSync()) {
+        throw Exception("Account file not found");
+      }
+      String accountInfo = file.readAsStringSync();
       _accountInfo = LoginStatusDto.fromJson(jsonDecode(accountInfo));
     } catch (e) {
       LogBox.error(e);
@@ -274,7 +278,8 @@ class UserLoginStateController {
   }
 
   void _saveAccountInfo(LoginStatusDto? loginStatus) {
-    _saveFile().writeAsStringSync(jsonEncode(loginStatus?.toJson()), flush: true);
+    _saveFile()
+        .writeAsStringSync(jsonEncode(loginStatus?.toJson()), flush: true);
   }
 
   void _refreshLoginStatus(LoginState logout) {

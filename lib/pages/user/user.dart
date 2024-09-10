@@ -76,94 +76,96 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     final useData = HomeController.to.userData.value!;
 
     return NestedScrollView(
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       controller: _scrollController,
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return [
           SliverPersistentHeader(
             pinned: true,
             delegate: _SliverHeaderDelegate(
-                minHeight: headerHeight, // 最小高度包含状态栏高度
-                maxHeight: headerHeight, // 最大高度同样包含状态栏高度
+                minHeight: headerHeight,
+                maxHeight: headerHeight,
                 child: _buildHeader(context,
                     headerHeight: headerHeight,
                     statusBarHeight: statusBarHeight)),
           ),
           SliverToBoxAdapter(
               child: Stack(
-            children: [
-              Transform.translate(
-                offset: Offset(0, -((imageHeight - 850.w) + headerHeight)),
-                child: SizedBox(
-                    height: imageHeight,
-                    width: double.infinity,
-                    child: NeteaseCacheImage(
-                      picUrl: useData.profile?.backgroundUrl ?? "",
-                    )),
-              ),
-              Column(
                 children: [
-                  Container(
-                    height: 700.w,
-                    child: _buildUserInfo(context, useData),
-                  ),
                   Transform.translate(
-                    offset: Offset(0, -80),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
+                    offset: Offset(0, -((imageHeight - 850.w) + headerHeight)),
+                    child: SizedBox(
+                        height: imageHeight,
+                        width: double.infinity,
+                        child: NeteaseCacheImage(
+                          picUrl: useData.profile?.backgroundUrl ?? "",
+                        )),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        height: 700.w,
+                        child: _buildUserInfo(context, useData),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 0),
-                      child: Column(
-                        children: [
-                          TabBar(
-                            tabs: [
-                              Tab(text: '音乐'),
-                              Tab(text: '博客'),
-                              Tab(text: '直播'),
-                            ],
-                            controller: _tabController,
-                            dividerHeight: 0,
-                            labelStyle: TextStyle(
-                              fontSize: 32.sp, // 选中的字体大小
-                              fontWeight: FontWeight.normal, // 选中的字体加粗
-                            ),
-                            unselectedLabelStyle: TextStyle(
-                              fontSize: 32.sp, // 未选中的字体大小
-                              fontWeight: FontWeight.normal, // 未选中的字体常规
-                            ),
-                            labelColor: Colors.black,
-                            unselectedLabelColor:
-                                Color.fromARGB(255, 145, 150, 162),
-                            indicator: UnderlineTabIndicator(
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 2),
-                              insets: EdgeInsets.symmetric(
-                                  horizontal: 22), // 控制指示器的宽度
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
                 ],
+              )),
+          SliverPersistentHeader(
+            pinned: true, // 确保 TabBar 被固定
+            delegate: _SliverHeaderDelegate(
+              minHeight: 100.w,
+              maxHeight: 100.w,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 0),
+                child: TabBar(
+                  tabs: [
+                    Tab(text: '音乐'),
+                    Tab(text: '博客'),
+                    Tab(text: '直播'),
+                  ],
+                  controller: _tabController,
+                  labelStyle: TextStyle(
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(color: Colors.red, width: 2),
+                    insets: EdgeInsets.symmetric(horizontal: 22),
+                  ),
+                ),
               ),
-            ],
-          )),
+            ),
+          ),
         ];
       },
       body: TabBarView(
         controller: _tabController,
         children: [
           ListView.builder(
-            itemCount: 20,
-            itemBuilder: (context, index) => ListTile(
-              title: Text('Item $index'),
-            ),
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 10,
+            itemBuilder: (context, index) {
+              return Container(
+                height: 100,
+                color: Colors.primaries[index % Colors.primaries.length],
+                child: Center(child: Text('Tab 1 Content')),
+              );
+            },
           ),
           Center(child: Text('Tab 2 Content')),
           Center(child: Text('Tab 3 Content')),
@@ -223,7 +225,8 @@ class _MineState extends State<User> with TickerProviderStateMixin {
           ),
           child: ClipOval(
             child: NeteaseCacheImage(
-                picUrl: userInfo.profile?.avatarUrl ?? "", size: const Size(80, 80)),
+                picUrl: userInfo.profile?.avatarUrl ?? "",
+                size: const Size(80, 80)),
           ),
         ),
         // nickname
