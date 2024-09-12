@@ -84,6 +84,8 @@ class MusicCard extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 10.w),
                         child: Text(
                           subTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 20.sp,
