@@ -32,6 +32,9 @@ class _MineState extends State<User> with TickerProviderStateMixin {
   late TabController _tabController;
   late PageController _pageViewController;
 
+  // stickytabheader
+  bool _isPinned = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,6 +50,21 @@ class _MineState extends State<User> with TickerProviderStateMixin {
         setState(() {
           imageHeight = 850.w - offset; // offset 为负值，所以这里是增加高度
         });
+      }
+
+      if (_scrollController.offset >= 530.w) {
+        // 530.w 是你要吸顶的高度阈值
+        if (!_isPinned) {
+          setState(() {
+            _isPinned = true;
+          });
+        }
+      } else {
+        if (_isPinned) {
+          setState(() {
+            _isPinned = false;
+          });
+        }
       }
 
       setState(() {
@@ -75,103 +93,97 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     final double headerHeight = statusBarHeight + 120.w; // 保证header的高度考虑了状态栏的高度
     final useData = HomeController.to.userData.value!;
 
-    return NestedScrollView(
-      physics: const BouncingScrollPhysics(),
-      controller: _scrollController,
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverHeaderDelegate(
-                minHeight: headerHeight,
-                maxHeight: headerHeight,
-                child: _buildHeader(context,
-                    headerHeight: headerHeight,
-                    statusBarHeight: statusBarHeight)),
-          ),
-          SliverToBoxAdapter(
+    return Stack(children: [
+      NestedScrollView(
+        physics: const BouncingScrollPhysics(),
+        controller: _scrollController,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _SliverHeaderDelegate(
+                  minHeight: headerHeight,
+                  maxHeight: headerHeight,
+                  child: _buildHeader(context,
+                      headerHeight: headerHeight,
+                      statusBarHeight: statusBarHeight)),
+            ),
+            SliverToBoxAdapter(
               child: Stack(
+                clipBehavior: Clip.none, // 确保背景图片超出边界时能正确显示
                 children: [
-                  Transform.translate(
-                    offset: Offset(0, -((imageHeight - 850.w) + headerHeight)),
+                  // 背景图片
+                  Positioned(
+                    top: -((imageHeight - 850.w) + headerHeight),
+                    left: 0,
+                    right: 0,
                     child: SizedBox(
-                        height: imageHeight,
-                        width: double.infinity,
-                        child: NeteaseCacheImage(
-                          picUrl: useData.profile?.backgroundUrl ?? "",
-                        )),
+                      height: imageHeight,
+                      width: double.infinity,
+                      child: NeteaseCacheImage(
+                        picUrl: useData.profile?.backgroundUrl ?? "",
+                      ),
+                    ),
                   ),
+                  // 用户信息
                   Column(
                     children: [
                       Container(
-                        height: 700.w,
+                        height: 530.w,
                         child: _buildUserInfo(context, useData),
                       ),
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 0),
+                        child: _buildTabHeader(context),
+                      )
                     ],
                   ),
                 ],
-              )),
-          SliverPersistentHeader(
-            pinned: true, // 确保 TabBar 被固定
-            delegate: _SliverHeaderDelegate(
-              minHeight: 100.w,
-              maxHeight: 100.w,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 0),
-                child: TabBar(
-                  tabs: [
-                    Tab(text: '音乐'),
-                    Tab(text: '博客'),
-                    Tab(text: '直播'),
-                  ],
-                  controller: _tabController,
-                  labelStyle: TextStyle(
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  unselectedLabelStyle: TextStyle(
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
-                  indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(color: Colors.red, width: 2),
-                    insets: EdgeInsets.symmetric(horizontal: 22),
-                  ),
-                ),
               ),
             ),
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          ListView.builder(
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return Container(
-                height: 100,
-                color: Colors.primaries[index % Colors.primaries.length],
-                child: Center(child: Text('Tab 1 Content')),
-              );
-            },
-          ),
-          Center(child: Text('Tab 2 Content')),
-          Center(child: Text('Tab 3 Content')),
-        ],
+          ];
+        },
+        body: Stack(
+          children: [
+            ListView.builder(
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return Container(
+                  height: 100,
+                  color: Colors.primaries[index % Colors.primaries.length],
+                  child: Center(child: Text('Tab 1 Content')),
+                );
+              },
+            ),
+            Center(child: Text('Tab 2 Content')),
+            Center(child: Text('Tab 3 Content')),
+          ],
+        ),
       ),
-    );
+      if (_isPinned) // 吸顶时显示的TabHeader
+        Positioned(
+          top: 200.w,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 100.w,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            child: _buildTabHeader(context), // 你的 TabHeader
+          ),
+        ),
+    ]);
   }
 
   Widget _buildHeader(BuildContext context,
@@ -451,6 +463,31 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     return Container(
       child: Center(
         child: Text('Roaming'),
+      ),
+    );
+  }
+
+  _buildTabHeader(BuildContext context) {
+    return TabBar(
+      tabs: const [
+        Tab(text: '音乐'),
+        Tab(text: '博客'),
+        Tab(text: '直播'),
+      ],
+      controller: _tabController,
+      labelStyle: TextStyle(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.normal,
+      ),
+      unselectedLabelStyle: TextStyle(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.normal,
+      ),
+      labelColor: Colors.black,
+      unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(color: Colors.red, width: 2),
+        insets: EdgeInsets.symmetric(horizontal: 22),
       ),
     );
   }
