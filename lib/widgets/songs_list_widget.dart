@@ -68,7 +68,7 @@ class ProgramListWidget extends StatelessWidget {
     for (int i = 0; i < itemCount; i++) {
       songsMatrix.add(programs.sublist(i * 3, i * 3 + 3));
     }
-    return Container(
+    return SizedBox(
       height: 300.h,
       child: PageView.builder(
         controller: PageController(
@@ -86,6 +86,54 @@ class ProgramListWidget extends StatelessWidget {
               child: Column(
                 children: songsMatrix[pageIndex]
                     .map((pragma) => SongCell(
+                          title: pragma.name!,
+                          artist: pragma.copywriter!,
+                          picUrl: pragma.picUrl!,
+                        ))
+                    .toList(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+class PodcastListWidget extends StatelessWidget {
+  final List<DjProgram> programs;
+
+  const PodcastListWidget({
+    super.key,
+    required this.programs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    int itemCount = programs.length ~/ 3; // 6列
+    List<List<DjProgram>> songsMatrix = [];
+    for (int i = 0; i < itemCount; i++) {
+      songsMatrix.add(programs.sublist(i * 3, i * 3 + 3));
+    }
+    return SizedBox(
+      height: 300.h,
+      child: PageView.builder(
+        controller: PageController(
+          viewportFraction: 0.9, // 每列占90%的宽度
+        ),
+        itemCount: itemCount, // 总共6列
+        itemBuilder: (context, pageIndex) {
+          // 根据 pageIndex 计算偏移量
+          double offsetX = ScreenUtil().screenWidth * 0.05 * (pageIndex - 1);
+
+          return Padding(
+            padding: EdgeInsets.only(right: 10.w),
+            child: Transform.translate(
+              offset: Offset(offsetX, 0),
+              child: Column(
+                children: songsMatrix[pageIndex]
+                    .map((pragma) => PodcastCell(
                   title: pragma.name!,
                   artist: pragma.copywriter!,
                   picUrl: pragma.picUrl!,
@@ -161,6 +209,69 @@ class SongCell extends StatelessWidget {
               TablerIcons.player_play_filled,
               size: 30.w,
               color: Colors.grey[600],
+            ),
+            SizedBox(width: 20.w),
+          ],
+        ));
+  }
+}
+
+class PodcastCell extends StatelessWidget {
+  final String title;
+  final String artist;
+  final String picUrl;
+  String? tag;
+
+  PodcastCell(
+      {super.key,
+      required this.title,
+      required this.artist,
+      required this.picUrl,
+      this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 80.h,
+        margin: EdgeInsets.symmetric(vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10.w), // 设置圆角半径
+              child:
+                  NeteaseCacheImage(picUrl: picUrl, size: Size(100.w, 100.w)),
+            ),
+            SizedBox(width: 15.w),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis, // 添加省略号
+                    maxLines: 1, // 设置最多显示一行
+                  ),
+                  Text(
+                    artist,
+                    style: TextStyle(
+                      fontSize: 26.sp,
+                      color: Colors.grey[400],
+                    ),
+                    overflow: TextOverflow.ellipsis, // 添加省略号
+                    maxLines: 1, // 设置最多显示一行
+                  ),
+                ],
+              ),
             ),
             SizedBox(width: 20.w),
           ],

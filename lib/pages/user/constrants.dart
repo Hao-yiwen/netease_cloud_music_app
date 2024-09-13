@@ -1,1 +1,1 @@
-List<String> TABS = ["动态", "本地", "云盘"];
+List<String> TABS = ["音乐", "动态"];

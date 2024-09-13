@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 
 import '../common/constants/url.dart';
 
@@ -8,11 +9,13 @@ import '../common/constants/url.dart';
 class NeteaseCacheImage extends StatelessWidget {
   final String picUrl;
   final Size? size;
+  final Color? color;
 
   NeteaseCacheImage({
     super.key,
     required this.picUrl,
     this.size,
+    this.color,
   });
 
   ImageProvider getImageProvider() {
@@ -33,13 +36,15 @@ class NeteaseCacheImage extends StatelessWidget {
       height: size?.height,
       width: size?.width,
       fit: BoxFit.cover,
-      color: Colors.black.withOpacity(0.3),
+      color: color ?? Colors.transparent,
       colorBlendMode: BlendMode.colorBurn,
       errorBuilder: (context, error, stackTrace) {
-        return Image.network(
-          PLACE_IMAGE_HOLDER,
-          fit: BoxFit.cover,
-        );
+        return Image.asset(ImageUtils.getImagePath("placeholder"),
+            height: size?.height,
+            width: size?.width,
+            fit: BoxFit.cover,
+            color: color ?? Colors.transparent,
+            colorBlendMode: BlendMode.colorBurn);
       },
     );
   }

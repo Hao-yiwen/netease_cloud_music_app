@@ -110,7 +110,7 @@ class SongCard extends StatelessWidget {
                           width: 5.w,
                         ),
                         Text(
-                          _getFormattedNumber(playCount!),
+                          getFormattedNumber(playCount!),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.sp,
@@ -139,14 +139,14 @@ class SongCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _getFormattedNumber(int i) {
-    if (i < 10000) {
-      return '$i';
-    } else if (i < 100000000) {
-      return '${i ~/ 10000}万';
-    } else {
-      return '${i ~/ 100000000}亿';
-    }
+String getFormattedNumber(int i) {
+  if (i < 10000) {
+    return '$i';
+  } else if (i < 100000000) {
+    return '${i ~/ 10000}万';
+  } else {
+    return '${i ~/ 100000000}亿';
   }
 }

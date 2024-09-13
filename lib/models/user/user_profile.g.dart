@@ -7,8 +7,8 @@ part of 'user_profile.dart';
 // **************************************************************************
 
 UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
-      userId: (json['userId'] as num).toInt(),
-      userType: (json['userType'] as num).toInt(),
+      userId: (json['userId'] as num?)?.toInt(),
+      userType: (json['userType'] as num?)?.toInt(),
       nickname: json['nickname'] as String?,
       avatarImgId: (json['avatarImgId'] as num?)?.toInt(),
       avatarUrl: json['avatarUrl'] as String?,
@@ -24,7 +24,9 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
       gender: (json['gender'] as num?)?.toInt(),
       accountStatus: (json['accountStatus'] as num?)?.toInt(),
       province: (json['province'] as num?)?.toInt(),
-    );
+    )..vipRights = json['vipRights'] == null
+        ? null
+        : VipRights.fromJson(json['vipRights'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
     <String, dynamic>{
@@ -45,4 +47,24 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'gender': instance.gender,
       'accountStatus': instance.accountStatus,
       'province': instance.province,
+      'vipRights': instance.vipRights,
+    };
+
+VipRights _$VipRightsFromJson(Map<String, dynamic> json) => VipRights()
+  ..associator = json['associator'] == null
+      ? null
+      : Associator.fromJson(json['associator'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$VipRightsToJson(VipRights instance) => <String, dynamic>{
+      'associator': instance.associator,
+    };
+
+Associator _$AssociatorFromJson(Map<String, dynamic> json) => Associator()
+  ..rights = json['rights'] as bool?
+  ..iconUrl = json['iconUrl'] as String?;
+
+Map<String, dynamic> _$AssociatorToJson(Associator instance) =>
+    <String, dynamic>{
+      'rights': instance.rights,
+      'iconUrl': instance.iconUrl,
     };

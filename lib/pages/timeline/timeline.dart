@@ -3,6 +3,9 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart';
+import 'package:netease_cloud_music_app/widgets/user_event_widget.dart';
 
 @RoutePage()
 class Timeline extends StatefulWidget {
@@ -13,7 +16,7 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
-  final List<String> _moments = List.generate(20, (index) => 'moment $index');
+  final controller = TimelineController.to;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class _TimelineState extends State<Timeline> {
   _buildHeader() {
     return Row(
       children: [
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         GestureDetector(
           child: Icon(
             TablerIcons.menu_2,
@@ -41,9 +44,26 @@ class _TimelineState extends State<Timeline> {
           ),
           onTap: () {},
         ),
-        SizedBox(width: 10),
-        Spacer(),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
+        Expanded(
+            child: Container(
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              Text(
+                "广场",
+                style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 5.h), // Text 与底部线条之间的间距
+              Container(
+                width: 30.w, // 底部线条的宽度
+                height: 4.h, // 底部线条的高度
+                color: Colors.deepOrange, // 底部线条的颜色
+              ),
+            ],
+          ),
+        )),
+        const SizedBox(width: 10),
         GestureDetector(
           child: Container(
             width: 50.w, // 根据你的需求调整宽度和高度
@@ -66,40 +86,22 @@ class _TimelineState extends State<Timeline> {
 
   _buildCOntainet() {
     return Expanded(
-      child: EasyRefresh(
-          onRefresh: () async {},
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    height: 100,
-                    child: Center(
-                      child: Text(
-                        'Banner',
-                        style: TextStyle(color: Colors.white, fontSize: 24),
-                      ),
-                    ),
-                  ),
+      child: Obx(() {
+        return EasyRefresh(
+          onRefresh: () async {
+            controller.refreshTopics();
+          },
+          child: (controller.hotTopicsEvents.value.events == null ||
+                  controller.hotTopicsEvents.value.events!.isEmpty)
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : UserEventWidget(
+                  events: controller.hotTopicsEvents.value.events,
+                  showVip: false,
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(_moments[index]),
-                    );
-                  },
-                  childCount: _moments.length,
-                ),
-              ),
-            ],
-          )),
+        );
+      }),
     );
   }
 }

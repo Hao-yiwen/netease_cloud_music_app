@@ -1,20 +1,18 @@
 import 'package:auto_route/annotations.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get/get.dart';
-import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/widgets/header_user_info.dart';
 import 'package:netease_cloud_music_app/pages/user/widgets/sliver_header_delegate.dart';
+import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 
 import '../../common/constants/colors.dart';
-import '../../common/constants/location_map.dart';
-import '../../common/utils/birthday.dart';
-import '../../http/api/login/dto/login_status_dto.dart';
 import '../../widgets/netease_cache_image.dart';
+import '../../widgets/play_list_card.dart';
+import '../../widgets/user_event_widget.dart';
 import 'constrants.dart';
 
 @RoutePage()
@@ -43,20 +41,21 @@ class _MineState extends State<User> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _pageViewController = PageController();
 
     _scrollController.addListener(() {
       double offset = _scrollController.offset;
       double opacity = (offset / 30).clamp(0, 1).toDouble();
 
+      // nestedscrollview中如果list在nestedscrollview中，则无法实现头部弹性放大效果
       // 头部弹性放大效果
-      if (offset < 0) {
-        // 当向下拉动时，增加图片高度
-        setState(() {
-          imageHeight = 850.w - offset; // offset 为负值，所以这里是增加高度
-        });
-      }
+      // if (offset < 0) {
+      //   // 当向下拉动时，增加图片高度
+      //   setState(() {
+      //     imageHeight = 850.w - offset; // offset 为负值，所以这里是增加高度
+      //   });
+      // }
 
       _checkSticky();
 
@@ -106,6 +105,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double headerHeight = statusBarHeight + 120.w; // 保证header的高度考虑了状态栏的高度
     final useData = HomeController.to.userData.value!;
+    final events = controller.ownEvent.value.events;
 
     return Stack(children: [
       NestedScrollView(
@@ -128,30 +128,32 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                 children: [
                   // 背景图片
                   Positioned(
-                    top: -((imageHeight - 850.w) + headerHeight),
+                    top: -headerHeight,
                     left: 0,
                     right: 0,
                     child: SizedBox(
                       height: imageHeight,
                       width: double.infinity,
                       child: NeteaseCacheImage(
-                        picUrl: useData.profile?.backgroundUrl ?? "",
-                      ),
+                          picUrl: useData.profile?.backgroundUrl ?? "",
+                          color: Colors.black.withOpacity(0.3)),
                     ),
                   ),
                   // 用户信息
                   SizedBox(
                     // 需要覆盖住背景图片的部分
-                    height: 850.w - headerHeight,
+                    height: 851.w - headerHeight,
                     child: Column(
                       children: [
-                        Container(
-                          height: 530.w,
-                          child: HeaderUserInfo(userInfo: useData),
+                        Expanded(
+                          child: SizedBox(
+                            height: 530.w,
+                            child: HeaderUserInfo(userInfo: useData),
+                          ),
                         ),
-                        const Spacer(),
                         // tabbar view
                         Container(
+                          height: 100.w,
                           key: stickyKey,
                           decoration: const BoxDecoration(
                             color: Colors.white,
@@ -160,7 +162,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                               topRight: Radius.circular(20),
                             ),
                           ),
-                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: _buildTabHeader(context),
                         )
                       ],
@@ -173,22 +175,8 @@ class _MineState extends State<User> with TickerProviderStateMixin {
         },
         body: TabBarView(
           controller: _tabController,
-          children: [
-            ListView.builder(
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return Container(
-                  height: 100,
-                  color: Colors.primaries[index % Colors.primaries.length],
-                  child: Center(child: Text('Tab 1 Content')),
-                );
-              },
-            ),
-            Center(child: Text('Tab 2 Content')),
-            Center(child: Text('Tab 3 Content')),
-          ],
+          physics: const NeverScrollableScrollPhysics(),
+          children: [_buildOwnPlayList(context), UserEventWidget(events: events)],
         ),
       ),
       // 吸顶时显示的TabHeader
@@ -252,27 +240,53 @@ class _MineState extends State<User> with TickerProviderStateMixin {
   }
 
   _buildTabHeader(BuildContext context) {
-    return TabBar(
-      tabs: TABS.map((e) {
-        return Tab(
-          text: e,
-        );
-      }).toList(),
-      controller: _tabController,
-      labelStyle: TextStyle(
-        fontSize: 32.sp,
-        fontWeight: FontWeight.normal,
-      ),
-      unselectedLabelStyle: TextStyle(
-        fontSize: 32.sp,
-        fontWeight: FontWeight.normal,
-      ),
-      labelColor: Colors.black,
-      unselectedLabelColor: AppTheme.userScrollColor,
-      indicator: const UnderlineTabIndicator(
-        borderSide: BorderSide(color: Colors.red, width: 2),
-        insets: EdgeInsets.symmetric(horizontal: 22),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20.w),
+      child: TabBar(
+        tabs: TABS.map((e) {
+          return Tab(
+            text: e,
+          );
+        }).toList(),
+        controller: _tabController,
+        labelStyle: TextStyle(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.normal,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.normal,
+        ),
+        labelColor: Colors.black,
+        dividerHeight: 0,
+        unselectedLabelColor: AppTheme.userScrollColor,
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(color: Colors.red, width: 2),
+          insets: EdgeInsets.symmetric(horizontal: 22),
+        ),
       ),
     );
+  }
+
+  _buildOwnPlayList(BuildContext context) {
+    // 我的歌单
+    final myOwnPlayList = MainController.to.ownPlayList.value;
+    return myOwnPlayList.isEmpty
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.w),
+            child: ListView.builder(
+                padding: EdgeInsets.only(bottom: 100.w),
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: myOwnPlayList.length,
+                itemBuilder: (context, index) {
+                  return PodcastCell(
+                      title: myOwnPlayList[index].name ?? "",
+                      artist:
+                          '${getFormattedNumber(myOwnPlayList[index].playCount ?? 0)}次播放 · ${myOwnPlayList[index].creator?.nickname ?? ""}首',
+                      picUrl: myOwnPlayList[index].coverImgUrl ?? "");
+                }));
   }
 }

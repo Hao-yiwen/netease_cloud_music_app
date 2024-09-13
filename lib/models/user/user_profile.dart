@@ -2,30 +2,73 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user_profile.g.dart';
 
-
 @JsonSerializable()
-class UserProfile{
-  final int userId;
-  final int userType;
-  final String? nickname;
-  final int? avatarImgId;
-  final String? avatarUrl;
-  final int? backgroundImgId;
-  final String? backgroundUrl;
-  final String? signature;
-  final int? createTime;
-  final String? userName;
-  final int? accountType;
-  final String? shortUserName;
-  final int? birthday;
-  final int? authority;
-  final int? gender;
-  final int? accountStatus;
-  final int? province;
+class UserProfile {
+  int? userId;
+  int? userType;
+  String? nickname;
+  int? avatarImgId;
+  String? avatarUrl;
+  int? backgroundImgId;
+  String? backgroundUrl;
+  String? signature;
+  int? createTime;
+  String? userName;
+  int? accountType;
+  String? shortUserName;
+  int? birthday;
+  int? authority;
+  int? gender;
+  int? accountStatus;
+  int? province;
+  VipRights? vipRights;
 
-  UserProfile({required this.userId, required this.userType, required this.nickname, required this.avatarImgId, required this.avatarUrl, required this.backgroundImgId, required this.backgroundUrl, required this.signature, required this.createTime, required this.userName, required this.accountType, required this.shortUserName, required this.birthday, required this.authority, required this.gender, required this.accountStatus, required this.province});
+  UserProfile(
+      {this.userId,
+      this.userType,
+      this.nickname,
+      this.avatarImgId,
+      this.avatarUrl,
+      this.backgroundImgId,
+      this.backgroundUrl,
+      this.signature,
+      this.createTime,
+      this.userName,
+      this.accountType,
+      this.shortUserName,
+      this.birthday,
+      this.authority,
+      this.gender,
+      this.accountStatus,
+      this.province});
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
+}
+
+@JsonSerializable()
+class VipRights {
+  Associator? associator;
+
+  VipRights();
+
+  factory VipRights.fromJson(Map<String, dynamic> json) =>
+      _$VipRightsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VipRightsToJson(this);
+}
+
+@JsonSerializable()
+class Associator {
+  bool? rights;
+  String? iconUrl;
+
+  Associator();
+
+  factory Associator.fromJson(Map<String, dynamic> json) =>
+      _$AssociatorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AssociatorToJson(this);
 }
