@@ -248,7 +248,7 @@ class MainController extends GetxController {
       loading.value = true;
       if (HomeController.to.userData.value.profile != null) {
         UserPlaylists userPlaylists = await MainApi.getUserPlaylists(
-            HomeController.to.userData.value.profile!.userId);
+            HomeController.to.userData.value.profile!.userId!);
         if (userPlaylists != null && userPlaylists.playlist != null) {
           ownPlayList.value = userPlaylists.playlist!;
         }

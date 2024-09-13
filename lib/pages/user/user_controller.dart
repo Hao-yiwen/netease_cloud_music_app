@@ -9,15 +9,19 @@ import 'package:netease_cloud_music_app/common/utils/dialog_utils.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/login/dto/login_status_dto.dart';
 import 'package:netease_cloud_music_app/http/api/login/login_api.dart';
+import 'package:netease_cloud_music_app/http/api/timeline/dto/events.dart';
 import 'package:netease_cloud_music_app/http/api/user/dto/user_account.dart';
 import 'package:netease_cloud_music_app/http/api/user/user_api.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+
+import '../../http/api/timeline/timeline_api.dart';
 
 enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
   Rx<UserAccount> userAccount = UserAccount().obs;
   RxBool loding = false.obs;
+  Rx<Events> ownEvent = Events().obs;
 
   @override
   void onInit() {
@@ -30,6 +34,7 @@ class UserController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getUserState();
       _getUserAccount();
+      _getOwnEvent();
     });
   }
 
@@ -52,11 +57,11 @@ class UserController extends GetxController {
   }
 
   Future<void> logout(BuildContext context) async {
-    try{
+    try {
       HomeController.to.box.delete(loginData);
       AutoRouter.of(context).replaceNamed('/login');
       await LoginApi.logout();
-    }catch(e){
+    } catch (e) {
       LogBox.error(e);
     }
   }
@@ -66,9 +71,9 @@ class UserController extends GetxController {
   Future<void> _getUserAccount() async {
     try {
       loding.value = true;
-      if(HomeController.to.userData.value.profile != null){
+      if (HomeController.to.userData.value.profile != null) {
         userAccount.value = await UserApi.getUserAccount(
-            HomeController.to.userData.value.profile!.userId);
+            HomeController.to.userData.value.profile!.userId!);
       }
     } catch (e) {
       LogBox.error(e);
@@ -86,6 +91,21 @@ class UserController extends GetxController {
           logout(context);
         }, () {});
       }
+    }
+  }
+
+  Future<void> _getOwnEvent() async {
+    try {
+      loding.value = true;
+      if (HomeController.to.userData.value.profile?.userId != null) {
+        final Events events = await TimelineApi.getUserEvent(
+            HomeController.to.userData.value.profile?.userId);
+        ownEvent.value = events;
+      }
+    } catch (e) {
+      LogBox.error(e);
+    } finally {
+      loding.value = false;
     }
   }
 }

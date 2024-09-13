@@ -298,7 +298,7 @@ class Main extends GetView<MainController> {
                       TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
             ),
           ),
-          ProgramListWidget(
+          PodcastListWidget(
             programs: programs,
           ),
         ],
