@@ -97,4 +97,7 @@ class AppTheme {
 
   static const iconBorder = Colors.white;
   static const topTextColor = Colors.white;
+
+  // user页面滚动条颜色
+  static const userScrollColor = Color.fromARGB(255, 145, 150, 162);
 }
