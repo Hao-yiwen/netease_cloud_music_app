@@ -64,6 +64,10 @@ class MainController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    refreshMainPage();
+  }
+
+  refreshMainPage() {
     // 获取私人雷达
     _getPrivateRadar();
     // 获取推荐歌曲

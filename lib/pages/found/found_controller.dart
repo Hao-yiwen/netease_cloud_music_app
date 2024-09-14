@@ -22,6 +22,10 @@ class FoundController extends GetxController {
     _getHomeBlock();
   }
 
+  refreshHome() {
+    _getHomeBlock(isRefresh: true);
+  }
+
   _getBanner() async {
     try {
       loading.value = true;
@@ -39,12 +43,14 @@ class FoundController extends GetxController {
 
   static FoundController get to => Get.find<FoundController>();
 
-  _getHomeBlock() async {
+  _getHomeBlock({bool isRefresh = false}) async {
     try {
       loading.value = true;
-      homeBlock.value = await FoundApi.getHomeBlock();
+      homeBlock.value = await FoundApi.getHomeBlock(isRefresh: isRefresh);
     } catch (e) {
       LogBox.error(e);
+    }finally{
+      loading.value = false;
     }
   }
 }

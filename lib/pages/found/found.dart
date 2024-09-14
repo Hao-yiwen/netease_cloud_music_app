@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
@@ -17,6 +22,7 @@ import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
 import '../../common/constants/url.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
+import '../../routes/routes.dart';
 import '../../widgets/custom_tag.dart';
 import '../../widgets/uncustom_tag.dart';
 
@@ -36,6 +42,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   int _currentCarouselIndex = 0;
   final FoundController foundController = FoundController.to;
   late TabController _albumTabController;
+  final EasyRefreshController _refreshController = EasyRefreshController();
 
   @override
   void initState() {
@@ -131,9 +138,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             const SizedBox(
               width: 10,
             ),
-            Icon(
-              TablerIcons.search,
-              size: 40.w,
+            GestureDetector(
+              onTap: () {
+                AutoRouter.of(context).pushNamed(Routes.search);
+              },
+              child: Icon(
+                TablerIcons.search,
+                size: 40.w,
+              ),
             ),
             const SizedBox(
               width: 10,
@@ -148,6 +160,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     return Expanded(
       child: PageView(
         controller: _pageViewController,
+        physics: NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           _tabController.animateTo(index);
           setState(() {
@@ -194,55 +207,16 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                CustomTag(label: '推荐'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '歌单'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '排行榜'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '电台'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '直播'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '数字专辑'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '歌手'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '新碟上架'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: 'MV'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '歌手'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: '新碟上架'),
-                SizedBox(
-                  width: 10,
-                ),
-                UncustomTag(label: 'MV'),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
+                "推荐",
+                "歌单",
+                "排行榜",
+                "电台",
+                "直播",
+                "数字专辑",
+                "歌手",
+                "新碟上架",
+                "MV"
+              ].map((e) => CustomTag(label: e)).toList(),
             ),
           )),
           SizedBox(
@@ -261,35 +235,58 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   }
 
   Widget _buildMusicFound(BuildContext context) {
-    return Obx(() {
-      return Column(
-        children: [
-          _buildFixTag(context),
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: CustomScrollView(
-                slivers: [
-                  if (foundController.banner.value != null &&
-                      foundController.banner.value!.banners != null)
-                    _buildCarousel(context),
-                  if (foundController.homeBlock.value.blocks != null &&
-                      foundController.homeBlock.value.blocks!.isNotEmpty)
-                    _buildFoundContent(
-                        foundController.homeBlock.value.blocks!, context),
-                  if (MainController.to.topPlayList.value.isNotEmpty)
-                    _buildPlayList(
-                        context, '甄选歌单', MainController.to.topPlayList.value),
-                ],
+    return Column(
+      children: [
+        _buildFixTag(context),
+        SizedBox(
+          height: 10,
+        ),
+        Expanded(
+          // 嵌套滚动要用EasyRefresh.builder
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: EasyRefresh.builder(
+              key: const Key('found'),
+              triggerAxis: Axis.vertical,
+              header: const ClassicHeader(
+                dragText: "下拉刷新",
+                armedText: "释放刷新",
+                processedText: "刷新完成",
+                failedText: "刷新失败",
+                noMoreText: "没有更多数据",
+                readyText: "正在刷新...",
+                messageText: "上次刷新时间 %T",
               ),
+              controller: _refreshController,
+              onRefresh: () async {
+                foundController.refreshHome();
+              },
+              onLoad: () async {},
+              childBuilder: (BuildContext context, ScrollPhysics physics) {
+                return Obx(() {
+                  return CustomScrollView(
+                    scrollDirection: Axis.vertical,
+                    physics: physics,
+                    slivers: [
+                      if (foundController.banner.value != null &&
+                          foundController.banner.value!.banners != null)
+                        _buildCarousel(context),
+                      if (foundController.homeBlock.value.blocks != null &&
+                          foundController.homeBlock.value.blocks!.isNotEmpty)
+                        _buildFoundContent(
+                            foundController.homeBlock.value.blocks!, context),
+                      if (MainController.to.topPlayList.value.isNotEmpty)
+                        _buildPlayList(context, '甄选歌单',
+                            MainController.to.topPlayList.value),
+                    ],
+                  );
+                });
+              },
             ),
           ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   _buildCarousel(BuildContext context) {
@@ -299,6 +296,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
       options: CarouselOptions(
           height: 150.0,
           viewportFraction: 1.0,
+          scrollDirection: Axis.horizontal,
           onPageChanged: (index, reason) {
             setState(() {
               _currentCarouselIndex = index;

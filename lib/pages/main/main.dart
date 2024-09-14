@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -25,16 +26,11 @@ class Main extends GetView<MainController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Visibility(
-        visible: !controller.loading.value,
-        child: SafeArea(
-          child: (Column(
-            children: [_buildHeader(context), _buildContent(context)],
-          )),
-        ),
-      );
-    });
+    return SafeArea(
+      child: (Column(
+        children: [_buildHeader(context), _buildContent(context)],
+      )),
+    );
   }
 
   _buildHeader(BuildContext context) {
@@ -90,7 +86,7 @@ class Main extends GetView<MainController> {
                     Icons.search,
                     size: 40.w,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -111,49 +107,86 @@ class Main extends GetView<MainController> {
   }
 
   _buildContent(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10.0),
-        child: CustomScrollView(
-          slivers: [
-            _buildEveryDayRecommendCards(context),
-            if (controller.similarSongs.value.isNotEmpty &&
-                controller.personalFmSongs.value.isNotEmpty)
-              _buildSongsList(
-                  context, '你的红心歌曲相似推荐', controller.similarSongs.value),
-            if (controller.personalFmSongs.value.isNotEmpty &&
-                controller.privateRadarSongs.value.isNotEmpty)
-              _buildSongsList(
-                  context,
-                  controller.randomPlaylist.value.name ?? '',
-                  controller.randomPlaylistSongs.value),
-            if (controller.personalFmSongs.value.isNotEmpty &&
-                controller.privateRadarSongs.value.isNotEmpty)
-              _buildProgramsList(context, '为你精选的音乐播客',
-                  controller.personalizedDjprogramDto.value.result!),
-            if (controller.recommendResourceDto.value != null &&
-                controller.recommendResourceDto.value!.recommend != null)
-              _buildRecommendPlayList(
-                  context,
-                  '${HomeController.to.userData.value.profile!.nickname ?? ""}的雷达歌单',
-                  controller.recommendResourceDto.value!.recommend!),
-            if (controller.personalizedPlayLists.value != null &&
-                controller.personalizedPlayLists.value.isNotEmpty)
-              _buildRecommendPlayList(
-                  context, '推荐歌单', controller.personalizedPlayLists.value),
-            if (controller.ownPlayList.value.isNotEmpty)
-              _buildPlayList(context, '我的歌单', controller.ownPlayList.value),
-
-            // 占位 底部100.w
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 100.w,
+    return Obx(() {
+      return controller.loading.value
+          ? const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             )
-          ],
-        ),
-      ),
-    );
+          : Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: EasyRefresh.builder(
+                    header: const ClassicHeader(
+                      dragText: "下拉刷新",
+                      armedText: "释放刷新",
+                      processedText: "刷新完成",
+                      failedText: "刷新失败",
+                      noMoreText: "没有更多数据",
+                      readyText: "正在刷新...",
+                      messageText: "上次刷新时间 %T",
+                    ),
+                    onRefresh: () async {
+                      // 控制刷新频率
+
+                      await controller.refreshMainPage();
+                    },
+                    childBuilder: (context, physics) {
+                      return Obx(() {
+                        return CustomScrollView(
+                          physics: physics,
+                          slivers: [
+                            _buildEveryDayRecommendCards(context),
+                            if (controller.similarSongs.value.isNotEmpty &&
+                                controller.personalFmSongs.value.isNotEmpty)
+                              _buildSongsList(context, '你的红心歌曲相似推荐',
+                                  controller.similarSongs.value),
+                            if (controller.personalFmSongs.value.isNotEmpty &&
+                                controller.privateRadarSongs.value.isNotEmpty)
+                              _buildSongsList(
+                                  context,
+                                  controller.randomPlaylist.value.name ?? '',
+                                  controller.randomPlaylistSongs.value),
+                            if (controller.personalFmSongs.value.isNotEmpty &&
+                                controller.privateRadarSongs.value.isNotEmpty)
+                              _buildProgramsList(
+                                  context,
+                                  '为你精选的音乐播客',
+                                  controller
+                                      .personalizedDjprogramDto.value.result!),
+                            if (controller.recommendResourceDto.value != null &&
+                                controller.recommendResourceDto.value!
+                                        .recommend !=
+                                    null)
+                              _buildRecommendPlayList(
+                                  context,
+                                  '${HomeController.to.userData.value.profile!.nickname ?? ""}的雷达歌单',
+                                  controller
+                                      .recommendResourceDto.value!.recommend!),
+                            if (controller.personalizedPlayLists.value !=
+                                    null &&
+                                controller
+                                    .personalizedPlayLists.value.isNotEmpty)
+                              _buildRecommendPlayList(context, '推荐歌单',
+                                  controller.personalizedPlayLists.value),
+                            if (controller.ownPlayList.value.isNotEmpty)
+                              _buildPlayList(context, '我的歌单',
+                                  controller.ownPlayList.value),
+
+                            // 占位 底部100.w
+                            SliverToBoxAdapter(
+                              child: SizedBox(
+                                height: 100.w,
+                              ),
+                            )
+                          ],
+                        );
+                      });
+                    }),
+              ),
+            );
+    });
   }
 
   _buildEveryDayRecommendCards(BuildContext context) {
