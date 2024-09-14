@@ -100,4 +100,7 @@ class AppTheme {
 
   // user页面滚动条颜色
   static const userScrollColor = Color.fromARGB(255, 145, 150, 162);
+
+  // 播放页面默认背景颜色
+  static const playPageBackgroundColor = Color.fromARGB(255, 77, 77, 77);
 }

@@ -2,6 +2,20 @@
 
 ![Flutter](https://img.shields.io/badge/flutter-v3.24.1-blue)
 
+## 项目运行
+
+此项目还在不断完善中，目前离v1版本还有一定距离，欢迎大家提出宝贵意见。
+
+1. 启动后端服务，端口默认3000
+   - git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
+   - npm i
+   - node app.js 
+2. 启动该项目，目前只支持短信验证码登录
+
+## 展示
+
+<img src="show_example.png" width="32%">
+
 ## 项目介绍
 
 flutter版本网易云音乐
