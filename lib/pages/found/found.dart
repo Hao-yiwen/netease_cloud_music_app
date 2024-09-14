@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
