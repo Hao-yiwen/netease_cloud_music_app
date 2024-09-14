@@ -88,6 +88,15 @@ class _TimelineState extends State<Timeline> {
     return Expanded(
       child: Obx(() {
         return EasyRefresh(
+          header: const ClassicHeader(
+            dragText: "下拉刷新",
+            armedText: "释放刷新",
+            processedText: "刷新完成",
+            failedText: "刷新失败",
+            noMoreText: "没有更多数据",
+            readyText: "正在刷新...",
+            messageText: "上次刷新时间 %T",
+          ),
           onRefresh: () async {
             controller.refreshTopics();
           },

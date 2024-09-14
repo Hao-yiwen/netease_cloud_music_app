@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/keys.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/dialog_utils.dart';
@@ -15,6 +16,7 @@ import 'package:netease_cloud_music_app/http/api/user/user_api.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 
 import '../../http/api/timeline/timeline_api.dart';
+import '../../routes/routes.dart';
 
 enum LoginStatus { login, noLogin }
 
@@ -49,6 +51,7 @@ class UserController extends GetxController {
       } else {
         WidgetUtil.showToast('登录失败,请重新登录');
         HomeController.to.loginStatus.value = LoginStatus.noLogin;
+        logout();
       }
     } catch (e) {
       HomeController.to.loginStatus.value = LoginStatus.noLogin;
@@ -56,10 +59,10 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> logout(BuildContext context) async {
+  Future<void> logout() async {
     try {
       HomeController.to.box.delete(loginData);
-      AutoRouter.of(context).replaceNamed('/login');
+      GetIt.instance<AppRouter>().replaceNamed(Routes.login);
       await LoginApi.logout();
     } catch (e) {
       LogBox.error(e);
@@ -88,7 +91,7 @@ class UserController extends GetxController {
     } catch (e) {
       if (context != null) {
         DialogUtils.showModal(context, "登录信息已过期，请重新登录", () {
-          logout(context);
+          logout();
         }, () {});
       }
     }

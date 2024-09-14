@@ -11,8 +11,10 @@ class FoundApi {
     return Banner.fromJson(res);
   }
 
-  static Future<HomeBlock> getHomeBlock() async {
-    final res = await HttpUtils.get('/homepage/block/page');
+  static Future<HomeBlock> getHomeBlock({bool isRefresh = false}) async {
+    final res = await HttpUtils.get('/homepage/block/page', params: {
+      "refresh": isRefresh,
+    });
     if (res["data"] != null) {
       return HomeBlock.fromJson(res["data"]);
     } else {

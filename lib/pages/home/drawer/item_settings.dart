@@ -156,7 +156,7 @@ List<DrawerItem> getListBottomInfo(BuildContext context) {
         text: "退出登录",
         color: Colors.red,
         onTap: () {
-          UserController.to.logout(context);
+          UserController.to.logout();
         }),
   ];
 }
