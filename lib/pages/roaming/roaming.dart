@@ -5,12 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/common/constants/colors.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
 import '../../common/music_handler.dart';
+import 'dart:math' as math;
 
 class Roaming extends StatefulWidget {
   const Roaming({super.key});
@@ -20,21 +22,25 @@ class Roaming extends StatefulWidget {
       context: hostContext,
       isScrollControlled: true, // 允许高度控制
       builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 1.0, // 占据整个屏幕高度
-          child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 77, 77, 77),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.w),
-                    topRight: Radius.circular(20.w))),
-            child: Padding(
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(hostContext).padding.top),
-                child: Roaming()),
-          ),
+        // 在弹窗中获取当前页面的安全区域padding
+        // https://stackoverflow.com/questions/49737225/safearea-not-working-in-persistent-bottomsheet-in-flutter
+        final view = View.of(context);
+        final viewPadding = view.padding;
+        final mediaPadding = MediaQuery.paddingOf(context);
+        final viewTopPadding = viewPadding.top / view.devicePixelRatio;
+        final topPadding = math.max(viewTopPadding, mediaPadding.top);
+
+        return Container(
+          padding:
+              EdgeInsets.only(top: topPadding, bottom: mediaPadding.bottom),
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: AppTheme.playPageBackgroundColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.w),
+                  topRight: Radius.circular(20.w))),
+          child: Roaming(),
         );
       },
     );
@@ -59,14 +65,11 @@ class _RoamingState extends State<Roaming> {
   }
 
   void playMusic() async {
-    await audioHandler.setUrl(controller.songInfo.value.url ?? '');
     audioHandler.play();
-    controller.playStatus.value = 1;
   }
 
   void pauseMusic() {
     audioHandler.pause();
-    controller.playStatus.value = 0;
   }
 
   void stopMusic() {
@@ -75,37 +78,37 @@ class _RoamingState extends State<Roaming> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Visibility(
-        visible: !controller.loading.value,
-        child: Column(
-          children: [
-            _buildPlayerHeader(context),
-            SizedBox(
-              height: 60.w,
-            ),
-            Hero(
-              tag: "test",
-              child: PlayAlbumCover(
-                rotating: true,
-                pading: 40.w,
-              ),
-            ),
-            SizedBox(
-              height: 60.w,
-            ),
-            // 歌曲信息
-            _buildPlayerMusicInfo(),
-            // 进度条
-            _buildProgressBar(),
-            // 播放按钮
-            _buildPlayerControl(context),
-            // 底部按钮
-            _buildBottomButton(context),
-          ],
+    return Column(
+      children: [
+        _buildPlayerHeader(context),
+        Expanded(
+          child: SizedBox(
+            height: 60.w,
+          ),
         ),
-      );
-    });
+        Hero(
+          tag: "test",
+          child: PlayAlbumCover(
+            rotating: controller.playing.value,
+            pading: 40.w,
+            imgPic: '${controller.mediaItem.value.extras?['image'] ?? ''}',
+          ),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 60.w,
+          ),
+        ),
+        // 歌曲信息
+        _buildPlayerMusicInfo(),
+        // 进度条
+        _buildProgressBar(),
+        // 播放按钮
+        _buildPlayerControl(context),
+        // 底部按钮
+        _buildBottomButton(context)
+      ],
+    );
   }
 
   _buildPlayerHeader(BuildContext context) {
@@ -149,15 +152,19 @@ class _RoamingState extends State<Roaming> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Faraway',
+                controller.mediaItem.value.title.fixAutoLines(),
                 style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(
                 height: 10.w,
               ),
               Text(
-                'Gala',
+                (controller.mediaItem.value.artist ?? '').fixAutoLines(),
                 style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -230,21 +237,19 @@ class _RoamingState extends State<Roaming> {
           width: 60.w,
         ),
         IconButton(
-          icon: Obx(() {
-            return Icon(
-              controller.playStatus.value == 1
-                  ? TablerIcons.player_pause_filled
-                  : TablerIcons.player_play_filled,
-              color: Colors.grey[400],
-              size: 80.w,
-            );
-          }),
+          icon: Icon(
+            false
+                ? TablerIcons.player_pause_filled
+                : TablerIcons.player_play_filled,
+            color: Colors.grey[400],
+            size: 80.w,
+          ),
           onPressed: () {
-            if (controller.playStatus.value == 1) {
-              pauseMusic();
-            } else {
-              playMusic();
-            }
+            // if (controller.playStatus.value == 1) {
+            //   pauseMusic();
+            // } else {
+            //   playMusic();
+            // }
           },
         ),
         SizedBox(
@@ -268,7 +273,7 @@ class _RoamingState extends State<Roaming> {
             width: 70.w,
             height: 70.w,
           ),
-        )
+        ),
       ],
     );
   }
@@ -312,5 +317,11 @@ class _RoamingState extends State<Roaming> {
         ],
       ),
     );
+  }
+}
+
+extension FixAutoLines on String {
+  String fixAutoLines() {
+    return Characters(this).join('\u{200B}');
   }
 }

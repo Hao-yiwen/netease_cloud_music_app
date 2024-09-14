@@ -83,7 +83,7 @@ class MainController extends GetxController {
     // 获取个人歌单
     _getOwnPlayList();
     // 获取推荐播客
-    _getPersonalizedDjProgram();
+    getPersonalizedDjProgram();
   }
 
   _getRecommandSongs() async {
@@ -264,7 +264,7 @@ class MainController extends GetxController {
     }
   }
 
-  _getPersonalizedDjProgram() async {
+  getPersonalizedDjProgram() async {
     try {
       loading.value = true;
       personalizedDjprogramDto.value = await MainApi.getDjProgramRecommend();

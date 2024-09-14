@@ -133,10 +133,9 @@ Future<void> _initGetService(GetIt getIt) async {
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   await Hive.initFlutter('music');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
-  final audioPlayer = getIt<AudioPlayer>();
   getIt.registerSingleton<MusicHandler>(
     await AudioService.init<MusicHandler>(
-      builder: () => MusicHandler(audioPlayer),
+      builder: () => MusicHandler(),
       config: const AudioServiceConfig(),
     ),
   );

@@ -5,10 +5,14 @@ import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 
 class PlayAlbumCover extends StatefulWidget {
   const PlayAlbumCover(
-      {super.key, required this.rotating, required this.pading});
+      {super.key,
+      required this.rotating,
+      required this.pading,
+      required this.imgPic});
 
   final bool rotating;
   final double pading;
+  final String imgPic;
 
   @override
   State<PlayAlbumCover> createState() => _PlayAlbumCoverState();
@@ -105,7 +109,7 @@ class _PlayAlbumCoverState extends State<PlayAlbumCover>
                                 angle: rotation,
                                 child: ClipOval(
                                   child: Image.network(
-                                    "http://b.hiphotos.baidu.com/image/pic/item/9d82d158ccbf6c81b94575cfb93eb13533fa40a2.jpg",
+                                    widget.imgPic,
                                     fit: BoxFit.cover,
                                   ),
                                 ),

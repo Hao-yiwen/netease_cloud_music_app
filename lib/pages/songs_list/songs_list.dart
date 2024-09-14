@@ -23,7 +23,7 @@ class SongsList extends StatelessWidget {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              RoamingController.to.currentSongId.value = songs![index].id!;
+              // RoamingController.to.currentSongId.value = songs![index].id!;
               RoamingController.to.getMusicInfo();
               Roaming.showBottomPlayer(context);
             },
