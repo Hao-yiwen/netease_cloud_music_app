@@ -19,6 +19,7 @@ import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
 import '../http/api/roaming/roaming_api.dart';
 import 'constants/keys.dart';
+import 'constants/platform_utils.dart';
 
 /**
  * @date 2024/0914
@@ -68,18 +69,86 @@ class RootIsolateData {
   RootIsolateData(this.rootIsolateToken, {this.playList, this.items});
 }
 
-class MusicHandler extends BaseAudioHandler implements AudioPlayerHandler {
+class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
   final AudioPlayer _audioPlayer = GetIt.instance<AudioPlayer>();
   final Box _box = GetIt.instance<Box>();
   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-  final _playList = List<MediaItem>.empty();
-  final _playListShut = List<MediaItem>.empty();
+  final _playList = <MediaItem>[];
+  final _playListShut = <MediaItem>[];
   AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
   int _currentIndex = 0;
 
   MusicHandler() {
     // 获取缓存
     _loadPlayListByStorage();
+    _notifyAudioHandlerAboutPositionEvents();
+    _notifyAudioHandlerAboutPlayStateEvents();
+  }
+
+  void _notifyAudioHandlerAboutPlayStateEvents() {
+    _audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
+      final playing = _audioPlayer.playing;
+      playbackState.add(playbackState.value.copyWith(
+        controls: [
+          PlatformUtils.isAndroid
+              ? ((mediaItem.value?.extras?['liked'] ?? false)
+                  ? const MediaControl(
+                      label: 'fastForward',
+                      action: MediaAction.fastForward,
+                      androidIcon: 'drawable/audio_service_like')
+                  : const MediaControl(
+                      label: 'rewind',
+                      action: MediaAction.rewind,
+                      androidIcon: 'drawable/audio_service_unlike'))
+              : const MediaControl(
+                  label: 'setRating',
+                  action: MediaAction.setRating,
+                  androidIcon: 'drawable/audio_service_like'),
+          MediaControl.skipToPrevious,
+          if (playing) MediaControl.pause else MediaControl.play,
+          MediaControl.skipToNext,
+          MediaControl.stop,
+        ],
+        systemActions: const {
+          MediaAction.seek,
+        },
+        androidCompactActionIndices: const [1, 2, 3],
+        processingState: const {
+          ProcessingState.idle: AudioProcessingState.idle,
+          ProcessingState.loading: AudioProcessingState.loading,
+          ProcessingState.buffering: AudioProcessingState.buffering,
+          ProcessingState.ready: AudioProcessingState.ready,
+          ProcessingState.completed: AudioProcessingState.completed,
+        }[_audioPlayer.processingState]!,
+        shuffleMode: (_audioPlayer.shuffleModeEnabled)
+            ? AudioServiceShuffleMode.all
+            : AudioServiceShuffleMode.none,
+        playing: playing,
+        updatePosition: _audioPlayer.position,
+        bufferedPosition: _audioPlayer.bufferedPosition,
+        speed: _audioPlayer.speed,
+        queueIndex: _currentIndex,
+      ));
+    });
+  }
+
+  void _notifyAudioHandlerAboutPositionEvents() {
+    _audioPlayer.playerStateStream.listen((state) {
+      switch (state.processingState) {
+        case ProcessingState.idle:
+          break;
+        case ProcessingState.loading:
+          break;
+        case ProcessingState.buffering:
+          break;
+        case ProcessingState.ready:
+          break;
+        case ProcessingState.completed:
+          skipToNext();
+          print('object=====下一首${_currentIndex}');
+          break;
+      }
+    });
   }
 
   Future<void> _loadPlayListByStorage() async {
@@ -93,6 +162,7 @@ class MusicHandler extends BaseAudioHandler implements AudioPlayerHandler {
       List<MediaItem> items = await compute(getCachePlayList,
           RootIsolateData(rootIsolateToken, playList: playList));
       // 更新播放列表
+      await changeQueueLists(items, init: true, index: _currentIndex);
     }
   }
 
@@ -190,6 +260,7 @@ class MusicHandler extends BaseAudioHandler implements AudioPlayerHandler {
   Future<void> playIndex(int index, {bool playIt = true}) async {
     _currentIndex = index;
     _box.put(PLAY_INDEX, _currentIndex);
+    await readySongUrl(playIt: playIt);
   }
 
   @override
@@ -272,6 +343,13 @@ class MusicHandler extends BaseAudioHandler implements AudioPlayerHandler {
         MainController.to.getPersonalizedDjProgram();
       }
     }
+  }
+
+  @override
+  Future<void> skipToPrevious() async {
+    await stop();
+    _setCurIndex();
+    await readySongUrl(isNext: false);
   }
 
   @override

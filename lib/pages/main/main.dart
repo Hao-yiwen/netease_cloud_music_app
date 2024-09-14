@@ -10,6 +10,7 @@ import 'package:netease_cloud_music_app/http/api/main/dto/playlist_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';
 
@@ -220,8 +221,9 @@ class Main extends GetView<MainController> {
                             .recommendSongsDto.value.dailySongs![0].al!.picUrl,
                         onTapHandle: () {
                           GetIt.instance<AppRouter>().push(SongsList(
-                              songs: controller
-                                  .recommendSongsDto.value.dailySongs!,
+                              songs: RoamingController.to.song2ToMedia(
+                                  controller
+                                      .recommendSongsDto.value.dailySongs!),
                               title: '每日推荐'));
                         },
                       ),
@@ -258,7 +260,8 @@ class Main extends GetView<MainController> {
                             controller.privateRadarSongs.value[0].al!.picUrl,
                         onTapHandle: () {
                           GetIt.instance<AppRouter>().push(SongsList(
-                              songs: controller.privateRadarSongs.value,
+                              songs: RoamingController.to.song2ToMedia(
+                                  controller.privateRadarSongs.value),
                               title: '私人雷达'));
                         },
                       ),

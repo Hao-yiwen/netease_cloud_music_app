@@ -9,6 +9,10 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>UIBackgroundModes</key>
+      <array>
+        <string>audio</string>
+      </array>
 	<key>CFBundleDisplayName</key>
 	<string>网易云音乐</string>
 	<key>CFBundleExecutable</key>

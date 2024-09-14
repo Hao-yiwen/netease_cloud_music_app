@@ -8,10 +8,9 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:audio_service/audio_service.dart' as _i17;
 import 'package:auto_route/auto_route.dart' as _i15;
 import 'package:flutter/material.dart' as _i16;
-import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart'
-    as _i17;
 import 'package:netease_cloud_music_app/pages/about.dart' as _i1;
 import 'package:netease_cloud_music_app/pages/empty_page.dart' as _i2;
 import 'package:netease_cloud_music_app/pages/error_page.dart' as _i3;
@@ -204,7 +203,7 @@ class Search extends _i15.PageRouteInfo<void> {
 class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
   SongsList({
     _i16.Key? key,
-    required List<_i17.SongDto> songs,
+    required List<_i17.MediaItem> songs,
     required String title,
     List<_i15.PageRouteInfo>? children,
   }) : super(
@@ -241,7 +240,7 @@ class SongsListArgs {
 
   final _i16.Key? key;
 
-  final List<_i17.SongDto> songs;
+  final List<_i17.MediaItem> songs;
 
   final String title;
 

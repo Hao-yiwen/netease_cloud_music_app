@@ -1,5 +1,3 @@
-String loginData = "LOGIN_DATA";
-
 // 随机音乐数量
 // 背景：目前开源的网易云音乐api没有直接推荐和根据喜欢的音乐获取详细音乐的能力，
 //      所以在这里先随机获取一个数量的音乐，然后再根据这些音乐获取相似音乐
@@ -25,3 +23,6 @@ final String PLAY_INDEX = 'PLAY_INDEX';
 
 // 播放质量
 final String HIGH_SONG = 'HIGH_SONG';
+
+// 登录信息
+final String LOGIN_DATA = 'LOGIN_DATA';

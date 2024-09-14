@@ -47,7 +47,7 @@ class UserController extends GetxController {
         HomeController.to.userData.value = loginStatusDto;
         HomeController.to.loginStatus.value = LoginStatus.login;
         HomeController.to.box
-            .put(loginData, jsonEncode(loginStatusDto.toJson()));
+            .put(LOGIN_DATA, jsonEncode(loginStatusDto.toJson()));
       } else {
         WidgetUtil.showToast('登录失败,请重新登录');
         HomeController.to.loginStatus.value = LoginStatus.noLogin;
@@ -61,7 +61,7 @@ class UserController extends GetxController {
 
   Future<void> logout() async {
     try {
-      HomeController.to.box.delete(loginData);
+      HomeController.to.box.delete(LOGIN_DATA);
       GetIt.instance<AppRouter>().replaceNamed(Routes.login);
       await LoginApi.logout();
     } catch (e) {
