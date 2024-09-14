@@ -14,7 +14,7 @@
 
 ## 展示
 
-![image](show_example.png)
+<img src="show_example.png" width="32%">
 
 ## 项目介绍
 
