@@ -6,6 +6,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/colors.dart';
+import 'package:netease_cloud_music_app/common/constants/url.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
@@ -88,11 +89,14 @@ class _RoamingState extends State<Roaming> {
         ),
         Hero(
           tag: "test",
-          child: PlayAlbumCover(
-            rotating: controller.playing.value,
-            pading: 40.w,
-            imgPic: '${controller.mediaItem.value.extras?['image'] ?? ''}',
-          ),
+          child: Obx(() {
+            return PlayAlbumCover(
+              rotating: controller.playing.value,
+              pading: 40.w,
+              imgPic:
+                  '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
+            );
+          }),
         ),
         Expanded(
           child: SizedBox(
@@ -148,26 +152,28 @@ class _RoamingState extends State<Roaming> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                controller.mediaItem.value.title.fixAutoLines(),
-                style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(
-                height: 10.w,
-              ),
-              Text(
-                (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-                style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+          Obx(() {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  controller.mediaItem.value.title.fixAutoLines(),
+                  style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: 10.w,
+                ),
+                Text(
+                  (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                  style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            );
+          }),
           Row(
             children: [
               IconButton(
@@ -210,72 +216,70 @@ class _RoamingState extends State<Roaming> {
   }
 
   _buildPlayerControl(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GestureDetector(
-          onTap: () {},
-          child: Image.asset(
-            ImageUtils.getImagePath('play_btn_shuffle'),
-            width: 50.w,
-            height: 50.w,
-            color: Colors.grey[400],
+    return Obx(() {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {},
+            child: Image.asset(
+              ImageUtils.getImagePath('play_btn_shuffle'),
+              width: 50.w,
+              height: 50.w,
+              color: Colors.grey[400],
+            ),
           ),
-        ),
-        SizedBox(
-          width: 55.w,
-        ),
-        IconButton(
-          icon: Icon(
-            TablerIcons.player_skip_back_filled,
-            color: Colors.grey[400],
-            size: 55.w,
+          SizedBox(
+            width: 55.w,
           ),
-          onPressed: () {},
-        ),
-        SizedBox(
-          width: 60.w,
-        ),
-        IconButton(
-          icon: Icon(
-            false
-                ? TablerIcons.player_pause_filled
-                : TablerIcons.player_play_filled,
-            color: Colors.grey[400],
-            size: 80.w,
+          IconButton(
+            icon: Icon(
+              TablerIcons.player_skip_back_filled,
+              color: Colors.grey[400],
+              size: 55.w,
+            ),
+            onPressed: () {},
           ),
-          onPressed: () {
-            // if (controller.playStatus.value == 1) {
-            //   pauseMusic();
-            // } else {
-            //   playMusic();
-            // }
-          },
-        ),
-        SizedBox(
-          width: 55.w,
-        ),
-        IconButton(
-          icon: Icon(
-            TablerIcons.player_skip_forward_filled,
-            color: Colors.grey[400],
-            size: 55.w,
+          SizedBox(
+            width: 60.w,
           ),
-          onPressed: () {},
-        ),
-        SizedBox(
-          width: 60.w,
-        ),
-        GestureDetector(
-          onTap: () {},
-          child: Image.asset(
-            ImageUtils.getImagePath('epj'),
-            width: 70.w,
-            height: 70.w,
+          IconButton(
+            icon: Icon(
+              controller.playing.value
+                  ? TablerIcons.player_pause_filled
+                  : TablerIcons.player_play_filled,
+              color: Colors.grey[400],
+              size: 80.w,
+            ),
+            onPressed: () {
+              controller.playOrPause();
+            },
           ),
-        ),
-      ],
-    );
+          SizedBox(
+            width: 55.w,
+          ),
+          IconButton(
+            icon: Icon(
+              TablerIcons.player_skip_forward_filled,
+              color: Colors.grey[400],
+              size: 55.w,
+            ),
+            onPressed: () {},
+          ),
+          SizedBox(
+            width: 60.w,
+          ),
+          GestureDetector(
+            onTap: () {},
+            child: Image.asset(
+              ImageUtils.getImagePath('epj'),
+              width: 70.w,
+              height: 70.w,
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   _buildBottomButton(BuildContext context) {

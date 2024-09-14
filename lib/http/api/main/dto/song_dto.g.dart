@@ -13,6 +13,8 @@ SongDto _$SongDtoFromJson(Map<String, dynamic> json) => SongDto()
   ..ar = (json['ar'] as List<dynamic>?)
       ?.map((e) => ArtistDto.fromJson(e as Map<String, dynamic>))
       .toList()
+  ..dt = (json['dt'] as num?)?.toInt()
+  ..fee = (json['fee'] as num?)?.toInt()
   ..al = json['al'] == null
       ? null
       : Al.fromJson(json['al'] as Map<String, dynamic>)
@@ -26,6 +28,8 @@ Map<String, dynamic> _$SongDtoToJson(SongDto instance) => <String, dynamic>{
       'id': instance.id,
       'alia': instance.alia,
       'ar': instance.ar,
+      'dt': instance.dt,
+      'fee': instance.fee,
       'al': instance.al,
       'mv': instance.mv,
       'videoInfo': instance.videoInfo,

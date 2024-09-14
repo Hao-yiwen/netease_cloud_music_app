@@ -11,6 +11,8 @@ class SongDto {
   int? id;
   List<String>? alia;
   List<ArtistDto>? ar;
+  int? dt;
+  int? fee;
   Al? al;
   int? mv;
   VideoInfo? videoInfo;
@@ -24,7 +26,7 @@ class SongDto {
 }
 
 @JsonSerializable()
-class SongsDetailDto extends ServerStatusBean{
+class SongsDetailDto extends ServerStatusBean {
   List<SongDto>? songs;
 
   SongsDetailDto();

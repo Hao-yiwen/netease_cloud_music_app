@@ -8,6 +8,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_binding.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
@@ -36,6 +37,8 @@ class _HomeState extends State<Home> {
     MainBinding().dependencies();
     // 播放器加载
     RoamingBinding().dependencies();
+    // 设置RoamingController buildcontext
+    RoamingController.to.buildContext = context;
     return AutoTabsRouter(
       transitionBuilder: (context, child, animation) => FadeTransition(
         opacity: animation,

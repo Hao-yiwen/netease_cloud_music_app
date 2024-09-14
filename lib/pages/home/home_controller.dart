@@ -19,7 +19,7 @@ class HomeController extends SuperController {
   Rx<TabsRouter?> tabsRouter = Rx<TabsRouter?>(null);
 
   initUserData() {
-    String userDataStr = box.get(loginData) ?? '';
+    String userDataStr = box.get(LOGIN_DATA) ?? '';
     if (userDataStr.isNotEmpty) {
       loginStatus.value = LoginStatus.login;
       userData.value = LoginStatusDto.fromJson(jsonDecode(userDataStr));
