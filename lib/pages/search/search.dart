@@ -30,7 +30,7 @@ class Search extends StatelessWidget {
           ),
         ),
         leadingWidth: 40,
-        title: _buildSearchBar(),
+        title: _buildSearchBar(context),
         actions: [
           SizedBox(
             width: 15,
@@ -49,7 +49,7 @@ class Search extends StatelessWidget {
               left: 0, // 确保有约束条件
               right: 0, //
               child: Container(
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomPadding),
                   child: BottomPlayerBar(),
@@ -60,11 +60,11 @@ class Search extends StatelessWidget {
     );
   }
 
-  _buildSearchBar() {
+  _buildSearchBar(BuildContext context) {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

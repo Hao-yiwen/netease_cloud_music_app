@@ -16,8 +16,8 @@ class BottomPlayerBar extends GetView<RoamingController> {
     return Container(
         height: 50,
         width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
         ),
         child: GestureDetector(
@@ -40,7 +40,7 @@ class BottomPlayerBar extends GetView<RoamingController> {
                           controller.mediaItem.value.title,
                           style: TextStyle(
                               fontSize: 30.w,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontFamily: 'Roboto',
                               // 指定字体族
                               decoration: TextDecoration.none),
@@ -54,7 +54,10 @@ class BottomPlayerBar extends GetView<RoamingController> {
                           "- ${controller.mediaItem.value.artist}",
                           style: TextStyle(
                               fontSize: 26.w,
-                              color: Colors.grey[500],
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimary
+                                  .withOpacity(0.7),
                               fontFamily: 'Roboto',
                               // 指定字体族
                               decoration: TextDecoration.none),
@@ -76,7 +79,7 @@ class BottomPlayerBar extends GetView<RoamingController> {
                     width: 55.w,
                     height: 55.w,
                     fit: BoxFit.cover,
-                    color: Colors.black,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
                 SizedBox(width: 30.w),
@@ -113,6 +116,7 @@ class BottomPlayerBar extends GetView<RoamingController> {
                     width: 40.w,
                     height: 40.w,
                     fit: BoxFit.cover,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
                 SizedBox(width: 30.w),

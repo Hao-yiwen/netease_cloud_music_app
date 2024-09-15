@@ -247,29 +247,37 @@ class _MineState extends State<User> with TickerProviderStateMixin {
   }
 
   _buildTabHeader(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 20.w),
-      child: TabBar(
-        tabs: TABS.map((e) {
-          return Tab(
-            text: e,
-          );
-        }).toList(),
-        controller: _tabController,
-        labelStyle: TextStyle(
-          fontSize: 32.sp,
-          fontWeight: FontWeight.normal,
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontSize: 32.sp,
-          fontWeight: FontWeight.normal,
-        ),
-        labelColor: Colors.black,
-        dividerHeight: 0,
-        unselectedLabelColor: AppTheme.userScrollColor,
-        indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: Colors.red, width: 2),
-          insets: EdgeInsets.symmetric(horizontal: 22),
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        padding: EdgeInsets.only(bottom: 20.w),
+        child: TabBar(
+          tabs: TABS.map((e) {
+            return Tab(
+              text: e,
+            );
+          }).toList(),
+          controller: _tabController,
+          labelStyle: TextStyle(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.normal,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.normal,
+          ),
+          labelColor: Theme.of(context).colorScheme.onPrimary,
+          dividerHeight: 0,
+          unselectedLabelColor:
+              Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+          indicator: const UnderlineTabIndicator(
+            borderSide: BorderSide(color: Colors.red, width: 2),
+            insets: EdgeInsets.symmetric(horizontal: 22),
+          ),
         ),
       ),
     );

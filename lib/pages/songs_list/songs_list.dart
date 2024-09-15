@@ -3,6 +3,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/constants/colours.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
@@ -33,21 +34,46 @@ class SongsList extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          Container(
+            color: Theme.of(context).cardColor,
+          ),
           CustomScrollView(
             slivers: [
               SliverAppBar(
                 expandedHeight: 200,
                 pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(title),
-                  background: NeteaseCacheImage(picUrl: picUrl),
+                backgroundColor: Colors.white,
+                flexibleSpace: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    var top = constraints.biggest.height;
+                    return FlexibleSpaceBar(
+                      title: Text(
+                        title,
+                        style: TextStyle(
+                          color: top > 200 ? Colors.white : Colors.black,
+                          fontWeight:
+                              top > 200 ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 35.sp,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      background: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          NeteaseCacheImage(
+                            picUrl: picUrl,
+                            color: Colors.black.withOpacity(0.3),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final isPlaying =
-                        RoamingController.to.mediaItem == songs[index];
                     return GestureDetector(
                       onTap: () {
                         RoamingController.to
@@ -56,7 +82,8 @@ class SongsList extends StatelessWidget {
                       },
                       child: Obx(() {
                         return ListTile(
-                          leading: isPlaying
+                          leading: RoamingController.to.mediaItem ==
+                                  songs[index]
                               ? (RoamingController.to.playing.value
                                   ? Image.asset(
                                       ImageUtils.getImagePath(
@@ -77,12 +104,17 @@ class SongsList extends StatelessWidget {
                           title: Text(
                             songs[index].title!,
                             style: TextStyle(
-                                color: isPlaying ? Colors.red : Colors.black),
+                                color: RoamingController.to.mediaItem ==
+                                        songs[index]
+                                    ? Colours.app_main
+                                    : Theme.of(context).colorScheme.onPrimary),
                           ),
-                          subtitle: Text(
-                            songs[index].artist!,
-                            style: TextStyle(color: Colors.grey[400]),
-                          ),
+                          subtitle: Text(songs[index].artist!,
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimary
+                                      .withOpacity(0.7))),
                         );
                       }),
                     );
@@ -97,10 +129,10 @@ class SongsList extends StatelessWidget {
               left: 0, // 确保有约束条件
               right: 0, //
               child: Container(
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: const BottomPlayerBar(),
+                  child: BottomPlayerBar(),
                 ),
               ))
         ],
