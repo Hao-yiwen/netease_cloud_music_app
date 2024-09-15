@@ -56,10 +56,7 @@ class _HomeState extends State<Home> {
               width: ScreenUtil().screenWidth * 0.85,
               child: DrawerHome(),
             ),
-            bottomSheet: const Hero(
-              tag: 'test',
-              child: BottomPlayerBar(),
-            ),
+            bottomSheet: BottomPlayerBar(),
             bottomNavigationBar: Obx(() {
               return BottomNavigationBar(
                 currentIndex:

@@ -95,6 +95,19 @@ class RoamingController extends SuperController
       mediaItem.value = value;
     });
 
+    AudioService.createPositionStream(
+            minPeriod: const Duration(microseconds: 800), steps: 1000)
+        .listen((event) {
+      if (event.inMicroseconds >
+          (mediaItem.value.duration?.inMicroseconds ?? 0)) {
+        {
+          duration.value = Duration.zero;
+          return;
+        }
+      }
+      duration.value = event;
+    });
+
     audioHandler.playbackState.listen((value) {
       playing.value = value.playing;
     });

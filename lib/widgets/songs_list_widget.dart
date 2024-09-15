@@ -100,7 +100,6 @@ class ProgramListWidget extends StatelessWidget {
   }
 }
 
-
 class PodcastListWidget extends StatelessWidget {
   final List<DjProgram> programs;
 
@@ -134,10 +133,10 @@ class PodcastListWidget extends StatelessWidget {
               child: Column(
                 children: songsMatrix[pageIndex]
                     .map((pragma) => PodcastCell(
-                  title: pragma.name!,
-                  artist: pragma.copywriter!,
-                  picUrl: pragma.picUrl!,
-                ))
+                          title: pragma.name!,
+                          artist: pragma.copywriter!,
+                          picUrl: pragma.picUrl!,
+                        ))
                     .toList(),
               ),
             ),
@@ -163,56 +162,59 @@ class SongCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: 80.h,
-        margin: EdgeInsets.symmetric(vertical: 10.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.w), // 设置圆角半径
-              child:
-                  NeteaseCacheImage(picUrl: picUrl, size: Size(100.w, 100.w)),
-            ),
-            SizedBox(width: 15.w),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 30.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis, // 添加省略号
-                    maxLines: 1, // 设置最多显示一行
-                  ),
-                  Text(
-                    artist,
-                    style: TextStyle(
-                      fontSize: 26.sp,
-                      color: Colors.grey[400],
-                    ),
-                    overflow: TextOverflow.ellipsis, // 添加省略号
-                    maxLines: 1, // 设置最多显示一行
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+          height: 80.h,
+          margin: EdgeInsets.symmetric(vertical: 10.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.w), // 设置圆角半径
+                child:
+                    NeteaseCacheImage(picUrl: picUrl, size: Size(100.w, 100.w)),
               ),
-            ),
-            Icon(
-              TablerIcons.player_play_filled,
-              size: 30.w,
-              color: Colors.grey[600],
-            ),
-            SizedBox(width: 20.w),
-          ],
-        ));
+              SizedBox(width: 15.w),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis, // 添加省略号
+                      maxLines: 1, // 设置最多显示一行
+                    ),
+                    Text(
+                      artist,
+                      style: TextStyle(
+                        fontSize: 26.sp,
+                        color: Colors.grey[400],
+                      ),
+                      overflow: TextOverflow.ellipsis, // 添加省略号
+                      maxLines: 1, // 设置最多显示一行
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                TablerIcons.player_play_filled,
+                size: 30.w,
+                color: Colors.grey[600],
+              ),
+              SizedBox(width: 20.w),
+            ],
+          )),
+    );
   }
 }
 
