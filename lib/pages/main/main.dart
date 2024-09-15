@@ -68,7 +68,7 @@ class Main extends GetView<MainController> {
       height: 70.w,
       padding: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -389,7 +389,9 @@ class Main extends GetView<MainController> {
               final mediaItems = await controller
                   .getPlayListDetail(recommendPlayList[index].id!);
               GetIt.instance<AppRouter>().push(SongsList(
-                  songs: mediaItems, title: recommendPlayList[index].name!, picUrl: recommendPlayList[index].picUrl!));
+                  songs: mediaItems,
+                  title: recommendPlayList[index].name!,
+                  picUrl: recommendPlayList[index].picUrl!));
             },
           )
         ],
@@ -415,8 +417,10 @@ class Main extends GetView<MainController> {
             onTapItemIndex: (index) async {
               final lists =
                   await controller.getPlayListDetail(playLists[index].id!);
-              GetIt.instance<AppRouter>()
-                  .push(SongsList(songs: lists, title: playLists[index].name!, picUrl: playLists[index].coverImgUrl!));
+              GetIt.instance<AppRouter>().push(SongsList(
+                  songs: lists,
+                  title: playLists[index].name!,
+                  picUrl: playLists[index].coverImgUrl!));
             },
           )
         ],

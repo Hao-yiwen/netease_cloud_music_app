@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:netease_cloud_music_app/common/constants/colours.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_binding.dart';
@@ -67,9 +68,9 @@ class _HomeState extends State<Home> {
                   _changeTabIndex(
                       context, index, HomeController.to.tabsRouter.value!);
                 },
-                backgroundColor: Colors.white,
-                selectedItemColor: Colors.red,
-                unselectedItemColor: Colors.grey,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                selectedItemColor: Colours.app_main_light,
+                unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
                 selectedFontSize: 10,
                 unselectedFontSize: 10,
                 type: BottomNavigationBarType.fixed,

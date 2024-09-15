@@ -42,6 +42,7 @@ class AppTheme {
           elevation: 0));
 
   static ThemeData dark = ThemeData.dark().copyWith(
+
       colorScheme: ThemeData.dark().colorScheme.copyWith(
         primary: primaryDark,
         onPrimary: onPrimaryDark,
