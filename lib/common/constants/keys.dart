@@ -6,9 +6,6 @@ int RANDOM_SONGS_COUNT = 4;
 // 音乐播放模式
 final String REPEAT_MODE = 'REPEAT_MODE';
 
-// 当前播放第几首个
-final String CUR_PLAY_INDEX = 'CUR_PLAY_INDEX';
-
 // 播放队列
 final String PLAY_QUEUE = 'PLAY_QUEUE';
 

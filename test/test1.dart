@@ -13,4 +13,7 @@ void main() {
   Map<String, dynamic>? resultNull = castMap(nullMap);
 
   print(resultNull); // 输出: null
+
+  List<String>? str = null;
+  print(str!.isNotEmpty);
 }

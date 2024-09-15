@@ -205,6 +205,7 @@ class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
     _i16.Key? key,
     required List<_i17.MediaItem> songs,
     required String title,
+    required String picUrl,
     List<_i15.PageRouteInfo>? children,
   }) : super(
           SongsList.name,
@@ -212,6 +213,7 @@ class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
             key: key,
             songs: songs,
             title: title,
+            picUrl: picUrl,
           ),
           initialChildren: children,
         );
@@ -226,6 +228,7 @@ class SongsList extends _i15.PageRouteInfo<SongsListArgs> {
         key: args.key,
         songs: args.songs,
         title: args.title,
+        picUrl: args.picUrl,
       );
     },
   );
@@ -236,6 +239,7 @@ class SongsListArgs {
     this.key,
     required this.songs,
     required this.title,
+    required this.picUrl,
   });
 
   final _i16.Key? key;
@@ -244,9 +248,11 @@ class SongsListArgs {
 
   final String title;
 
+  final String picUrl;
+
   @override
   String toString() {
-    return 'SongsListArgs{key: $key, songs: $songs, title: $title}';
+    return 'SongsListArgs{key: $key, songs: $songs, title: $title, picUrl: $picUrl}';
   }
 }
 

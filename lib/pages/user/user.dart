@@ -1,7 +1,9 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
@@ -10,6 +12,8 @@ import 'package:netease_cloud_music_app/pages/user/widgets/sliver_header_delegat
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 
 import '../../common/constants/colors.dart';
+import '../../routes/routes.dart';
+import '../../routes/routes.gr.dart';
 import '../../widgets/netease_cache_image.dart';
 import '../../widgets/play_list_card.dart';
 import '../../widgets/user_event_widget.dart';
@@ -176,7 +180,10 @@ class _MineState extends State<User> with TickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           physics: const NeverScrollableScrollPhysics(),
-          children: [_buildOwnPlayList(context), UserEventWidget(events: events)],
+          children: [
+            _buildOwnPlayList(context),
+            UserEventWidget(events: events)
+          ],
         ),
       ),
       // 吸顶时显示的TabHeader
@@ -283,10 +290,19 @@ class _MineState extends State<User> with TickerProviderStateMixin {
                 itemCount: myOwnPlayList.length,
                 itemBuilder: (context, index) {
                   return PodcastCell(
-                      title: myOwnPlayList[index].name ?? "",
-                      artist:
-                          '${getFormattedNumber(myOwnPlayList[index].playCount ?? 0)}次播放 · ${myOwnPlayList[index].creator?.nickname ?? ""}首',
-                      picUrl: myOwnPlayList[index].coverImgUrl ?? "");
+                    title: myOwnPlayList[index].name ?? "",
+                    artist:
+                        '${getFormattedNumber(myOwnPlayList[index].playCount ?? 0)}次播放 · ${myOwnPlayList[index].creator?.nickname ?? ""}首',
+                    picUrl: myOwnPlayList[index].coverImgUrl ?? "",
+                    onTapItem: () async {
+                      final lists = await MainController.to
+                          .getPlayListDetail(myOwnPlayList[index].id ?? 0);
+                      GetIt.instance<AppRouter>().push(SongsList(
+                          songs: lists,
+                          title: myOwnPlayList[index].name ?? "",
+                          picUrl: myOwnPlayList[index].coverImgUrl ?? ""));
+                    },
+                  );
                 }));
   }
 }

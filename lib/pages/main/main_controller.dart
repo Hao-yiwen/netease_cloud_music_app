@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/like_song_dto.dart';
@@ -13,6 +14,7 @@ import 'package:netease_cloud_music_app/http/api/main/dto/top_playlists_dto.dart
 import 'package:netease_cloud_music_app/http/api/main/dto/user_playlists.dart';
 import 'package:netease_cloud_music_app/http/api/main/main_api.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
 import '../../common/constants/keys.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
@@ -27,26 +29,14 @@ class MainController extends GetxController {
   // 推荐歌单 包含私人雷达
   Rx<RecommendResourceDto> recommendResourceDto = RecommendResourceDto().obs;
 
-  // 私人雷达音乐
-  Rx<List<SongDto>> privateRadarSongs = Rx<List<SongDto>>(<SongDto>[]);
-
   // 喜欢的音乐
   Rx<LikeSongDto> likeSongDto = LikeSongDto(<int>[]).obs;
-
-  // 红心音乐相似推荐
-  Rx<List<SongDto>> similarSongs = Rx<List<SongDto>>(<SongDto>[]);
-
-  // 私人fm推荐音乐
-  Rx<List<SongDto>> personalFmSongs = Rx<List<SongDto>>(<SongDto>[]);
 
   // 获取10个顶级歌单
   Rx<List<Playlist>> topPlayList = Rx<List<Playlist>>(<Playlist>[]);
 
   // 随机选取的顶级歌单
   Rx<Playlist> randomPlaylist = Rx<Playlist>(Playlist());
-
-  // 随机选取的顶级歌单中的全部音乐
-  Rx<List<SongDto>> randomPlaylistSongs = Rx<List<SongDto>>(<SongDto>[]);
 
   // 推荐歌单
   Rx<List<RecommendPlaylist>> personalizedPlayLists =
@@ -58,6 +48,21 @@ class MainController extends GetxController {
   // 推荐播客
   Rx<PersonalizedDjprogramDto> personalizedDjprogramDto =
       PersonalizedDjprogramDto().obs;
+
+  // 每日推荐歌曲
+  RxList<MediaItem> dailySongs = <MediaItem>[].obs;
+
+  // 私人fm推荐音乐
+  Rx<List<MediaItem>> personalFmSongs = Rx<List<MediaItem>>(<MediaItem>[]);
+
+  // 私人雷达音乐
+  Rx<List<MediaItem>> privateRadarSongs = Rx<List<MediaItem>>(<MediaItem>[]);
+
+  // 红心音乐相似推荐
+  Rx<List<MediaItem>> similarSongs = Rx<List<MediaItem>>(<MediaItem>[]);
+
+  // 随机选取的顶级歌单中的全部音乐
+  Rx<List<MediaItem>> randomPlaylistSongs = Rx<List<MediaItem>>(<MediaItem>[]);
 
   static MainController get to => Get.find<MainController>();
 
@@ -90,6 +95,10 @@ class MainController extends GetxController {
     try {
       loading.value = true;
       recommendSongsDto?.value = await MainApi.getRecommendSongs();
+      if (recommendSongsDto.value.dailySongs?.isNotEmpty ?? false) {
+        dailySongs.value = RoamingController.to
+            .song2ToMedia(recommendSongsDto.value!.dailySongs!);
+      }
     } catch (e) {
       LogBox.error(e);
     } finally {
@@ -106,8 +115,9 @@ class MainController extends GetxController {
       if (privateRadarId != 0) {
         // 通过歌单id获取歌曲详细信息
         final playlistDetail = await MainApi.getPlaylistDetail(privateRadarId);
-        if (playlistDetail.playlist?.tracks != null) {
-          privateRadarSongs.value = playlistDetail.playlist!.tracks!;
+        if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
+          privateRadarSongs.value = RoamingController.to
+              .song2ToMedia(playlistDetail.playlist!.tracks!);
         }
       }
     } catch (e) {
@@ -123,6 +133,19 @@ class MainController extends GetxController {
     } catch (e) {
       LogBox.error(e);
     }
+  }
+
+  Future<List<MediaItem>> getPlayListDetail(int id) async {
+    try {
+      final playlistDetail = await MainApi.getPlaylistDetail(id);
+      if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
+        return RoamingController.to
+            .song2ToMedia(playlistDetail.playlist!.tracks!);
+      }
+    } catch (e) {
+      LogBox.error(e);
+    }
+    return <MediaItem>[];
   }
 
   /**
@@ -163,12 +186,14 @@ class MainController extends GetxController {
           }
         }
         SongsDetailDto songsDetailDto = await MainApi.getSongsDetail(ids);
-        if (songsDetailDto != null && songsDetailDto.songs!.isNotEmpty) {
+        if (songsDetailDto.songs?.isNotEmpty ?? false) {
           // 最多展示18首音乐
           if (songsDetailDto.songs!.length > 18) {
-            similarSongs.value = songsDetailDto.songs!.sublist(0, 18);
+            similarSongs.value = RoamingController.to
+                .song2ToMedia(songsDetailDto.songs!.sublist(0, 18));
           } else {
-            similarSongs.value = songsDetailDto.songs!;
+            similarSongs.value =
+                RoamingController.to.song2ToMedia(songsDetailDto.songs!);
           }
         }
       }
@@ -193,8 +218,9 @@ class MainController extends GetxController {
           }
         }
         SongsDetailDto songsDetailDto = await MainApi.getSongsDetail(ids);
-        if (songsDetailDto != null && songsDetailDto.songs!.isNotEmpty) {
-          personalFmSongs.value = songsDetailDto.songs!;
+        if (songsDetailDto.songs?.isNotEmpty ?? false) {
+          personalFmSongs.value =
+              RoamingController.to.song2ToMedia(songsDetailDto.songs!);
         }
       }
     } catch (e) {
@@ -217,10 +243,11 @@ class MainController extends GetxController {
             await MainApi.getPlaylistDetail(randomPlaylist.value.id!);
         if (playlistSongs.playlist?.tracks!.isNotEmpty ?? false) {
           if (playlistSongs.playlist!.tracks!.length > 18) {
-            randomPlaylistSongs.value =
-                playlistSongs.playlist!.tracks!.sublist(0, 18);
+            randomPlaylistSongs.value = RoamingController.to
+                .song2ToMedia(playlistSongs.playlist!.tracks!.sublist(0, 18));
           } else {
-            randomPlaylistSongs.value = playlistSongs.playlist!.tracks!;
+            randomPlaylistSongs.value = RoamingController.to
+                .song2ToMedia(playlistSongs.playlist!.tracks!);
           }
         }
       }

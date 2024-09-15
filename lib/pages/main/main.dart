@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/personalized_djprogram_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/playlist_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
-import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
-import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
-import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';
 
 import '../../routes/routes.dart';
@@ -36,7 +34,7 @@ class Main extends GetView<MainController> {
 
   _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.w),
       child: SizedBox(
         height: 70.w,
         child: (Row(
@@ -217,14 +215,15 @@ class Main extends GetView<MainController> {
                         title: "每日推荐",
                         subTitle: "符合你口味的新鲜好歌",
                         icon: TablerIcons.calendar,
-                        cardPic: controller
-                            .recommendSongsDto.value.dailySongs![0].al!.picUrl,
+                        cardPic:
+                            controller.dailySongs[0].extras?['image'] ?? '',
                         onTapHandle: () {
                           GetIt.instance<AppRouter>().push(SongsList(
-                              songs: RoamingController.to.song2ToMedia(
-                                  controller
-                                      .recommendSongsDto.value.dailySongs!),
-                              title: '每日推荐'));
+                              songs: controller.dailySongs,
+                              title: '每日推荐',
+                              picUrl:
+                                  controller.dailySongs[0].extras?['image'] ??
+                                      ''));
                         },
                       ),
                       SizedBox(
@@ -239,7 +238,9 @@ class Main extends GetView<MainController> {
                         title: "私人漫游",
                         subTitle: "多种听歌模式随心播放",
                         icon: TablerIcons.radio,
-                        cardPic: controller.personalFmSongs.value[0].al!.picUrl,
+                        cardPic: controller
+                                .personalFmSongs.value[0].extras?['image'] ??
+                            '',
                         onTapHandle: () {
                           Roaming.showBottomPlayer(context);
                         },
@@ -256,13 +257,16 @@ class Main extends GetView<MainController> {
                         title: "私人雷达",
                         subTitle: "你爱的歌值得反复聆听",
                         icon: TablerIcons.radio,
-                        cardPic:
-                            controller.privateRadarSongs.value[0].al!.picUrl,
+                        cardPic: controller
+                                .privateRadarSongs.value[0].extras?['image'] ??
+                            '',
                         onTapHandle: () {
                           GetIt.instance<AppRouter>().push(SongsList(
-                              songs: RoamingController.to.song2ToMedia(
-                                  controller.privateRadarSongs.value),
-                              title: '私人雷达'));
+                              songs: controller.privateRadarSongs.value,
+                              title: '私人雷达',
+                              picUrl: controller.privateRadarSongs.value[0]
+                                      .extras?['image'] ??
+                                  ''));
                         },
                       ),
                       SizedBox(
@@ -276,7 +280,9 @@ class Main extends GetView<MainController> {
                       MusicCard(
                         title: "相似歌曲",
                         subTitle: "从你喜欢的歌听起",
-                        cardPic: controller.similarSongs.value[0].al!.picUrl,
+                        cardPic:
+                            controller.similarSongs.value[0].extras?['image'] ??
+                                '',
                         onTapHandle: () {
                           Roaming.showBottomPlayer(context);
                         },
@@ -342,7 +348,7 @@ class Main extends GetView<MainController> {
     );
   }
 
-  _buildSongsList(BuildContext context, String title, List<SongDto> songs) {
+  _buildSongsList(BuildContext context, String title, List<MediaItem> songs) {
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -377,7 +383,15 @@ class Main extends GetView<MainController> {
                       TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
             ),
           ),
-          RecommendPlayListCard(recommendPlayList: recommendPlayList)
+          RecommendPlayListCard(
+            recommendPlayList: recommendPlayList,
+            onTapItemIndex: (index) async {
+              final mediaItems = await controller
+                  .getPlayListDetail(recommendPlayList[index].id!);
+              GetIt.instance<AppRouter>().push(SongsList(
+                  songs: mediaItems, title: recommendPlayList[index].name!, picUrl: recommendPlayList[index].picUrl!));
+            },
+          )
         ],
       ),
     );
@@ -396,7 +410,15 @@ class Main extends GetView<MainController> {
                       TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
             ),
           ),
-          PlayListCard(playList: playLists)
+          PlayListCard(
+            playList: playLists,
+            onTapItemIndex: (index) async {
+              final lists =
+                  await controller.getPlayListDetail(playLists[index].id!);
+              GetIt.instance<AppRouter>()
+                  .push(SongsList(songs: lists, title: playLists[index].name!, picUrl: playLists[index].coverImgUrl!));
+            },
+          )
         ],
       ),
     );

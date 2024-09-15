@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -64,6 +65,17 @@ class RoamingController extends SuperController
   late BuildContext buildContext;
 
   RxString currPathUrl = '/home/user'.obs;
+
+  var lastPopTime = DateTime.now();
+
+  @override
+  void onInit() {
+    super.onInit();
+    String repeatMode = box.get(REPEAT_MODE, defaultValue: 'all');
+    audioServiceRepeatMode.value = AudioServiceRepeatMode.values
+            .firstWhereOrNull((element) => element.name == repeatMode) ??
+        AudioServiceRepeatMode.all;
+  }
 
   @override
   void onReady() {
@@ -161,6 +173,51 @@ class RoamingController extends SuperController
             album: e.al?.name,
             artist: (e.ar ?? []).map((e) => e.name).toList().join(' / ')))
         .toList();
+  }
+
+  // 防治重复点击
+  bool intervalClick() {
+    if (DateTime.now().difference(lastPopTime) >
+        const Duration(microseconds: 800)) {
+      lastPopTime = DateTime.now();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> changeRepeatMode() async {
+    switch (audioServiceRepeatMode.value) {
+      case AudioServiceRepeatMode.one:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.none;
+        break;
+      case AudioServiceRepeatMode.none:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.all;
+        break;
+      case AudioServiceRepeatMode.all:
+      case AudioServiceRepeatMode.group:
+        audioServiceRepeatMode.value = AudioServiceRepeatMode.one;
+        break;
+    }
+    audioHandler.setRepeatMode(audioServiceRepeatMode.value);
+    box.put(REPEAT_MODE, audioServiceRepeatMode.value.name);
+  }
+
+  IconData getRepeatIcon() {
+    IconData icon;
+    switch (audioServiceRepeatMode.value) {
+      case AudioServiceRepeatMode.one:
+        icon = TablerIcons.repeat_once;
+        break;
+      case AudioServiceRepeatMode.none:
+        icon = TablerIcons.arrows_shuffle;
+        break;
+      case AudioServiceRepeatMode.all:
+      case AudioServiceRepeatMode.group:
+        icon = TablerIcons.repeat;
+        break;
+    }
+    return icon;
   }
 
   @override

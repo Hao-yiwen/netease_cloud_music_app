@@ -31,31 +31,40 @@ class BottomPlayerBar extends GetView<RoamingController> {
                 SizedBox(width: 20.w),
                 _buildAlbumImage(),
                 SizedBox(width: 20.w),
-                Row(
-                  children: [
-                    Text(
-                      controller.mediaItem.value.title,
-                      style: TextStyle(
-                          fontSize: 30.w,
-                          color: Colors.black,
-                          fontFamily: 'Roboto',
-                          // 指定字体族
-                          decoration: TextDecoration.none),
-                      overflow: TextOverflow.ellipsis, // 处理溢出文本
-                    ),
-                    Text(
-                      "- ${controller.mediaItem.value.artist}",
-                      style: TextStyle(
-                          fontSize: 26.w,
-                          color: Colors.grey[500],
-                          fontFamily: 'Roboto',
-                          // 指定字体族
-                          decoration: TextDecoration.none),
-                      overflow: TextOverflow.ellipsis, // 处理溢出文本
-                    ),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Text(
+                          controller.mediaItem.value.title,
+                          style: TextStyle(
+                              fontSize: 30.w,
+                              color: Colors.black,
+                              fontFamily: 'Roboto',
+                              // 指定字体族
+                              decoration: TextDecoration.none),
+                          overflow: TextOverflow.ellipsis, // 处理溢出文本
+                          maxLines: 1,
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Text(
+                          "- ${controller.mediaItem.value.artist}",
+                          style: TextStyle(
+                              fontSize: 26.w,
+                              color: Colors.grey[500],
+                              fontFamily: 'Roboto',
+                              // 指定字体族
+                              decoration: TextDecoration.none),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis, // 处理溢出文本
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     controller.playOrPause();

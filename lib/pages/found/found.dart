@@ -1,15 +1,14 @@
-import 'dart:async';
-
-import 'package:auto_route/annotations.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
 import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
@@ -19,11 +18,12 @@ import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
+import '../../common/constants/strings.dart';
 import '../../common/constants/url.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
 import '../../routes/routes.dart';
+import '../../routes/routes.gr.dart';
 import '../../widgets/custom_tag.dart';
-import '../../widgets/uncustom_tag.dart';
 
 @RoutePage()
 class Found extends StatefulWidget {
@@ -39,7 +39,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   int _currentPageIndex = 0;
   final CarouselSliderController _controller = CarouselSliderController();
   int _currentCarouselIndex = 0;
-  final FoundController foundController = FoundController.to;
+  final FoundController controller = FoundController.to;
   late TabController _albumTabController;
   final EasyRefreshController _refreshController = EasyRefreshController();
 
@@ -48,7 +48,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 5, vsync: this);
-    _albumTabController = TabController(length: 3, vsync: this);
+    _albumTabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -79,7 +79,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             GestureDetector(
@@ -91,14 +91,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                 size: 40.w,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
               // 明确设置SingleChildScrollView的高度
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Container(
+                child: SizedBox(
                   width: 300,
                   child: TabBar(
                     controller: _tabController,
@@ -159,7 +159,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     return Expanded(
       child: PageView(
         controller: _pageViewController,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           _tabController.animateTo(index);
           setState(() {
@@ -168,25 +168,17 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         },
         children: [
           _buildMusicFound(context),
-          Container(
-            child: Center(
-              child: Text('Roaming'),
-            ),
+          const Center(
+            child: Text('Roaming'),
           ),
-          Container(
-            child: Center(
-              child: Text('Timeline'),
-            ),
+          const Center(
+            child: Text('Timeline'),
           ),
-          Container(
-            child: Center(
-              child: Text('Timeline'),
-            ),
+          const Center(
+            child: Text('Timeline'),
           ),
-          Container(
-            child: Center(
-              child: Text('Timeline'),
-            ),
+          const Center(
+            child: Text('Timeline'),
           ),
         ],
       ),
@@ -198,7 +190,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
       height: 70.w,
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Expanded(
@@ -218,14 +210,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               ].map((e) => CustomTag(label: e)).toList(),
             ),
           )),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Icon(
             TablerIcons.chevron_down,
             size: 30.w,
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           )
         ],
@@ -237,7 +229,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     return Column(
       children: [
         _buildFixTag(context),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Expanded(
@@ -245,6 +237,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: EasyRefresh.builder(
+              footer: null,
               key: const Key('found'),
               triggerAxis: Axis.vertical,
               header: const ClassicHeader(
@@ -258,7 +251,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               ),
               controller: _refreshController,
               onRefresh: () async {
-                foundController.refreshHome();
+                controller.refreshHome();
               },
               onLoad: () async {},
               childBuilder: (BuildContext context, ScrollPhysics physics) {
@@ -267,13 +260,13 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     scrollDirection: Axis.vertical,
                     physics: physics,
                     slivers: [
-                      if (foundController.banner.value != null &&
-                          foundController.banner.value!.banners != null)
+                      if (controller.banner.value != null &&
+                          controller.banner.value!.banners != null)
                         _buildCarousel(context),
-                      if (foundController.homeBlock.value.blocks != null &&
-                          foundController.homeBlock.value.blocks!.isNotEmpty)
+                      if (controller.homeBlock.value.blocks != null &&
+                          controller.homeBlock.value.blocks!.isNotEmpty)
                         _buildFoundContent(
-                            foundController.homeBlock.value.blocks!, context),
+                            controller.homeBlock.value.blocks!, context),
                       if (MainController.to.topPlayList.value.isNotEmpty)
                         _buildPlayList(context, '甄选歌单',
                             MainController.to.topPlayList.value),
@@ -301,50 +294,55 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               _currentCarouselIndex = index;
             });
           }),
-      items: foundController.banner.value.banners!.map((i) {
+      items: controller.banner.value.banners!.map((i) {
         return Builder(
           builder: (BuildContext context) {
-            return Container(
-                width: ScreenUtil().screenWidth,
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: NeteaseCacheImage(picUrl: i.pic!)
-                                .getImageProvider(),
-                            fit: BoxFit.cover,
+            return GestureDetector(
+              onTap: () {
+                WidgetUtil.showToast(WAIT_DEVELOP);
+              },
+              child: Container(
+                  width: ScreenUtil().screenWidth,
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: BoxDecoration(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NeteaseCacheImage(picUrl: i.pic!)
+                                  .getImageProvider(),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 2, left: 4),
-                        child: Container(
-                          alignment: Alignment.bottomLeft,
-                          child: DotsIndicator(
-                            dotsCount:
-                                foundController.banner.value.banners!.length,
-                            position: _currentCarouselIndex,
-                            decorator: DotsDecorator(
-                              activeColor: Colors.red,
-                              size: const Size.square(6.0),
-                              activeSize: const Size.square(6.0),
-                              activeShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2, left: 4),
+                          child: Container(
+                            alignment: Alignment.bottomLeft,
+                            child: DotsIndicator(
+                              dotsCount:
+                                  controller.banner.value.banners!.length,
+                              position: _currentCarouselIndex,
+                              decorator: DotsDecorator(
+                                activeColor: Colors.red,
+                                size: const Size.square(6.0),
+                                activeSize: const Size.square(6.0),
+                                activeShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ));
+                      ],
+                    ),
+                  )),
+            );
           },
         );
       }).toList(),
@@ -364,7 +362,16 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                       TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
             ),
           ),
-          PlayListCard(playList: playLists)
+          PlayListCard(
+              playList: playLists,
+              onTapItemIndex: (index) async {
+                final lists = await MainController.to
+                    .getPlayListDetail(playLists[index].id!);
+                GetIt.instance<AppRouter>().push(SongsList(
+                    songs: lists,
+                    title: playLists[index].name!,
+                    picUrl: playLists[index].coverImgUrl!));
+              })
         ],
       ),
     );
@@ -395,13 +402,6 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   }
 
   Widget _buildNewSongNewAlbum(BlockItem item, BuildContext context) {
-    var creatives = item.creatives;
-    var newSongs = creatives!.where(
-        (el) => el.creativeType == AlbumTypeEnum.NEW_SONG_HOMEPAGE.value);
-    var newAlbums = creatives!.where(
-        (el) => el.creativeType == AlbumTypeEnum.NEW_ALBUM_HOMEPAGE.value);
-    var digitalAlbums = creatives!.where(
-        (el) => el.creativeType == AlbumTypeEnum.DIGITAL_ALBUM_HOMEPAGE.value);
     return Container(
       height: 450.w,
       padding: EdgeInsets.only(top: 20.w),
@@ -429,10 +429,9 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               // 取消进度条
               isScrollable: true,
               // 允许Tab根据内容自适应宽度
-              tabs: [
+              tabs: const [
                 Text("新歌"), // 直接使用Text即可，IntrinsicWidth不再必要
                 Text("新碟"),
-                Text("数字专辑"),
               ],
             ),
           ),
@@ -443,47 +442,14 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _albumTabController,
               children: [
-                _buildSongList(context, newSongs.toList()),
-                _buildSongList(context, newAlbums.toList()),
-                _buildSongList(context, digitalAlbums.toList()),
+                SongsListWidget(
+                  songs: controller.newSong.value,
+                ),
+                SongsListWidget(songs: controller.newAlbum)
               ],
             ),
           )
         ],
-      ),
-    );
-  }
-
-  Widget _buildSongList(BuildContext context, List<Creative> creatives) {
-    return Container(
-      height: 300.h,
-      child: PageView.builder(
-        controller: PageController(
-          viewportFraction: 0.9, // 每列占90%的宽度
-        ),
-        itemCount: creatives.length, // 总共6列
-        itemBuilder: (context, pageIndex) {
-          // 根据 pageIndex 计算偏移量
-          double offsetX = ScreenUtil().screenWidth * 0.05 * (pageIndex - 1);
-
-          return Padding(
-            padding: EdgeInsets.only(right: 10.w),
-            child: Transform.translate(
-              offset: Offset(offsetX, 0),
-              child: Column(
-                children: creatives[pageIndex]
-                    .resources!
-                    .map((song) => SongCell(
-                          title: song.uiElement?.mainTitle?.title ?? "",
-                          artist: song.uiElement?.subTitle?.title ?? "",
-                          picUrl: song.uiElement?.image?.imageUrl ??
-                              PLACE_IMAGE_HOLDER,
-                        ))
-                    .toList(),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -512,6 +478,17 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                   child: SongCard(
                     picUrl: item.creatives![index].uiElement!.image!.imageUrl!,
                     title: item.creatives![index].uiElement!.mainTitle!.title!,
+                    onTapItem: () async {
+                      final lists = await MainController.to.getPlayListDetail(
+                          int.parse(item
+                              .creatives![index].resources![0]!.resourceId!));
+                      GetIt.instance<AppRouter>().push(SongsList(
+                          songs: lists,
+                          title: item
+                              .creatives![index].uiElement!.mainTitle!.title!,
+                          picUrl: item
+                              .creatives![index].uiElement!.image!.imageUrl!));
+                    },
                   ),
                 );
               },
@@ -534,7 +511,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
           SizedBox(
             height: 10.w,
           ),
-          _buildSongList(context, item.creatives!),
+          SongsListWidget(songs: controller.slideSongListAlign.value),
         ],
       ),
     );
