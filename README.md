@@ -7,15 +7,14 @@
 此项目还在不断完善中，目前离v1版本还有一定距离，欢迎大家提出宝贵意见。
 
 1. 启动后端服务，端口默认3000
-   - git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
-   - npm i
-   - node app.js 
+    - git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
+    - npm i
+    - node app.js
 2. 启动该项目，目前只支持短信验证码登录
 
 ## 展示
 
-<img src="showcase/show_home.png" width="32%">
-<img src="showcase/show_player.png" width="32%">
+<img src="showcase/show_home.png" width="32%"><img src="showcase/show_player.png" width="32%">
 
 ## 项目介绍
 
@@ -33,13 +32,39 @@ flutter版本网易云音乐
 
 - 技术栈：getx, getit, gorouter/autoRouter
 
-## 项目进展
+## 页面预览
 
-- 0817：goRouter -> autoRouter
-- 0820: 底部粘性播放器
-    - 粘性播放器的实现是各个页面都包裹一个底部播放器，然后使用Hero Animation实现播放器的丝滑切换
-- 0822: 实现网易云音乐我的页面中头部下拉底部图片拉伸效果，并且附带头部渐变效果
-- 0908: 封装网易云音乐图片请求专用组件，解决部分情况下图片403问题
+- 推荐页面 main - 已完成
+- 发现页面 found - 已完成
+- 漫游页面 roam - 已完成
+- 动态页面 timeline - 已完成
+- 我的页面 user - 已完成
+- 搜索页面 search - 已完成
+- 歌单页面 songlist - 已完成
+- mv页面 mv - 未开始
+- 评论页面 comment - 未开始
+- 消息页面 message - 未开始
+
+## 项目规划
+
+### p1
+
+- 页面基本复制网易云音乐app页面 - 已完成
+- 音乐播放&后台播放 - 已完成
+- 评论页面 - 未开始
+- 歌词页面 - 未开始
+- 漫游功能重构 - 未开始
+- 页面样式优化&代码优化 - 未开始
+- 网络库优化 - 未开始
+- android适配
+
+### p2
+
+- 视频播放 - 未开始
+- 发布动态页面 - 未开始
+- 骨架屏引入 - 未开始
+- ios小组件开发 - 未开始
+- 缓存策略 - 未开始
 
 ## Star History
 
