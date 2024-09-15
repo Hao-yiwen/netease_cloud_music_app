@@ -1,6 +1,5 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
@@ -11,6 +10,7 @@ import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
+import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 
 import '../../common/music_handler.dart';
 import 'dart:math' as math;
@@ -19,10 +19,21 @@ class Roaming extends StatefulWidget {
   const Roaming({super.key});
 
   static void showBottomPlayer(BuildContext hostContext) {
-    showModalBottomSheet(
+    showGeneralDialog(
       context: hostContext,
-      isScrollControlled: true, // 允许高度控制
-      builder: (context) {
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: Duration(milliseconds: 200),
+      transitionBuilder: (context, animation1, animation2, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(0, 1),
+            end: Offset(0, 0),
+          ).animate(animation1),
+          child: child,
+        );
+      },
+      pageBuilder: (context, animation1, animation2) {
         // 在弹窗中获取当前页面的安全区域padding
         // https://stackoverflow.com/questions/49737225/safearea-not-working-in-persistent-bottomsheet-in-flutter
         final view = View.of(context);
@@ -31,17 +42,19 @@ class Roaming extends StatefulWidget {
         final viewTopPadding = viewPadding.top / view.devicePixelRatio;
         final topPadding = math.max(viewTopPadding, mediaPadding.top);
 
-        return Container(
-          padding:
-              EdgeInsets.only(top: topPadding, bottom: mediaPadding.bottom),
-          height: double.infinity,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: AppTheme.playPageBackgroundColor,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.w),
-                  topRight: Radius.circular(20.w))),
-          child: Roaming(),
+        return Material(
+          child: Container(
+            padding:
+                EdgeInsets.only(top: topPadding, bottom: mediaPadding.bottom),
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: AppTheme.playPageBackgroundColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.w),
+                    topRight: Radius.circular(20.w))),
+            child: Roaming(),
+          ),
         );
       },
     );
@@ -200,9 +213,9 @@ class _RoamingState extends State<Roaming> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
       child: ProgressBar(
-        progress: Duration(milliseconds: 500),
-        buffered: Duration(milliseconds: 2000),
-        total: Duration(milliseconds: 5000),
+        progress: controller.duration.value,
+        buffered: controller.duration.value,
+        total: controller.mediaItem.value.duration!,
         onSeek: (duration) {
           LogBox.info('Seek to: ${duration.inMilliseconds}');
         },
@@ -270,7 +283,33 @@ class _RoamingState extends State<Roaming> {
             width: 60.w,
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              showModalBottomSheet(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  context: context,
+                  builder: (context) {
+                    return Obx(() {
+                      return Container(
+                        padding:
+                            EdgeInsets.only(top: 40.w, left: 20.w, right: 20.w),
+                        child: PlayList(
+                          mediaItems: controller.mediaItems,
+                          currentItem: controller.mediaItem.value,
+                          onItemTap: (index) {
+                            controller.playByIndex(index, 'roaming',
+                                mediaItem: controller.mediaItems);
+                          },
+                          playing: controller.playing.value,
+                        ),
+                      );
+                    });
+                  });
+            },
             child: Image.asset(
               ImageUtils.getImagePath('epj'),
               width: 70.w,
