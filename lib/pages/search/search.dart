@@ -52,10 +52,7 @@ class Search extends StatelessWidget {
                 color: Colors.white,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: Hero(
-                    tag: 'test',
-                    child: BottomPlayerBar(),
-                  ),
+                  child: BottomPlayerBar(),
                 ),
               ))
         ],

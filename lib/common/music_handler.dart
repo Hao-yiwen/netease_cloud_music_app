@@ -156,7 +156,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
     _audioServiceRepeatMode = AudioServiceRepeatMode.values
             .firstWhereOrNull((element) => element.name == repeatMode) ??
         AudioServiceRepeatMode.all;
-    _currentIndex = _box.get(CUR_PLAY_INDEX, defaultValue: 0);
+    _currentIndex = _box.get(PLAY_INDEX, defaultValue: 0);
     List<String> playList = _box.get(PLAY_QUEUE, defaultValue: []);
     if (playList.isNotEmpty) {
       List<MediaItem> items = await compute(getCachePlayList,

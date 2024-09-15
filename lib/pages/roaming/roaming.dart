@@ -100,17 +100,14 @@ class _RoamingState extends State<Roaming> {
             height: 60.w,
           ),
         ),
-        Hero(
-          tag: "test",
-          child: Obx(() {
-            return PlayAlbumCover(
-              rotating: controller.playing.value,
-              pading: 40.w,
-              imgPic:
-                  '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
-            );
-          }),
-        ),
+        Obx(() {
+          return PlayAlbumCover(
+            rotating: controller.playing.value,
+            pading: 40.w,
+            imgPic:
+                '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
+          );
+        }),
         Expanded(
           child: SizedBox(
             height: 60.w,
@@ -151,7 +148,6 @@ class _RoamingState extends State<Roaming> {
           child: IconButton(
             icon: Icon(TablerIcons.share, color: Colors.grey[400], size: 45.w),
             onPressed: () {
-              Get.toNamed('/settings');
             },
           ),
         ),
@@ -169,20 +165,26 @@ class _RoamingState extends State<Roaming> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  controller.mediaItem.value.title.fixAutoLines(),
-                  style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 400.w),
+                  child: Text(
+                    controller.mediaItem.value.title.fixAutoLines(),
+                    style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 SizedBox(
                   height: 10.w,
                 ),
-                Text(
-                  (controller.mediaItem.value.artist ?? '').fixAutoLines(),
-                  style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 400.w),
+                  child: Text(
+                    (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                    style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             );
@@ -210,22 +212,25 @@ class _RoamingState extends State<Roaming> {
   }
 
   _buildProgressBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
-      child: ProgressBar(
-        progress: controller.duration.value,
-        buffered: controller.duration.value,
-        total: controller.mediaItem.value.duration!,
-        onSeek: (duration) {
-          LogBox.info('Seek to: ${duration.inMilliseconds}');
-        },
-        thumbColor: Colors.white,
-        barHeight: 2.0,
-        thumbRadius: 5.0,
-        timeLabelTextStyle: TextStyle(color: Colors.white, fontSize: 18.w),
-        timeLabelPadding: 14.w,
-      ),
-    );
+    return Obx(() {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
+        child: ProgressBar(
+          progress: controller.duration.value,
+          buffered: controller.duration.value,
+          total: controller.mediaItem.value.duration!,
+          onSeek: (duration) {
+            LogBox.info('Seek to: ${duration.inMilliseconds}');
+            controller.audioHandler.seek(duration);
+          },
+          thumbColor: Colors.white,
+          barHeight: 2.0,
+          thumbRadius: 5.0,
+          timeLabelTextStyle: TextStyle(color: Colors.white, fontSize: 18.w),
+          timeLabelPadding: 14.w,
+        ),
+      );
+    });
   }
 
   _buildPlayerControl(BuildContext context) {
@@ -233,15 +238,15 @@ class _RoamingState extends State<Roaming> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: () {},
-            child: Image.asset(
-              ImageUtils.getImagePath('play_btn_shuffle'),
-              width: 50.w,
-              height: 50.w,
-              color: Colors.grey[400],
-            ),
-          ),
+          IconButton(
+              onPressed: () {
+                controller.changeRepeatMode();
+              },
+              icon: Icon(
+                controller.getRepeatIcon(),
+                size: 43.w,
+                color: Colors.grey[400],
+              )),
           SizedBox(
             width: 55.w,
           ),
@@ -251,7 +256,14 @@ class _RoamingState extends State<Roaming> {
               color: Colors.grey[400],
               size: 55.w,
             ),
-            onPressed: () {},
+            onPressed: () {
+              if (controller.fm.value) {
+                return;
+              }
+              if (controller.intervalClick()) {
+                controller.audioHandler.skipToPrevious();
+              }
+            },
           ),
           SizedBox(
             width: 60.w,
@@ -277,7 +289,11 @@ class _RoamingState extends State<Roaming> {
               color: Colors.grey[400],
               size: 55.w,
             ),
-            onPressed: () {},
+            onPressed: () {
+              if (controller.intervalClick()) {
+                controller.audioHandler.skipToNext();
+              }
+            },
           ),
           SizedBox(
             width: 60.w,

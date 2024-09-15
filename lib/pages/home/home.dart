@@ -52,11 +52,13 @@ class _HomeState extends State<Home> {
             body: chiild,
             key: scaffoldState,
             drawer: Drawer(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               width: ScreenUtil().screenWidth * 0.85,
-              child: DrawerHome(),
+              child: const DrawerHome(),
             ),
-            bottomSheet: BottomPlayerBar(),
+            bottomSheet: RoamingController.to.mediaItem.value.id == null
+                ? const SizedBox()
+                : BottomPlayerBar(),
             bottomNavigationBar: Obx(() {
               return BottomNavigationBar(
                 currentIndex:
