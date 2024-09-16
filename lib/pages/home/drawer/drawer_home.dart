@@ -16,12 +16,6 @@ class DrawerHome extends StatefulWidget {
 }
 
 class _DrawerHomeState extends State<DrawerHome> {
-  final TextStyle listItemTextStyle = TextStyle(
-    fontSize: 28.w, // 使用你定义的屏幕适配工具，如 ScreenUtil
-    color: Colors.black,
-    fontWeight: FontWeight.w200,
-  );
-
   @override
   void initState() {
     super.initState();
@@ -113,7 +107,13 @@ class _DrawerHomeState extends State<DrawerHome> {
           _buildCardContent(list: getTopItem(context)),
           _buildCardContent(list: getListMusicService(context)),
           _buildCardContent(list: getListSettings(context)),
-          _buildCardContent(list: getListBottomInfo(context))
+          _buildCardContent(list: getListBottomInfo(context)),
+          // 防止底部内容被遮挡
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: MediaQuery.of(context).padding.bottom,
+            ),
+          )
         ],
       ),
     );
@@ -126,17 +126,24 @@ class _DrawerHomeState extends State<DrawerHome> {
       String? badge,
       Color? color,
       Function()? onTap}) {
+    final TextStyle listItemTextStyle = TextStyle(
+      fontSize: 28.w, // 使用你定义的屏幕适配工具，如 ScreenUtil
+      color: Theme.of(context).colorScheme.secondary,
+      fontWeight: FontWeight.w200,
+    );
     return InkWell(
       onTap: onTap ?? () {},
       child: Padding(
         padding: EdgeInsets.all(20.w),
         child: Row(
           children: [
-            Icon(icon, color: color ?? Colors.black, size: 35.w),
+            Icon(icon,
+                color: color ?? Theme.of(context).colorScheme.secondary,
+                size: 35.w),
             SizedBox(width: 30.w),
             Text(text,
-                style:
-                    listItemTextStyle.copyWith(color: color ?? Colors.black)),
+                style: listItemTextStyle.copyWith(
+                    color: color ?? Theme.of(context).colorScheme.secondary)),
             const Spacer(),
             if (trailing != null)
               Row(
@@ -189,7 +196,7 @@ class _DrawerHomeState extends State<DrawerHome> {
         padding: EdgeInsets.all(24.w),
         child: Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).colorScheme.onSecondary,
             borderRadius: BorderRadius.circular(24.w),
           ),
           child: Padding(
