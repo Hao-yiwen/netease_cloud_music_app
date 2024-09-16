@@ -68,7 +68,8 @@ class RoamingController extends SuperController
   var lastPopTime = DateTime.now();
 
   // 歌曲评论
-  Rx<CommentMusic> comments = CommentMusic().obs;
+  RxList<CommentSection> comments = <CommentSection>[].obs;
+  RxInt commentCount = 0.obs;
 
   @override
   void onInit() {
@@ -264,7 +265,26 @@ class RoamingController extends SuperController
       CommentMusic commentMusic =
           await RoamingApi.getMusicComment(mediaItem.value.id);
       if (commentMusic.code == 200) {
-        comments.value = commentMusic;
+        commentCount.value = commentMusic.total ?? 0;
+        if (commentMusic.topComments?.isNotEmpty ?? false) {
+          comments.value
+            .add(CommentSection()
+              ..title = '置顶评论'
+              ..comments = commentMusic.topComments!);
+        }
+        if (commentMusic.hotComments?.isNotEmpty ?? false) {
+          comments.value
+            .add(CommentSection()
+              ..title = '热门评论'
+              ..comments = commentMusic.hotComments!);
+        }
+        if (commentMusic.comments?.isNotEmpty ?? false) {
+          comments.value
+            ..clear()
+            ..add(CommentSection()
+              ..title = '精彩评论'
+              ..comments = commentMusic.comments!);
+        }
       }
     } catch (e) {
       LogBox.error(e);

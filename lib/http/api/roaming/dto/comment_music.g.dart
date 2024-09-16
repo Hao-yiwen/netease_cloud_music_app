@@ -6,6 +6,19 @@ part of 'comment_music.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+CommentSection _$CommentSectionFromJson(Map<String, dynamic> json) =>
+    CommentSection()
+      ..title = json['title'] as String?
+      ..comments = (json['comments'] as List<dynamic>?)
+          ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$CommentSectionToJson(CommentSection instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'comments': instance.comments,
+    };
+
 CommentMusic _$CommentMusicFromJson(Map<String, dynamic> json) => CommentMusic()
   ..code = dynamicToInt(json['code'])
   ..message = json['message'] as String?

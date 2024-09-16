@@ -6,6 +6,19 @@ import '../../../../models/user/user_profile.dart';
 part 'comment_music.g.dart';
 
 @JsonSerializable()
+class CommentSection {
+  String? title;
+  List<Comment>? comments;
+
+  CommentSection();
+
+  factory CommentSection.fromJson(Map<String, dynamic> json) =>
+      _$CommentSectionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CommentSectionToJson(this);
+}
+
+@JsonSerializable()
 class CommentMusic extends ServerStatusBean {
   int? total;
   int? userId;
