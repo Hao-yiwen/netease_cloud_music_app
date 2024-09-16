@@ -8,6 +8,7 @@ import 'package:netease_cloud_music_app/pages/roaming/roaming.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 
+import '../../common/utils/debouncer.dart';
 import '../../common/utils/image_utils.dart';
 import '../../widgets/bottom_player_bar.dart';
 
@@ -20,8 +21,9 @@ class SongsList extends StatelessWidget {
   final List<MediaItem> songs;
   final String title;
   final String picUrl;
+  final _debouncer = Debouncer(milliseconds: 500);
 
-  const SongsList(
+  SongsList(
       {super.key,
       required this.songs,
       required this.title,
@@ -76,9 +78,11 @@ class SongsList extends StatelessWidget {
                   (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        RoamingController.to
-                            .playByIndex(index, 'queueTitle', mediaItem: songs);
-                        Roaming.showBottomPlayer(context);
+                        _debouncer.run(() {
+                          RoamingController.to.playByIndex(index, 'queueTitle',
+                              mediaItem: songs);
+                          Roaming.showBottomPlayer(context);
+                        });
                       },
                       child: Obx(() {
                         return ListTile(
@@ -103,18 +107,29 @@ class SongsList extends StatelessWidget {
                                 ),
                           title: Text(
                             songs[index].title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: RoamingController.to.mediaItem ==
                                         songs[index]
                                     ? Colours.app_main
                                     : Theme.of(context).colorScheme.onPrimary),
                           ),
-                          subtitle: Text(songs[index].artist!,
-                              style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimary
-                                      .withOpacity(0.7))),
+                          subtitle: Text(
+                            songs[index].artist!,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimary
+                                    .withOpacity(0.7),
+                                fontSize: Theme.of(context)
+                                        .textTheme
+                                        ?.bodySmall
+                                        ?.fontSize ??
+                                    14.sp),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         );
                       }),
                     );
