@@ -20,6 +20,7 @@ abstract class Routes {
   static const webview = _Paths.webview;
   static const songsList = _Paths.songsList;
   static const other = _Paths.other;
+  static const comment = _Paths.comment;
 }
 
 abstract class _Paths {
@@ -40,6 +41,7 @@ abstract class _Paths {
   static const String webview = '/webview';
   static const String songsList = '/songsList';
   static const String other = '*';
+  static const String comment = '/comment';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -75,6 +77,7 @@ class AppRouter extends RootStackRouter {
             durationInMilliseconds: 200,
             path: Routes.webview),
         AutoRoute(path: Routes.songsList, page: SongsList.page),
+        AutoRoute(path: Routes.comment, page: CommentRoute.page),
         AutoRoute(path: Routes.other, page: ErrorRoute.page),
       ];
 
