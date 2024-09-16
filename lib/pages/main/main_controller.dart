@@ -67,9 +67,14 @@ class MainController extends GetxController {
   static MainController get to => Get.find<MainController>();
 
   @override
+  void onInit() {
+    super.onInit();
+    refreshMainPage();
+  }
+
+  @override
   void onReady() {
     super.onReady();
-    refreshMainPage();
   }
 
   refreshMainPage() {

@@ -11,6 +11,7 @@ import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
+import 'package:netease_cloud_music_app/routes/routes.dart';
 
 import '../../common/music_handler.dart';
 import 'dart:math' as math;
@@ -147,8 +148,7 @@ class _RoamingState extends State<Roaming> {
           padding: EdgeInsets.only(right: 20.w),
           child: IconButton(
             icon: Icon(TablerIcons.share, color: Colors.grey[400], size: 45.w),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ),
       ],
@@ -202,8 +202,13 @@ class _RoamingState extends State<Roaming> {
               SizedBox(
                 width: 60.w,
               ),
-              Image.asset(ImageUtils.getImagePath('detail_icn_cmt'),
-                  width: 60.w, height: 60.w),
+              GestureDetector(
+                onTap: () {
+                  GetIt.instance<AppRouter>().pushNamed(Routes.comment);
+                },
+                child: Image.asset(ImageUtils.getImagePath('detail_icn_cmt'),
+                    width: 60.w, height: 60.w),
+              ),
             ],
           )
         ],

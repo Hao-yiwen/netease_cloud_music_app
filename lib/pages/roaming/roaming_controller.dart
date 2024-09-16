@@ -4,12 +4,11 @@ import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
-import 'package:netease_cloud_music_app/http/api/roaming/dto/song_info_dto.dart';
+import 'package:netease_cloud_music_app/http/api/roaming/dto/comment_music.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/roaming_api.dart';
 
 import '../../common/constants/keys.dart';
@@ -68,6 +67,9 @@ class RoamingController extends SuperController
 
   var lastPopTime = DateTime.now();
 
+  // 歌曲评论
+  Rx<CommentMusic> comments = CommentMusic().obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -105,6 +107,11 @@ class RoamingController extends SuperController
       duration.value = Duration.zero;
       if (value == null) return;
       mediaItem.value = value;
+
+      // 获取歌曲评论
+      if (value.extras?['type'] == MediaType.playlist.name) {
+        _getMusicComment();
+      }
     });
 
     AudioService.createPositionStream(
@@ -250,5 +257,17 @@ class RoamingController extends SuperController
   @override
   void onResumed() {
     // TODO: implement onResumed
+  }
+
+  Future<void> _getMusicComment() async {
+    try {
+      CommentMusic commentMusic =
+          await RoamingApi.getMusicComment(mediaItem.value.id);
+      if (commentMusic.code == 200) {
+        comments.value = commentMusic;
+      }
+    } catch (e) {
+      LogBox.error(e);
+    }
   }
 }
