@@ -14,7 +14,7 @@
 
 ## 展示
 
-<img src="showcase/show_home.png" width="32%"><img src="showcase/show_player.png" width="32%">
+<img src="showcase/show_home.png" width="32%">  <img src="showcase/show_player.png" width="32%">
 
 ## 项目介绍
 
