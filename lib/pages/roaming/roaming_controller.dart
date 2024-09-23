@@ -7,8 +7,11 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:netease_cloud_music_app/common/lyric_parser/LyricsLineModel.dart';
+import 'package:netease_cloud_music_app/common/lyric_parser/parser_lrc.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/comment_music.dart';
+import 'package:netease_cloud_music_app/http/api/roaming/dto/song_lyric.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/roaming_api.dart';
 
 import '../../common/constants/keys.dart';
@@ -71,6 +74,11 @@ class RoamingController extends SuperController
   RxList<CommentSection> comments = <CommentSection>[].obs;
   RxInt commentCount = 0.obs;
 
+  // 歌曲歌词
+  RxBool hasTran = false.obs;
+
+  List<LyricsLineModel> lyricLineModels = <LyricsLineModel>[].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -105,9 +113,12 @@ class RoamingController extends SuperController
       ..addAll(value));
 
     audioHandler.mediaItem.listen((value) async {
+      lyricLineModels.clear();
       duration.value = Duration.zero;
       if (value == null) return;
       mediaItem.value = value;
+      // 获取歌词
+      _getMusicLyric(value.id);
 
       // 获取歌曲评论
       if (value.extras?['type'] == MediaType.playlist.name) {
@@ -267,16 +278,14 @@ class RoamingController extends SuperController
       if (commentMusic.code == 200) {
         commentCount.value = commentMusic.total ?? 0;
         if (commentMusic.topComments?.isNotEmpty ?? false) {
-          comments.value
-            .add(CommentSection()
-              ..title = '置顶评论'
-              ..comments = commentMusic.topComments!);
+          comments.value.add(CommentSection()
+            ..title = '置顶评论'
+            ..comments = commentMusic.topComments!);
         }
         if (commentMusic.hotComments?.isNotEmpty ?? false) {
-          comments.value
-            .add(CommentSection()
-              ..title = '热门评论'
-              ..comments = commentMusic.hotComments!);
+          comments.value.add(CommentSection()
+            ..title = '热门评论'
+            ..comments = commentMusic.hotComments!);
         }
         if (commentMusic.comments?.isNotEmpty ?? false) {
           comments.value
@@ -284,6 +293,38 @@ class RoamingController extends SuperController
             ..add(CommentSection()
               ..title = '精彩评论'
               ..comments = commentMusic.comments!);
+        }
+      }
+    } catch (e) {
+      LogBox.error(e);
+    }
+  }
+
+  Future<void> _getMusicLyric(String id) async {
+    try {
+      hasTran.value = false;
+      String lyric = box.get('lyric_${mediaItem.value.id}') ?? '';
+      String lyricTran = box.get('lyricTran_${mediaItem.value.id}') ?? '';
+      SongLyric songLyric = await RoamingApi.getMusicLyric(id);
+      lyric = songLyric.lrc?.lyric ?? "";
+      lyricTran = songLyric.tlyric?.lyric ?? "";
+      box.put('lyric_${mediaItem.value.id}', lyric);
+      box.put('lyricTran_${mediaItem.value.id}', lyricTran);
+      if (lyric.isNotEmpty) {
+        var list = ParserLrc(lyric).parseLines();
+        var listTran = ParserLrc(lyricTran).parseLines();
+        if (lyricTran.isNotEmpty) {
+          hasTran.value = true;
+          lyricLineModels.addAll(list.map((e) {
+            int index = listTran
+                .indexWhere((element) => element.startTime == e.startTime);
+            if (index != -1) {
+              e.extText = listTran[index].mainText;
+            }
+            return e;
+          }).toList());
+        } else {
+          lyricLineModels.addAll(list);
         }
       }
     } catch (e) {

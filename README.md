@@ -14,11 +14,8 @@
 
 ## 展示
 
-<<<<<<< Updated upstream
-<img src="showcase/show_home.png" width="32%"><img src="showcase/show_player.png" width="32%">
-=======
-<img src="showcase/show_home.png" width="32%"><p style="display:inline-block;width: 40px;" /><img src="showcase/show_player.png" width="32%">
->>>>>>> Stashed changes
+<img src="showcase/show_home.png" width="30%" style="display:inline-block;" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="showcase/show_player.png" width="30%" style="display:inline-block;" />
+
 
 ## 项目介绍
 
@@ -55,8 +52,8 @@ flutter版本网易云音乐
 
 - 页面基本复制网易云音乐app页面 - 已完成
 - 音乐播放&后台播放 - 已完成
-- 评论页面 - 进行中
-- 歌词页面 - 进行中
+- 评论页面 - 已完成(页面很糙)
+- 歌词页面 - 已完成(页面很糙)
 - 漫游功能重构 - 未开始
 - 页面样式优化&代码优化 - 未开始
 - 网络库优化 - 未开始
