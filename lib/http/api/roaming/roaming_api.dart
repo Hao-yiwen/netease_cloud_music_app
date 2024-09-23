@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/comment_music.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/song_info_dto.dart';
+import 'package:netease_cloud_music_app/http/api/roaming/dto/song_lyric.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 
 class RoamingApi {
@@ -25,5 +26,13 @@ class RoamingApi {
       'offset': offset,
     });
     return CommentMusic.fromJson(res);
+  }
+
+  // 获取歌词
+  static Future<SongLyric> getMusicLyric(dynamic id) async {
+    final res = await HttpUtils.get('/lyric', params: {
+      'id': id,
+    });
+    return SongLyric.fromJson(res);
   }
 }

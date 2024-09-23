@@ -68,6 +68,7 @@ class Roaming extends StatefulWidget {
 class _RoamingState extends State<Roaming> {
   final RoamingController controller = Get.find<RoamingController>();
   final audioHandler = GetIt.instance<MusicHandler>();
+  var _showLyric = false;
 
   @override
   void initState() {
@@ -101,14 +102,14 @@ class _RoamingState extends State<Roaming> {
             height: 60.w,
           ),
         ),
-        Obx(() {
-          return PlayAlbumCover(
-            rotating: controller.playing.value,
-            pading: 40.w,
-            imgPic:
-                '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
-          );
-        }),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _showLyric = !_showLyric;
+            });
+          },
+          child: _showLyric ? _buildLyric(context) : _buildPlayer(context),
+        ),
         Expanded(
           child: SizedBox(
             height: 60.w,
@@ -381,6 +382,33 @@ class _RoamingState extends State<Roaming> {
         ],
       ),
     );
+  }
+
+  _buildLyric(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(maxHeight: 620.h, maxWidth: 620.w),
+      child: SingleChildScrollView(
+          child: Column(
+        children: List.generate(controller.lyricLineModels.length, (index) {
+          return Text(
+            textAlign: TextAlign.center,
+            controller.lyricLineModels[index].mainText ?? '',
+            style: TextStyle(color: Colors.white, fontSize: 30.w, height: 2),
+          );
+        }),
+      )),
+    );
+  }
+
+  _buildPlayer(BuildContext context) {
+    return Obx(() {
+      return PlayAlbumCover(
+        rotating: controller.playing.value,
+        pading: 40.w,
+        imgPic:
+            '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
+      );
+    });
   }
 }
 
