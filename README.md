@@ -14,7 +14,11 @@
 
 ## 展示
 
+<<<<<<< Updated upstream
 <img src="showcase/show_home.png" width="32%"><img src="showcase/show_player.png" width="32%">
+=======
+<img src="showcase/show_home.png" width="32%"><p style="display:inline-block;width: 40px;" /><img src="showcase/show_player.png" width="32%">
+>>>>>>> Stashed changes
 
 ## 项目介绍
 
