@@ -16,7 +16,9 @@ import 'drawer_item.dart';
 
 List<DrawerItem> getTopItem(BuildContext context) {
   return [
-    DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: "99"),
+    DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: "99", onTap: (){
+      GetIt.instance<AppRouter>().pushNamed(Routes.message);
+    }),
     DrawerItem(
       icon: TablerIcons.currency_ethereum,
       text: "云贝中心",
