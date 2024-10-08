@@ -21,6 +21,7 @@ abstract class Routes {
   static const songsList = _Paths.songsList;
   static const other = _Paths.other;
   static const comment = _Paths.comment;
+  static const message = _Paths.message;
 }
 
 abstract class _Paths {
@@ -42,6 +43,7 @@ abstract class _Paths {
   static const String songsList = '/songsList';
   static const String other = '*';
   static const String comment = '/comment';
+  static const String message = '/message';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -64,6 +66,7 @@ class AppRouter extends RootStackRouter {
           ],
         ),
         AutoRoute(path: Routes.search, page: Search.page),
+        AutoRoute(page: MessageRoute.page, path: Routes.message),
         AutoRoute(path: Routes.login, page: Login.page, guards: [AuthGuard()]),
         AutoRoute(path: Routes.splash, page: SplashRoute.page, initial: true),
         CustomRoute(

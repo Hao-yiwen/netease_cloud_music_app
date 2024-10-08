@@ -1,4 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/comment_music.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/song_info_dto.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/song_lyric.dart';
