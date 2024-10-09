@@ -13,6 +13,7 @@ import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
+import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
@@ -85,6 +86,11 @@ class MyObserver extends AutoRouterObserver {
         del
             ? Get.delete<SearchController>()
             : Get.lazyPut(() => SearchController());
+        break;
+      case MessageRoute.name:
+        del
+            ? Get.delete<MessageController>()
+            : Get.lazyPut(() => MessageController());
         break;
     }
   }

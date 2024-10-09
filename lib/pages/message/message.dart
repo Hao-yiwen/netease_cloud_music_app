@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 
 import '../../widgets/bottom_player_bar.dart';
 
 @RoutePage()
-class MessagePage extends StatelessWidget {
+class MessagePage extends GetView<MessageController> {
   const MessagePage({super.key});
 
   @override
@@ -34,12 +39,48 @@ class MessagePage extends StatelessWidget {
     );
   }
 
-
   _buildContent() {
-    return Container(
-      child: Center(
-        child: Text('Message'),
-      ),
-    );
+    return Obx(() {
+      return controller.loading.value
+          ? Center(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                width: 64.0,
+                height: 64.0,
+                child: const CircularProgressIndicator(),
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.only(bottom: 64.w),
+              child: ListView.builder(
+                itemCount: controller.privateMessage.value.msgs?.length ?? 0,
+                itemBuilder: (context, index) {
+                  var item = controller.privateMessage.value.msgs?[index];
+                  var lastMsg = "";
+                  if (controller.privateMessage.value.msgs?[index].lastMsg !=
+                      null) {
+                    // jsonString = jsonString.replaceAll(r'\\', '');
+                    Map<String, dynamic> jp = json.decode(
+                        controller.privateMessage.value.msgs?[index].lastMsg ??
+                            "");
+                    if (jp['msg'] != null) {
+                      lastMsg = jp['msg'];
+                    }
+                  }
+                  return ListTile(
+                    title: Text(item?.fromUser?.nickname ?? ""),
+                    subtitle: Text(
+                      lastMsg,
+                      maxLines: 1,
+                    ),
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(item?.fromUser?.avatarUrl ?? ""),
+                    ),
+                  );
+                },
+              ),
+            );
+    });
   }
 }
