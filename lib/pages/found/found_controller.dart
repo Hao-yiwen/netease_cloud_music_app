@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/found/dto/banner.dart';
 import 'package:netease_cloud_music_app/http/api/found/dto/home_block.dart';
+import 'package:netease_cloud_music_app/http/api/found/dto/mv_list.dart';
 import 'package:netease_cloud_music_app/http/api/main/main_api.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
@@ -28,15 +29,23 @@ class FoundController extends GetxController {
   RxList<MediaItem> newSong = <MediaItem>[].obs;
   RxList<MediaItem> digitalAlbums = <MediaItem>[].obs;
 
+  // 全部mv
+  Rx<MvList> mvList = MvList().obs;
+
   @override
   void onInit() {
     super.onInit();
     _getBanner();
     _getHomeBlock();
+    _getMvList();
   }
 
   refreshHome() {
     _getHomeBlock(isRefresh: true);
+  }
+
+  refreshMv() {
+    _getMvList();
   }
 
   _getBanner() async {
@@ -47,6 +56,17 @@ class FoundController extends GetxController {
       } else {
         banner.value = await FoundApi.getBanner(BannerType.ANDROID.value);
       }
+    } catch (e) {
+      LogBox.error(e);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  Future<void> _getMvList() async {
+    try {
+      loading.value = true;
+      mvList.value = await FoundApi.getAllMvList();
     } catch (e) {
       LogBox.error(e);
     } finally {
