@@ -74,6 +74,8 @@ dependencies:
   audio_service: ^0.18.15
   logger: ^2.4.0
   sliver_tools: ^0.2.12
+  chewie: ^1.8.5
+  video_player: ^2.9.2
 
 dependency_overrides:
   web: ^1.0.0

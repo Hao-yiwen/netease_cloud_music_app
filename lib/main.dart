@@ -14,6 +14,7 @@ import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
 import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
+import 'package:netease_cloud_music_app/pages/mv_player/mv_player_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
@@ -43,7 +44,8 @@ Future<void> main() async {
     splitScreenMode: true,
     builder: (BuildContext context, Widget? child) {
       ThemeBinding().dependencies();
-      LogBox.debug('Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
+      LogBox.debug(
+          'Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
       return Obx(() {
         return GetMaterialApp.router(
           theme: AppTheme.light,
@@ -91,6 +93,11 @@ class MyObserver extends AutoRouterObserver {
         del
             ? Get.delete<MessageController>()
             : Get.lazyPut(() => MessageController());
+        break;
+      case MvPlayer.name:
+        del
+            ? Get.delete<MvPlayerController>()
+            : Get.lazyPut(() => MvPlayerController());
         break;
     }
   }

@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
@@ -19,7 +18,6 @@ import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
 import '../../common/constants/strings.dart';
-import '../../common/constants/url.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
 import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
@@ -106,7 +104,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     labelPadding: EdgeInsets.zero,
                     tabs: const [
                       Tab(text: '音乐'),
-                      Tab(text: '博客'),
+                      Tab(text: 'MV'),
                       Tab(text: '直播'),
                       Tab(text: '听书'),
                       Tab(text: '派对'),
@@ -168,9 +166,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         },
         children: [
           _buildMusicFound(context),
-          const Center(
-            child: Text('Roaming'),
-          ),
+          _buildMvList(context),
           const Center(
             child: Text('Timeline'),
           ),
@@ -584,5 +580,62 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  _buildMvList(BuildContext context) {
+    return EasyRefresh.builder(
+        footer: null,
+        key: const Key('found'),
+        triggerAxis: Axis.vertical,
+        header: const ClassicHeader(
+          dragText: "下拉刷新",
+          armedText: "释放刷新",
+          processedText: "刷新完成",
+          failedText: "刷新失败",
+          noMoreText: "没有更多数据",
+          readyText: "正在刷新...",
+          messageText: "上次刷新时间 %T",
+        ),
+        controller: _refreshController,
+        onRefresh: () async {
+          controller.refreshMv();
+        },
+        onLoad: () async {},
+        childBuilder: (BuildContext context, ScrollPhysics physics) {
+          return ListView.builder(
+            physics: physics,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.only(top: 20.w),
+                child: GestureDetector(
+                  onTap: (){
+                    GetIt.instance<AppRouter>().push(MvPlayer(
+                      title: controller.mvList.value.data![index].name!,
+                      id: controller.mvList.value.data![index].id!,
+                      artist: controller.mvList.value.data![index].artistName!,
+                    ));
+                  },
+                  child: ListTile(
+                    leading: NeteaseCacheImage(
+                        picUrl: controller.mvList.value.data![index].cover!),
+                    title: Text(
+                      controller.mvList.value.data![index].name!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      controller.mvList.value.data![index].artistName!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            itemCount: controller.mvList.value.data?.length ?? 0,
+          );
+        });
   }
 }
