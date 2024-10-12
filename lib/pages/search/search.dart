@@ -79,8 +79,35 @@ class Search extends StatelessWidget {
   }
 
   _buildContent() {
-    return Center(
-      child: Text('Search Page'),
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      padding: const EdgeInsets.all(10.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSearchHistory(),
+            _buildSearchHot(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildSearchHistory() {
+    return Container(
+      child: Column(
+        children: [Text('搜索历史')],
+      ),
+    );
+  }
+
+  _buildSearchHot() {
+    return Container(
+      child: Column(
+        children: [Text('热门搜索')],
+      ),
     );
   }
 }

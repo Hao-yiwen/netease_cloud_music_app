@@ -1,10 +1,8 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:netease_cloud_music_app/common/constants/colours.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
@@ -59,7 +57,7 @@ class _HomeState extends State<Home> {
             ),
             bottomSheet: RoamingController.to.mediaItem.value.id == null
                 ? const SizedBox()
-                : BottomPlayerBar(),
+                : const BottomPlayerBar(),
             bottomNavigationBar: Obx(() {
               return BottomNavigationBar(
                 currentIndex:

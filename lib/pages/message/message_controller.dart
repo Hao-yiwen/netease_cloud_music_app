@@ -11,10 +11,9 @@ class MessageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _getPrivateMessage();
   }
 
-  Future<void> _getPrivateMessage() async {
+  Future<void> getPrivateMessage() async {
     try {
       loading.value = true;
       var res = await MessageApi.getPrivateMessage();
@@ -29,4 +28,6 @@ class MessageController extends GetxController {
       loading.value = false;
     }
   }
+
+  static MessageController get to => Get.find<MessageController>();
 }

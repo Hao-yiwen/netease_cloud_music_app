@@ -13,6 +13,7 @@ import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
+import 'package:netease_cloud_music_app/pages/message/message_binding.dart';
 import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/mv_player/mv_player_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
@@ -57,6 +58,7 @@ Future<void> main() async {
           initialBinding: BindingsBuilder(() {
             HomeBinding().dependencies();
             UserBinding().dependencies();
+            MessageBinding().dependencies();
           }),
           routeInformationParser: _appRouter.defaultRouteParser(),
         );
@@ -89,11 +91,11 @@ class MyObserver extends AutoRouterObserver {
             ? Get.delete<SearchController>()
             : Get.lazyPut(() => SearchController());
         break;
-      case MessageRoute.name:
-        del
-            ? Get.delete<MessageController>()
-            : Get.lazyPut(() => MessageController());
-        break;
+      // case MessageRoute.name:
+      //   del
+      //       ? Get.delete<MessageController>()
+      //       : Get.lazyPut(() => MessageController());
+      //   break;
       case MvPlayer.name:
         del
             ? Get.delete<MvPlayerController>()

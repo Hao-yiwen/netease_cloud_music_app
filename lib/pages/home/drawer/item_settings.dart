@@ -14,9 +14,9 @@ import '../../../routes/routes.gr.dart';
 import '../../user/user_controller.dart';
 import 'drawer_item.dart';
 
-List<DrawerItem> getTopItem(BuildContext context) {
+List<DrawerItem> getTopItem(BuildContext context, {int? messageCount}) {
   return [
-    DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: "99", onTap: (){
+    DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: (messageCount ?? 0).toString(), onTap: (){
       GetIt.instance<AppRouter>().pushNamed(Routes.message);
     }),
     DrawerItem(

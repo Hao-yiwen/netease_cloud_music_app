@@ -66,7 +66,7 @@ class Main extends GetView<MainController> {
   _buildSearchBar(BuildContext context) {
     return Container(
       height: 70.w,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
         borderRadius: BorderRadius.circular(20),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
+import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'drawer_item.dart';
@@ -16,6 +17,8 @@ class DrawerHome extends StatefulWidget {
 }
 
 class _DrawerHomeState extends State<DrawerHome> {
+  MessageController messageController = Get.find<MessageController>();
+
   @override
   void initState() {
     super.initState();
@@ -86,9 +89,9 @@ class _DrawerHomeState extends State<DrawerHome> {
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             GestureDetector(
-              child: Icon(
+              child: const Icon(
                 TablerIcons.scan,
                 color: Colors.black54,
               ),
@@ -104,7 +107,10 @@ class _DrawerHomeState extends State<DrawerHome> {
     return Expanded(
       child: CustomScrollView(
         slivers: [
-          _buildCardContent(list: getTopItem(context)),
+          _buildCardContent(
+              list: getTopItem(context,
+                  messageCount:
+                      messageController.privateMessage.value.newMsgCount)),
           _buildCardContent(list: getListMusicService(context)),
           _buildCardContent(list: getListSettings(context)),
           _buildCardContent(list: getListBottomInfo(context)),
