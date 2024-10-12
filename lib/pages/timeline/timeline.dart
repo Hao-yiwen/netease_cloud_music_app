@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart';
 import 'package:netease_cloud_music_app/widgets/user_event_widget.dart';
 
+import '../home/home_controller.dart';
+
 @RoutePage()
 class Timeline extends StatefulWidget {
   const Timeline({super.key});
@@ -24,7 +26,7 @@ class _TimelineState extends State<Timeline> {
       child: Column(
         children: [
           _buildHeader(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           _buildCOntainet()
@@ -42,7 +44,9 @@ class _TimelineState extends State<Timeline> {
             TablerIcons.menu_2,
             size: 40.w,
           ),
-          onTap: () {},
+          onTap: () {
+            HomeController.to.scaffoldKey.value.currentState?.openDrawer();
+          },
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -68,7 +72,7 @@ class _TimelineState extends State<Timeline> {
           child: Container(
             width: 50.w, // 根据你的需求调整宽度和高度
             height: 50.w,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.red, // 设置外面圆的颜色为红色
               shape: BoxShape.circle, // 确保形状为圆形
             ),

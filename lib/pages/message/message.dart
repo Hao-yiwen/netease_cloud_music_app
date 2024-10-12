@@ -18,7 +18,7 @@ class MessagePage extends GetView<MessageController> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Message'),
+        title: const Text('Message'),
       ),
       body: Stack(
         children: [
@@ -31,7 +31,7 @@ class MessagePage extends GetView<MessageController> {
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: BottomPlayerBar(),
+                  child: const BottomPlayerBar(),
                 ),
               ))
         ],
