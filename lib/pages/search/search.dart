@@ -1,14 +1,45 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/common/constants/other.dart';
+import 'package:netease_cloud_music_app/pages/search/searchpage_controller.dart';
+import 'package:netease_cloud_music_app/pages/search/widgets/search_page_bar.dart';
+import 'package:netease_cloud_music_app/routes/routes.dart';
 
+import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
 
 @RoutePage()
-class Search extends StatelessWidget {
+class Search extends StatefulWidget {
   const Search({super.key});
+
+  @override
+  State<Search> createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  late SearchpageController controller;
+  var textvalue = '';
+  TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    Get.lazyPut(() => SearchpageController());
+    controller = Get.find<SearchpageController>();
+    super.initState();
+  }
+
+  _gotoSearchDetail(BuildContext context) {
+    if (textvalue.isEmpty) {
+      WidgetUtil.showToast('请输入搜索内容');
+      return;
+    }
+    GetIt.instance<AppRouter>().push(SearchDetail(keywords: textvalue));
+    controller.searchKeyWords(textvalue);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +61,23 @@ class Search extends StatelessWidget {
           ),
         ),
         leadingWidth: 40,
-        title: _buildSearchBar(context),
+        title: SearchPageBar(
+          search: _gotoSearchDetail,
+          setTextValue: (value) {
+            textvalue = value;
+          },
+          textEditingController: textEditingController,
+        ),
         actions: [
           SizedBox(
             width: 15,
           ),
-          Text('搜索', style: TextStyle(fontSize: 30.w)),
+          GestureDetector(
+            onTap: () {
+              _gotoSearchDetail(context);
+            },
+            child: Text('搜索', style: TextStyle(fontSize: 30.w)),
+          ),
           SizedBox(
             width: 10,
           ),
@@ -55,24 +97,6 @@ class Search extends StatelessWidget {
                   child: BottomPlayerBar(),
                 ),
               ))
-        ],
-      ),
-    );
-  }
-
-  _buildSearchBar(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          SizedBox(width: 10),
-          Icon(Icons.search),
-          Text('搜索歌曲、歌手、专辑',
-              style: TextStyle(color: Colors.grey, fontSize: 30.w)),
         ],
       ),
     );

@@ -23,6 +23,7 @@ abstract class Routes {
   static const comment = _Paths.comment;
   static const message = _Paths.message;
   static const mvPlayer = _Paths.mvPlayer;
+  static const searchDetail = _Paths.searchDetail;
 }
 
 abstract class _Paths {
@@ -46,6 +47,7 @@ abstract class _Paths {
   static const String comment = '/comment';
   static const String message = '/message';
   static const String mvPlayer = '/mvPlayer';
+  static const String searchDetail = '/searchDetail';
 }
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -84,6 +86,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: Routes.songsList, page: SongsList.page),
         AutoRoute(path: Routes.comment, page: CommentRoute.page),
         AutoRoute(path: Routes.mvPlayer, page: MvPlayer.page),
+        AutoRoute(path: Routes.searchDetail, page: SearchDetail.page),
         AutoRoute(path: Routes.other, page: ErrorRoute.page),
       ];
 

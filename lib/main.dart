@@ -86,11 +86,6 @@ class MyObserver extends AutoRouterObserver {
             ? Get.delete<SplashController>()
             : Get.lazyPut(() => SplashController());
         break;
-      case Search.name:
-        del
-            ? Get.delete<SearchController>()
-            : Get.lazyPut(() => SearchController());
-        break;
       // case MessageRoute.name:
       //   del
       //       ? Get.delete<MessageController>()
