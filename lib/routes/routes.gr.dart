@@ -321,14 +321,10 @@ class Search extends _i19.PageRouteInfo<void> {
 class SearchDetail extends _i19.PageRouteInfo<SearchDetailArgs> {
   SearchDetail({
     _i20.Key? key,
-    required String keywords,
     List<_i19.PageRouteInfo>? children,
   }) : super(
           SearchDetail.name,
-          args: SearchDetailArgs(
-            key: key,
-            keywords: keywords,
-          ),
+          args: SearchDetailArgs(key: key),
           initialChildren: children,
         );
 
@@ -337,28 +333,21 @@ class SearchDetail extends _i19.PageRouteInfo<SearchDetailArgs> {
   static _i19.PageInfo page = _i19.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<SearchDetailArgs>();
-      return _i13.SearchDetail(
-        key: args.key,
-        keywords: args.keywords,
-      );
+      final args =
+          data.argsAs<SearchDetailArgs>(orElse: () => const SearchDetailArgs());
+      return _i13.SearchDetail(key: args.key);
     },
   );
 }
 
 class SearchDetailArgs {
-  const SearchDetailArgs({
-    this.key,
-    required this.keywords,
-  });
+  const SearchDetailArgs({this.key});
 
   final _i20.Key? key;
 
-  final String keywords;
-
   @override
   String toString() {
-    return 'SearchDetailArgs{key: $key, keywords: $keywords}';
+    return 'SearchDetailArgs{key: $key}';
   }
 }
 
