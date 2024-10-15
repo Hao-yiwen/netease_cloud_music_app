@@ -22,23 +22,26 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   late SearchpageController controller;
-  var textvalue = '';
   TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
     Get.lazyPut(() => SearchpageController());
     controller = Get.find<SearchpageController>();
+    textEditingController.text = controller.textvalue.value;
+    controller.getSearchKeyWords();
     super.initState();
   }
 
   _gotoSearchDetail(BuildContext context) {
-    if (textvalue.isEmpty) {
+    if (controller.textvalue.value.isEmpty) {
       WidgetUtil.showToast('请输入搜索内容');
       return;
     }
-    GetIt.instance<AppRouter>().push(SearchDetail(keywords: textvalue));
-    controller.searchKeyWords(textvalue);
+    GetIt.instance<AppRouter>().push(SearchDetail());
+    controller.searchKeyWords(controller.textvalue.value);
+    // 保存搜索结果
+    controller.saveSearchKeyWords(controller.textvalue.value);
   }
 
   @override
@@ -52,19 +55,18 @@ class _SearchState extends State<Search> {
           onTap: () {
             Navigator.of(context).pop();
           },
-          child: Container(
-            child: Center(
-                child: Icon(
-              TablerIcons.chevron_left,
-              size: 60.w,
-            )),
-          ),
+          child: Center(
+              child: Icon(
+            TablerIcons.chevron_left,
+            size: 60.w,
+          )),
         ),
         leadingWidth: 40,
         title: SearchPageBar(
           search: _gotoSearchDetail,
           setTextValue: (value) {
-            textvalue = value;
+            controller.textvalue.value = value;
+            controller.searchSuggest(value);
           },
           textEditingController: textEditingController,
         ),
@@ -94,9 +96,10 @@ class _SearchState extends State<Search> {
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: BottomPlayerBar(),
+                  child: const BottomPlayerBar(),
                 ),
-              ))
+              )),
+          _buildKeyWords(context),
         ],
       ),
     );
@@ -121,17 +124,115 @@ class _SearchState extends State<Search> {
 
   _buildSearchHistory() {
     return Container(
-      child: Column(
-        children: [Text('搜索历史')],
-      ),
+      child: Obx(() {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('搜索历史'),
+            Wrap(
+              spacing: 10, // 控制水平间距
+              runSpacing: 5, // 控制垂直间距
+              children: controller.searchKey.map((e) {
+                return GestureDetector(
+                  onTap: () {
+                    textEditingController.text = e;
+                    controller.textvalue.value = e;
+                    _gotoSearchDetail(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          e,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: GestureDetector(
+                            onTap: () {
+                              controller.deleteSearchKeyWords(e);
+                            },
+                            child: Icon(TablerIcons.trash, size: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      }),
     );
   }
 
   _buildSearchHot() {
     return Container(
+      padding: EdgeInsets.only(top: 20),
       child: Column(
         children: [Text('热门搜索')],
       ),
     );
+  }
+
+  _buildKeyWords(BuildContext context) {
+    return Obx(() {
+      if (controller.textvalue.value.isNotEmpty) {
+        return Container(
+          height: double.infinity,
+          width: double.infinity,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: controller
+                      .keyWordsSuggest.value?.result?.allMatch?.isNotEmpty ==
+                  true
+              ? ListView.builder(
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        textEditingController.text = controller.keyWordsSuggest
+                                .value?.result?.allMatch?[index].keyword ??
+                            '';
+                        controller.textvalue.value = controller.keyWordsSuggest
+                                .value?.result?.allMatch?[index].keyword ??
+                            '';
+                        _gotoSearchDetail(context);
+                      },
+                      child: ListTile(
+                        leading: Icon(
+                          TablerIcons.search,
+                          color: Colors.blueAccent,
+                        ),
+                        title: Text(
+                          controller.keyWordsSuggest.value?.result
+                                  ?.allMatch?[index].keyword ??
+                              '',
+                          style: TextStyle(
+                              fontSize: 25.w, color: Colors.blueAccent),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: controller
+                          .keyWordsSuggest.value?.result?.allMatch?.length ??
+                      0,
+                )
+              : Container(
+                  child: Text(
+                    '继续搜索',
+                    style: TextStyle(fontSize: 30.w, color: Colors.blueAccent),
+                  ),
+                ),
+        );
+      }
+      return Container();
+    });
   }
 }

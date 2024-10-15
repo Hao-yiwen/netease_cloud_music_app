@@ -14,36 +14,49 @@ class SearchPageBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: TextField(
-              controller: textEditingController,
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                isDense: true,
-                prefixIcon: Icon(Icons.search),
-                hintText: '搜索歌曲、歌手、专辑',
-                hintStyle: TextStyle(fontSize: 30.w),
-                border: InputBorder.none,
-              ),
-              onChanged: (value) {
-                setTextValue(value);
-              },
-              onSubmitted: (value) {
-                search(context);
-              },
-            ),
+    return Stack(
+      children: [
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
-      ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: textEditingController,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    prefixIcon: Icon(Icons.search),
+                    hintText: '搜索歌曲、歌手、专辑',
+                    hintStyle: TextStyle(fontSize: 30.w),
+                    border: InputBorder.none,
+                    suffixIcon: textEditingController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: () {
+                              textEditingController.clear();
+                              setTextValue('');
+                            },
+                          )
+                        : null,
+                  ),
+                  onChanged: (value) {
+                    setTextValue(value);
+                  },
+                  onSubmitted: (value) {
+                    search(context);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
