@@ -5,4 +5,4 @@ final NETEASE_INFO_LIST =
 // final BASE_URL = 'http://39.105.115.83:1231/';
 final BASE_URL = 'http://127.0.0.1:3000/';
 
-final PLACE_IMAGE_HOLDER = 'https://placehold.it/100x100';
+final PLACE_IMAGE_HOLDER = 'https://picsum.photos/100/100';
