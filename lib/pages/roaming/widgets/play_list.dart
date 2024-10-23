@@ -35,12 +35,24 @@ class PlayList extends StatelessWidget {
                 : Colors.transparent,
             title: Padding(
               padding: EdgeInsets.only(left: 20.w),
-              child: Text(
-                mediaItems[index].title + (mediaItems[index].artist ?? ''),
-                style: const TextStyle(color: Colors.black),
-                // Text color for better contrast
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Row(
+                children: [
+                  Text(
+                    mediaItems[index].title,
+                    style: const TextStyle(color: Colors.black),
+                    // Text color for better contrast
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    (mediaItems[index].artist ?? ''),
+                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    // Text color for better contrast
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
               ),
             ),
             trailing: mediaItems[index] == currentItem

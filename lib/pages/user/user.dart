@@ -228,7 +228,7 @@ class _MineState extends State<User> with TickerProviderStateMixin {
             GestureDetector(
               child: Icon(TablerIcons.search, color: _iconColor),
               onTap: () {
-                // Open settings page
+                AutoRouter.of(context).pushNamed(Routes.search);
               },
             ),
             Padding(

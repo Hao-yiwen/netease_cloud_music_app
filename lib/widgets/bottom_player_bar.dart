@@ -3,13 +3,62 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/common/constants/url.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
 import '../pages/roaming/widgets/play_list.dart';
 
-class BottomPlayerBar extends GetView<RoamingController> {
+class BottomPlayerBar extends StatefulWidget {
   const BottomPlayerBar({super.key});
+
+  @override
+  State<BottomPlayerBar> createState() => _BottomPlayerBarState();
+}
+
+class _BottomPlayerBarState extends State<BottomPlayerBar>
+    with TickerProviderStateMixin {
+  final RoamingController controller = Get.find<RoamingController>();
+  late AnimationController _controller;
+  double rotation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this, duration: Duration(seconds: 20))
+      ..addListener(() {
+        setState(() {
+          rotation = _controller.value * 2 * 3.14;
+        });
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.dismissed && controller.playing.value) {
+          _controller.forward(from: _controller.value);
+        }
+        if (status == AnimationStatus.completed && _controller.value == 1) {
+          _controller.forward(from: 0);
+        }
+      });
+
+    if (controller.playing.value) {
+      _controller.forward(from: _controller.value);
+    }
+
+    ever(controller.playing, (isPlaying) {
+      if (isPlaying) {
+        _controller.forward(from: _controller.value);
+      } else {
+        _controller.stop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +143,7 @@ class BottomPlayerBar extends GetView<RoamingController> {
                         ),
                         context: context,
                         builder: (context) {
+                          LogBox.info('mediaItems: ${controller.mediaItems}');
                           return Obx(() {
                             return Container(
                               padding: EdgeInsets.only(
@@ -134,12 +184,10 @@ class BottomPlayerBar extends GetView<RoamingController> {
           fit: BoxFit.cover,
         ),
         Positioned.fill(
-            child: Image.asset(ImageUtils.getImagePath('play_disc'))),
-        Positioned.fill(
             child: Padding(
           padding: EdgeInsets.all(20.w),
           child: Transform.rotate(
-            angle: 0,
+            angle: rotation,
             child: ClipOval(
               child: Image.network(
                 controller.mediaItem.value.extras?["image"] ??
@@ -149,6 +197,8 @@ class BottomPlayerBar extends GetView<RoamingController> {
             ),
           ),
         )),
+        Positioned.fill(
+            child: Image.asset(ImageUtils.getImagePath('play_disc'))),
       ],
     );
   }

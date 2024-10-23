@@ -129,9 +129,12 @@ class _SearchState extends State<Search> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('搜索历史'),
+            SizedBox(
+              height: 10,
+            ),
             Wrap(
               spacing: 10, // 控制水平间距
-              runSpacing: 5, // 控制垂直间距
+              runSpacing: 15, // 控制垂直间距
               children: controller.searchKey.map((e) {
                 return GestureDetector(
                   onTap: () {
@@ -142,7 +145,7 @@ class _SearchState extends State<Search> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: Colors.grey,
+                      color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Row(
@@ -189,7 +192,7 @@ class _SearchState extends State<Search> {
           height: double.infinity,
           width: double.infinity,
           color: Theme.of(context).scaffoldBackgroundColor,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10),
           child: controller
                       .keyWordsSuggest.value?.result?.allMatch?.isNotEmpty ==
                   true
@@ -208,14 +211,14 @@ class _SearchState extends State<Search> {
                       child: ListTile(
                         leading: Icon(
                           TablerIcons.search,
-                          color: Colors.blueAccent,
+                          color: Colors.grey,
                         ),
                         title: Text(
                           controller.keyWordsSuggest.value?.result
                                   ?.allMatch?[index].keyword ??
                               '',
                           style: TextStyle(
-                              fontSize: 25.w, color: Colors.blueAccent),
+                              fontSize: 25.w, color: Colors.grey[800]),
                         ),
                       ),
                     );

@@ -5,6 +5,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/colors.dart';
+import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/constants/url.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
@@ -13,6 +14,7 @@ import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
+import '../../common/constants/strings.dart';
 import '../../common/music_handler.dart';
 import 'dart:math' as math;
 
@@ -149,7 +151,9 @@ class _RoamingState extends State<Roaming> {
           padding: EdgeInsets.only(right: 20.w),
           child: IconButton(
             icon: Icon(TablerIcons.share, color: Colors.grey[400], size: 45.w),
-            onPressed: () {},
+            onPressed: () {
+              WidgetUtil.showToast(WAIT_DEVELOP);
+            },
           ),
         ),
       ],
