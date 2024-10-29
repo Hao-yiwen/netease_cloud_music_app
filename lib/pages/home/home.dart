@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
+import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
 import 'package:netease_cloud_music_app/common/constants/colours.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/mian_binding.dart';
@@ -117,7 +118,7 @@ class _HomeState extends State<Home> {
                   _buildBottomNavigationBarItem(
                     context,
                     icon: TablerIcons.user,
-                    label: '我的',
+                    label: AppStrings.my,
                     isSelected:
                         HomeController.to.tabsRouter.value!.activeIndex ==
                             TAB_ENUM.user.value,

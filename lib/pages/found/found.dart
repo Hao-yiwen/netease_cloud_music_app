@@ -17,7 +17,7 @@ import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
 
-import '../../common/constants/strings.dart';
+import '../../common/constants/app_strings.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
 import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
@@ -295,7 +295,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
           builder: (BuildContext context) {
             return GestureDetector(
               onTap: () {
-                WidgetUtil.showToast(WAIT_DEVELOP);
+                WidgetUtil.showToast(AppStrings.waitDevelop);
               },
               child: Container(
                   width: ScreenUtil().screenWidth,
@@ -608,7 +608,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               return Padding(
                 padding: EdgeInsets.only(top: 20.w),
                 child: GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     GetIt.instance<AppRouter>().push(MvPlayer(
                       title: controller.mvList.value.data![index].name!,
                       id: controller.mvList.value.data![index].id!,

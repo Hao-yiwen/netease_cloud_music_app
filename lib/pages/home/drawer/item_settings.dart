@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
 import 'package:netease_cloud_music_app/common/service/theme_service.dart';
 
 import '../../../common/constants/url.dart';
@@ -16,9 +17,13 @@ import 'drawer_item.dart';
 
 List<DrawerItem> getTopItem(BuildContext context, {int? messageCount}) {
   return [
-    DrawerItem(icon: TablerIcons.mail, text: "我的消息", badge: (messageCount ?? 0).toString(), onTap: (){
-      GetIt.instance<AppRouter>().pushNamed(Routes.message);
-    }),
+    DrawerItem(
+        icon: TablerIcons.mail,
+        text: "我的消息",
+        badge: (messageCount ?? 0).toString(),
+        onTap: () {
+          GetIt.instance<AppRouter>().pushNamed(Routes.message);
+        }),
     DrawerItem(
       icon: TablerIcons.currency_ethereum,
       text: "云贝中心",
@@ -79,11 +84,11 @@ List<DrawerItem> getListSettings(BuildContext context) {
   return [
     DrawerItem(
       icon: TablerIcons.settings,
-      text: "设置",
+      text: AppStrings.setting,
     ),
     DrawerItem(
         icon: TablerIcons.moon_stars,
-        text: "深色模式",
+        text: AppStrings.darkMode,
         trailing: SizedBox(
             height: 60.w,
             width: 120.w,

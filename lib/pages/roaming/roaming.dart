@@ -14,7 +14,7 @@ import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 
-import '../../common/constants/strings.dart';
+import '../../common/constants/app_strings.dart';
 import '../../common/music_handler.dart';
 import 'dart:math' as math;
 
@@ -152,7 +152,7 @@ class _RoamingState extends State<Roaming> {
           child: IconButton(
             icon: Icon(TablerIcons.share, color: Colors.grey[400], size: 45.w),
             onPressed: () {
-              WidgetUtil.showToast(WAIT_DEVELOP);
+              WidgetUtil.showToast(AppStrings.waitDevelop);
             },
           ),
         ),
