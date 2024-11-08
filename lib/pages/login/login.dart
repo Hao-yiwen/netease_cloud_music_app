@@ -19,6 +19,7 @@ class _LoginState extends State<Login> {
   final LoginController controller = LoginController.to;
   final TextEditingController phone = TextEditingController();
   final TextEditingController captcha = TextEditingController();
+  int time = 60;
 
   @override
   void initState() {
@@ -62,7 +63,6 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    // todo 太丑了 要优化
                     Expanded(
                       flex: 1,
                       child: GestureDetector(

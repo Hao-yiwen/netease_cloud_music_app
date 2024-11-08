@@ -12,7 +12,6 @@ import 'package:netease_cloud_music_app/http/api/main/dto/playlist_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../routes/routes.dart';
 import '../../widgets/song_card.dart';
@@ -165,9 +164,7 @@ class Main extends GetView<MainController> {
                                   '${HomeController.to.userData.value.profile!.nickname ?? ""}的雷达歌单',
                                   controller
                                       .recommendResourceDto.value!.recommend!),
-                            if (controller.personalizedPlayLists.value !=
-                                    null &&
-                                controller
+                            if (controller
                                     .personalizedPlayLists.value.isNotEmpty)
                               _buildRecommendPlayList(context, '推荐歌单',
                                   controller.personalizedPlayLists.value),
@@ -207,116 +204,112 @@ class Main extends GetView<MainController> {
             padding: const EdgeInsets.only(top: 10),
             child: SizedBox(
               height: 280.w,
-              child: Skeletonizer(
-                enabled: controller.loading.value,
-                enableSwitchAnimation: true,
-                child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: <Widget>[
-                      if (controller.recommendSongsDto.value.dailySongs !=
-                              null &&
-                          controller
-                              .recommendSongsDto.value.dailySongs!.isNotEmpty)
-                        Row(
-                          children: [
-                            MusicCard(
-                              title: "每日推荐",
-                              subTitle: "符合你口味的新鲜好歌",
-                              icon: TablerIcons.calendar,
-                              cardPic:
-                                  controller.dailySongs[0].extras?['image'] ??
-                                      '',
-                              onTapHandle: () {
-                                GetIt.instance<AppRouter>().push(SongsList(
-                                    songs: controller.dailySongs,
-                                    title: '每日推荐',
-                                    picUrl: controller
-                                            .dailySongs[0].extras?['image'] ??
-                                        ''));
-                              },
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                          ],
-                        ),
-                      if (controller.personalFmSongs.value.isNotEmpty)
-                        Row(
-                          children: [
-                            MusicCard(
-                              title: "私人漫游",
-                              subTitle: "多种听歌模式随心播放",
-                              icon: TablerIcons.radio,
-                              cardPic: controller.personalFmSongs.value[0]
-                                      .extras?['image'] ??
-                                  '',
-                              onTapHandle: () {
-                                Roaming.showBottomPlayer(context);
-                              },
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                          ],
-                        ),
-                      if (controller.privateRadarSongs.value.isNotEmpty)
-                        Row(
-                          children: [
-                            MusicCard(
-                              title: "私人雷达",
-                              subTitle: "你爱的歌值得反复聆听",
-                              icon: TablerIcons.radio,
-                              cardPic: controller.privateRadarSongs.value[0]
-                                      .extras?['image'] ??
-                                  '',
-                              onTapHandle: () {
-                                GetIt.instance<AppRouter>().push(SongsList(
-                                    songs: controller.privateRadarSongs.value,
-                                    title: '私人雷达',
-                                    picUrl: controller.privateRadarSongs
-                                            .value[0].extras?['image'] ??
-                                        ''));
-                              },
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                          ],
-                        ),
-                      if (controller.similarSongs.value.isNotEmpty)
-                        Row(
-                          children: [
-                            MusicCard(
-                              title: "相似歌曲",
-                              subTitle: "从你喜欢的歌听起",
-                              cardPic: controller
-                                      .similarSongs.value[0].extras?['image'] ??
-                                  '',
-                              onTapHandle: () {
-                                Roaming.showBottomPlayer(context);
-                              },
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                          ],
-                        ),
-                      if (controller.personalizedDjprogramDto.value != null &&
-                          controller.personalizedDjprogramDto.value!.result !=
-                              null)
-                        MusicCard(
-                          title: "音乐播客",
-                          subTitle: controller.personalizedDjprogramDto.value!
-                                  .result![0].name ??
-                              "",
-                          cardPic: controller.personalizedDjprogramDto.value!
-                              .result![0].picUrl,
-                          onTapHandle: () {
-                            Roaming.showBottomPlayer(context);
-                          },
-                        ),
-                    ]),
-              ),
+              child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[
+                    if (controller.recommendSongsDto.value.dailySongs !=
+                            null &&
+                        controller
+                            .recommendSongsDto.value.dailySongs!.isNotEmpty)
+                      Row(
+                        children: [
+                          MusicCard(
+                            title: "每日推荐",
+                            subTitle: "符合你口味的新鲜好歌",
+                            icon: TablerIcons.calendar,
+                            cardPic:
+                                controller.dailySongs[0].extras?['image'] ??
+                                    '',
+                            onTapHandle: () {
+                              GetIt.instance<AppRouter>().push(SongsList(
+                                  songs: controller.dailySongs,
+                                  title: '每日推荐',
+                                  picUrl: controller
+                                          .dailySongs[0].extras?['image'] ??
+                                      ''));
+                            },
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                        ],
+                      ),
+                    if (controller.personalFmSongs.value.isNotEmpty)
+                      Row(
+                        children: [
+                          MusicCard(
+                            title: "私人漫游",
+                            subTitle: "多种听歌模式随心播放",
+                            icon: TablerIcons.radio,
+                            cardPic: controller.personalFmSongs.value[0]
+                                    .extras?['image'] ??
+                                '',
+                            onTapHandle: () {
+                              Roaming.showBottomPlayer(context);
+                            },
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                        ],
+                      ),
+                    if (controller.privateRadarSongs.value.isNotEmpty)
+                      Row(
+                        children: [
+                          MusicCard(
+                            title: "私人雷达",
+                            subTitle: "你爱的歌值得反复聆听",
+                            icon: TablerIcons.radio,
+                            cardPic: controller.privateRadarSongs.value[0]
+                                    .extras?['image'] ??
+                                '',
+                            onTapHandle: () {
+                              GetIt.instance<AppRouter>().push(SongsList(
+                                  songs: controller.privateRadarSongs.value,
+                                  title: '私人雷达',
+                                  picUrl: controller.privateRadarSongs
+                                          .value[0].extras?['image'] ??
+                                      ''));
+                            },
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                        ],
+                      ),
+                    if (controller.similarSongs.value.isNotEmpty)
+                      Row(
+                        children: [
+                          MusicCard(
+                            title: "相似歌曲",
+                            subTitle: "从你喜欢的歌听起",
+                            cardPic: controller
+                                    .similarSongs.value[0].extras?['image'] ??
+                                '',
+                            onTapHandle: () {
+                              Roaming.showBottomPlayer(context);
+                            },
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                        ],
+                      ),
+                    if (controller.personalizedDjprogramDto.value != null &&
+                        controller.personalizedDjprogramDto.value!.result !=
+                            null)
+                      MusicCard(
+                        title: "音乐播客",
+                        subTitle: controller.personalizedDjprogramDto.value!
+                                .result![0].name ??
+                            "",
+                        cardPic: controller.personalizedDjprogramDto.value!
+                            .result![0].picUrl,
+                        onTapHandle: () {
+                          Roaming.showBottomPlayer(context);
+                        },
+                      ),
+                  ]),
             ),
           )
         ],

@@ -154,7 +154,7 @@ class MainController extends GetxController {
   }
 
   /**
-   * 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
+   * @description: 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
    */
   _getSameSongsFromSomeRadomMusic() async {
     try {
