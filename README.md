@@ -40,7 +40,7 @@ flutter版本网易云音乐
 - 漫游页面 roam - 已完成
 - 动态页面 timeline - 已完成
 - 我的页面 user - 已完成
-- 搜索页面 search - 进行中
+- 搜索页面 search - 已完成
 - 歌单页面 songlist - 已完成
 - mv页面 mv - 已完成
 - 评论页面 comment - 已完成
@@ -59,7 +59,7 @@ flutter版本网易云音乐
 - 漫游功能重构 - 未开始
 - 页面样式优化&代码优化 - 未开始
 - 网络库优化 - 未开始
-- android适配 - 未开始
+- android适配 - 进行中
 - loading效果收口 - 未开始
 
 ### p2
