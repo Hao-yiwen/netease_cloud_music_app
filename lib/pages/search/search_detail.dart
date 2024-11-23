@@ -182,7 +182,7 @@ class _SearchDetailState extends State<SearchDetail>
             itemBuilder: (context, index) {
               return GestureDetector(
                 key: ValueKey(controller.songList.value.result?.playlists?[index]
-                    .id),
+                    .id ?? index),
                 onTap: () async {
                   final lists = await MainController.to
                       .getPlayListDetail(controller.songList.value.result?.playlists?[index].id ?? 0);
