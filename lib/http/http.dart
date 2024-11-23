@@ -13,6 +13,7 @@ import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 import 'error_interceptor.dart';
 import 'api/login/dto/login_status_dto.dart';
+import 'package:path/path.dart' as path;
 
 class Http {
   ///超时时间
@@ -243,7 +244,20 @@ class UserLoginStateController {
   }
 
   File _saveFile() {
-    return File(Http.pathProvider.getDataSavedPath() + "_accountInfo.json");
+    final String dirPath = Http.pathProvider.getDataSavedPath();
+    final Directory directory = Directory(dirPath);
+
+    // 确保目录存在
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+
+    final String filePath = path.join(dirPath, "_accountInfo.json");
+    final File file = File(filePath);
+
+    LogBox.info("Account file path: $filePath"); // 用于调试
+
+    return file;
   }
 
   void onLogined(LoginStatusDto info) {
@@ -259,14 +273,37 @@ class UserLoginStateController {
   Future<void> _readAccountInfo() async {
     try {
       File file = _saveFile();
+      // 检查文件是否存在
       if (!file.existsSync()) {
-        throw Exception("Account file not found");
+        LogBox.info("账户文件不存在，可能是首次登录");
+        return; // 直接返回，不抛出异常
       }
+
+      // 读取文件内容
       String accountInfo = file.readAsStringSync();
-      _accountInfo = LoginStatusDto.fromJson(jsonDecode(accountInfo));
-    } catch (e) {
-      LogBox.error(e);
-      await onLogout();
+      if (accountInfo.isEmpty) {
+        LogBox.info("账户文件为空");
+        return;
+      }
+
+      // 解析 JSON
+      final Map<String, dynamic> jsonMap = jsonDecode(accountInfo);
+      if (jsonMap == null || jsonMap.isEmpty) {
+        LogBox.info("账户数据解析为空");
+        return;
+      }
+
+      // 转换为对象
+      _accountInfo = LoginStatusDto.fromJson(jsonMap);
+      LogBox.info("账户信息读取成功");
+
+    } catch (e, stackTrace) {
+      LogBox.error("读取账户信息失败: $e");
+      LogBox.error(stackTrace); // 打印堆栈信息以便调试
+      // 只有在确实需要登出时才调用 onLogout
+      if (e is! FileSystemException) { // 如果不是文件系统错误，则登出
+        await onLogout();
+      }
     }
   }
 
