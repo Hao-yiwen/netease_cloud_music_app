@@ -1,37 +1,58 @@
-# 仿网易云音乐项目
+# 网易云音乐 Flutter 版
 
 ![Flutter](https://img.shields.io/badge/flutter-v3.24.1-blue)
-
-## 项目运行
-
-此项目已经基本稳定，欢迎大家提出宝贵意见，帮助我们做得更好。
-
-1. 启动后端服务，端口默认3000
-    - git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
-    - npm i
-    - node app.js
-2. 启动该项目，目前只支持短信验证码登录
-
-## 展示
-
-<img src="showcase/show_home.png" width="30%" style="display:inline-block;" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="showcase/show_player.png" width="30%" style="display:inline-block;" />
+![iOS](https://img.shields.io/badge/iOS-12.0+-lightgrey)
+![Android](https://img.shields.io/badge/Android-6.0+-brightgreen)
 
 
-## 项目介绍
 
-flutter版本网易云音乐
+## 项目简介
 
-- 仿照网易云音乐版本 9.1.55
+这是一个使用 Flutter 开发的网易云音乐第三方客户端，致力于还原官方 App 的用户体验。
 
-- flutter开发版本: 3.24.1
+### 技术特点
 
-- 后端接口：https://github.com/Binaryify/NeteaseCloudMusicApi
+- 基于网易云音乐 9.1.55 版本进行开发
+- Flutter SDK 版本: 3.24.1
+- 后端接口采用开源项目：[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
+- 核心技术栈：
+  - 状态管理：GetX
+  - 依赖注入：GetIt
+  - 路由管理：GoRouter/AutoRouter
 
-- 参考项目：
-    - https://github.com/2697a/bujuan autoroute
-    - https://gitee.com/master_xing/flutter_cloud_music 底部粘性播放条实现
+### 参考项目
 
-- 技术栈：getx, getit, gorouter/autoRouter
+- [bujuan](https://github.com/2697a/bujuan) - AutoRoute 实现参考
+- [flutter_cloud_music](https://gitee.com/master_xing/flutter_cloud_music) - 底部播放控制栏实现
+
+## 快速开始
+
+项目当前已趋于稳定，我们非常欢迎社区的反馈和建议。
+
+### 环境配置
+
+1. 启动后端服务（默认端口 3000）
+   ```bash
+   git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
+   npm install
+   node app.js
+   ```
+
+2. 运行 Flutter 项目
+   ```bash
+   flutter run -d <your-device>
+   ```
+
+3. 使用手机号码和短信验证码登录即可开始体验
+
+## 已知问题
+
+- 服务器部署的接口目前存在登录稳定性问题，可能出现401登录环境异常的情况。建议在本地启动服务以获得最佳体验。
+- 为了优化主页展示效果，部分数据需要调用多个后端接口进行整合，可能导致加载速度较慢。我们正在对此进行优化，以提升用户体验。
+
+## App预览
+
+<img src="showcase/show_gif.gif" width="30%" style="display:inline-block;" />
 
 ## 页面预览
 
