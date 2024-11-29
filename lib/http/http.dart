@@ -141,10 +141,15 @@ class Http {
     requestOptions = requestOptions.copyWith(extra: {
       "refresh": refresh,
     });
+    Map<String, dynamic> queryParams = {
+      ...?params,
+      // "realIP": "116.25.146.177",
+    };
     Response response;
+    // 拼接 &realIP=116.25.146.177
     response = await _dio.get(
       path,
-      queryParameters: params,
+      queryParameters: queryParams,
       options: requestOptions,
     );
     return response.data;
