@@ -77,33 +77,28 @@ class MainController extends GetxController {
     super.onReady();
   }
 
-  refreshMainPage() {
-    // 获取私人雷达
-    _getPrivateRadar();
-    // 获取推荐歌曲
-    _getRecommandSongs();
-    // 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
-    _getSameSongsFromSomeRadomMusic();
-    // 获取私人fm音乐
-    _getPersonalFm();
-    // 获取网友推荐顶级歌单
-    _getRandomTopPlayList();
-    // 获取推荐歌单
-    _getPersonalizedPlayLists();
-    // 获取个人歌单
-    _getOwnPlayList();
-    // 获取推荐播客
-    getPersonalizedDjProgram();
-  }
-
-  _getRecommandSongs() async {
+  refreshMainPage() async {
     try {
       loading.value = true;
-      recommendSongsDto?.value = await MainApi.getRecommendSongs();
-      if (recommendSongsDto.value.dailySongs?.isNotEmpty ?? false) {
-        dailySongs.value = RoamingController.to
-            .song2ToMedia(recommendSongsDto.value!.dailySongs!);
-      }
+
+      await Future.wait([
+        // 获取私人雷达
+        _getPrivateRadar(),
+        // 获取推荐歌曲
+        _getRecommandSongs(),
+        // 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
+        _getSameSongsFromSomeRadomMusic(),
+        // 获取私人fm音乐
+        _getPersonalFm(),
+        // 获取网友推荐顶级歌单
+        _getRandomTopPlayList(),
+        // 获取推荐歌单
+        _getPersonalizedPlayLists(),
+        // 获取个人歌单
+        _getOwnPlayList(),
+        // 获取推荐播客
+        getPersonalizedDjProgram(),
+      ] as Iterable<Future>);
     } catch (e) {
       LogBox.error(e);
     } finally {
@@ -111,9 +106,20 @@ class MainController extends GetxController {
     }
   }
 
+  _getRecommandSongs() async {
+    try {
+      recommendSongsDto?.value = await MainApi.getRecommendSongs();
+      if (recommendSongsDto.value.dailySongs?.isNotEmpty ?? false) {
+        dailySongs.value = RoamingController.to
+            .song2ToMedia(recommendSongsDto.value!.dailySongs!);
+      }
+    } catch (e) {
+      LogBox.error(e);
+    }
+  }
+
   _getPrivateRadar() async {
     try {
-      loading.value = true;
       // 首先先从推荐资源拿到私人雷达的歌单id
       recommendResourceDto.value = await MainApi.getRecommendResource();
       int privateRadarId = recommendResourceDto.value.recommend?[0]?.id ?? 0;
@@ -127,8 +133,6 @@ class MainController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
@@ -158,7 +162,6 @@ class MainController extends GetxController {
    */
   _getSameSongsFromSomeRadomMusic() async {
     try {
-      loading.value = true;
       // 获取喜欢的音乐
       await _getLikeSongs();
       // 从喜欢的音乐中选择多首音乐
@@ -204,8 +207,6 @@ class MainController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
@@ -235,7 +236,6 @@ class MainController extends GetxController {
 
   _getRandomTopPlayList() async {
     try {
-      loading.value = true;
       // 获取网友推荐顶级歌单
       TopPlaylistsDto topPlaylistsDto = await MainApi.getTopPlayList();
       if (topPlaylistsDto != null && topPlaylistsDto.playlists != null) {
@@ -258,14 +258,11 @@ class MainController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
   _getPersonalizedPlayLists() async {
     try {
-      loading.value = true;
       PersonalizedPlayLists personalizedPlayLists =
           await MainApi.getPersonalizedPlaylists();
       if (personalizedPlayLists != null &&
@@ -274,14 +271,11 @@ class MainController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
   _getOwnPlayList() async {
     try {
-      loading.value = true;
       if (HomeController.to.userData.value.profile != null) {
         UserPlaylists userPlaylists = await MainApi.getUserPlaylists(
             HomeController.to.userData.value.profile!.userId!);
@@ -291,19 +285,14 @@ class MainController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
   getPersonalizedDjProgram() async {
     try {
-      loading.value = true;
       personalizedDjprogramDto.value = await MainApi.getDjProgramRecommend();
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 }

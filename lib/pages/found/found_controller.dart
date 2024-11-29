@@ -35,9 +35,21 @@ class FoundController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _getBanner();
-    _getHomeBlock();
-    _getMvList();
+  }
+
+  initData() async {
+    try {
+      loading.value = true;
+      await Future.wait([
+        _getBanner(),
+        _getHomeBlock(),
+        _getMvList(),
+      ] as Iterable<Future>);
+    } catch (e) {
+      LogBox.error(e);
+    } finally {
+      loading.value = false;
+    }
   }
 
   refreshHome() {
@@ -50,7 +62,6 @@ class FoundController extends GetxController {
 
   _getBanner() async {
     try {
-      loading.value = true;
       if (Platform.isIOS) {
         banner.value = await FoundApi.getBanner(BannerType.IPHONE.value);
       } else {
@@ -58,19 +69,14 @@ class FoundController extends GetxController {
       }
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
   Future<void> _getMvList() async {
     try {
-      loading.value = true;
       mvList.value = await FoundApi.getAllMvList();
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
@@ -78,7 +84,6 @@ class FoundController extends GetxController {
 
   _getHomeBlock({bool isRefresh = false}) async {
     try {
-      loading.value = true;
       homeBlock.value = await FoundApi.getHomeBlock(isRefresh: isRefresh);
 
       // HOMEPAGE_SLIDE_SONGLIST_ALIGN获取mediaItem列表
@@ -88,8 +93,6 @@ class FoundController extends GetxController {
       await _buildNewSongNewAlbum();
     } catch (e) {
       LogBox.error(e);
-    } finally {
-      loading.value = false;
     }
   }
 
