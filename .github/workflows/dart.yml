@@ -25,7 +25,14 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3' # 指定 Flutter 版本
+          flutter-version: '3.24.5'
+          channel: 'stable'
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
 
       - name: Install dependencies
         run: flutter pub get
@@ -33,11 +40,14 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build AAR
+        run: |
+          flutter build aar --release
+          echo "检查 AAR 构建输出目录"
+          ls -la build/host/outputs/repo/
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v2
+      - name: Upload AAR
+        uses: actions/upload-artifact@v3
         with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: flutter-aar
+          path: build/host/outputs/repo/
