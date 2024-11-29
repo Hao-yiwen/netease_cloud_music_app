@@ -13,6 +13,7 @@ import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
+import 'package:audio_service/audio_service.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../common/music_handler.dart';
@@ -21,24 +22,22 @@ import 'dart:math' as math;
 class Roaming extends StatefulWidget {
   const Roaming({super.key});
 
-  static void showBottomPlayer(BuildContext hostContext) {
+  static void showBottomPlayer(BuildContext context) {
     showGeneralDialog(
-      context: hostContext,
+      context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      transitionDuration: Duration(milliseconds: 200),
-      transitionBuilder: (context, animation1, animation2, child) {
+      transitionDuration: const Duration(milliseconds: 200),
+      transitionBuilder: (context, animation, _, child) {
         return SlideTransition(
           position: Tween<Offset>(
-            begin: Offset(0, 1),
-            end: Offset(0, 0),
-          ).animate(animation1),
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).animate(animation),
           child: child,
         );
       },
-      pageBuilder: (context, animation1, animation2) {
-        // 在弹窗中获取当前页面的安全区域padding
-        // https://stackoverflow.com/questions/49737225/safearea-not-working-in-persistent-bottomsheet-in-flutter
+      pageBuilder: (context, _, __) {
         final view = View.of(context);
         final viewPadding = view.padding;
         final mediaPadding = MediaQuery.paddingOf(context);
@@ -56,7 +55,7 @@ class Roaming extends StatefulWidget {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20.w),
                     topRight: Radius.circular(20.w))),
-            child: Roaming(),
+            child: const Roaming(),
           ),
         );
       },
@@ -72,26 +71,19 @@ class _RoamingState extends State<Roaming> {
   final audioHandler = GetIt.instance<MusicHandler>();
   var _showLyric = false;
 
+  void _toggleLyric() {
+    setState(() => _showLyric = !_showLyric);
+  }
+
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void playMusic() async {
-    audioHandler.play();
-  }
-
-  void pauseMusic() {
-    audioHandler.pause();
-  }
-
-  void stopMusic() {
-    audioHandler.stop();
+    // 确保 MediaItem 信息在 Android 端正确设置
+    audioHandler.mediaItem.listen((mediaItem) {
+      if (mediaItem != null) {
+        AudioServiceBackground.setMediaItem(mediaItem);
+      }
+    });
   }
 
   @override
@@ -99,37 +91,21 @@ class _RoamingState extends State<Roaming> {
     return Column(
       children: [
         _buildPlayerHeader(context),
-        Expanded(
-          child: SizedBox(
-            height: 60.w,
-          ),
-        ),
+        const Spacer(),
         GestureDetector(
-          onTap: () {
-            setState(() {
-              _showLyric = !_showLyric;
-            });
-          },
-          child: _showLyric ? _buildLyric(context) : _buildPlayer(context),
+          onTap: _toggleLyric,
+          child: _showLyric ? _buildLyric() : _buildPlayer(),
         ),
-        Expanded(
-          child: SizedBox(
-            height: 60.w,
-          ),
-        ),
-        // 歌曲信息
+        const Spacer(),
         _buildPlayerMusicInfo(),
-        // 进度条
         _buildProgressBar(),
-        // 播放按钮
         _buildPlayerControl(context),
-        // 底部按钮
         _buildBottomButton(context)
       ],
     );
   }
 
-  _buildPlayerHeader(BuildContext context) {
+  Widget _buildPlayerHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -138,9 +114,7 @@ class _RoamingState extends State<Roaming> {
           child: IconButton(
             icon: Icon(TablerIcons.chevron_down,
                 color: Colors.grey[400], size: 60.w),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
         Text(
@@ -151,41 +125,42 @@ class _RoamingState extends State<Roaming> {
           padding: EdgeInsets.only(right: 20.w),
           child: IconButton(
             icon: Icon(TablerIcons.share, color: Colors.grey[400], size: 45.w),
-            onPressed: () {
-              WidgetUtil.showToast(AppStrings.waitDevelop);
-            },
+            onPressed: () => WidgetUtil.showToast(AppStrings.waitDevelop),
           ),
         ),
       ],
     );
   }
 
-  _buildPlayerMusicInfo() {
+  Widget _buildPlayerMusicInfo() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 40.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Obx(() {
+            final mediaItem = controller.mediaItem.value;
+            // 确保 MediaItem 包含必要信息
+            if (mediaItem.title.isEmpty || mediaItem.artist == null) {
+              return const SizedBox.shrink();
+            }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 400.w),
                   child: Text(
-                    controller.mediaItem.value.title.fixAutoLines(),
+                    mediaItem.title.fixAutoLines(),
                     style: TextStyle(color: Colors.grey[400], fontSize: 36.w),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(
-                  height: 10.w,
-                ),
+                SizedBox(height: 10.w),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 400.w),
                   child: Text(
-                    (controller.mediaItem.value.artist ?? '').fixAutoLines(),
+                    (mediaItem.artist ?? '').fixAutoLines(),
                     style: TextStyle(color: Colors.grey[400], fontSize: 26.w),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -204,13 +179,10 @@ class _RoamingState extends State<Roaming> {
                 ),
                 onPressed: () {},
               ),
-              SizedBox(
-                width: 60.w,
-              ),
+              SizedBox(width: 60.w),
               GestureDetector(
-                onTap: () {
-                  GetIt.instance<AppRouter>().pushNamed(Routes.comment);
-                },
+                onTap: () =>
+                    GetIt.instance<AppRouter>().pushNamed(Routes.comment),
                 child: Image.asset(ImageUtils.getImagePath('detail_icn_cmt'),
                     width: 60.w, height: 60.w),
               ),
@@ -221,14 +193,23 @@ class _RoamingState extends State<Roaming> {
     );
   }
 
-  _buildProgressBar() {
+  Widget _buildProgressBar() {
     return Obx(() {
+      final duration = controller.duration.value;
+      final mediaItem = controller.mediaItem.value;
+
+      // 确保 duration 有效
+      if (mediaItem.duration == null ||
+          mediaItem.duration!.inMilliseconds <= 0) {
+        return const SizedBox.shrink();
+      }
+
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
         child: ProgressBar(
-          progress: controller.duration.value,
-          buffered: controller.duration.value,
-          total: controller.mediaItem.value.duration!,
+          progress: duration,
+          buffered: duration,
+          total: mediaItem.duration!,
           onSeek: (duration) {
             LogBox.info('Seek to: ${duration.inMilliseconds}');
             controller.audioHandler.seek(duration);
@@ -243,23 +224,22 @@ class _RoamingState extends State<Roaming> {
     });
   }
 
-  _buildPlayerControl(BuildContext context) {
+  Widget _buildPlayerControl(BuildContext context) {
     return Obx(() {
+      final isPlaying = controller.playing.value;
+      final isFm = controller.fm.value;
+
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-              onPressed: () {
-                controller.changeRepeatMode();
-              },
+              onPressed: controller.changeRepeatMode,
               icon: Icon(
                 controller.getRepeatIcon(),
                 size: 43.w,
                 color: Colors.grey[400],
               )),
-          SizedBox(
-            width: 55.w,
-          ),
+          SizedBox(width: 55.w),
           IconButton(
             icon: Icon(
               TablerIcons.player_skip_back_filled,
@@ -267,32 +247,23 @@ class _RoamingState extends State<Roaming> {
               size: 55.w,
             ),
             onPressed: () {
-              if (controller.fm.value) {
-                return;
-              }
-              if (controller.intervalClick()) {
+              if (!isFm && controller.intervalClick()) {
                 controller.audioHandler.skipToPrevious();
               }
             },
           ),
-          SizedBox(
-            width: 60.w,
-          ),
+          SizedBox(width: 60.w),
           IconButton(
             icon: Icon(
-              controller.playing.value
+              isPlaying
                   ? TablerIcons.player_pause_filled
                   : TablerIcons.player_play_filled,
               color: Colors.grey[400],
               size: 80.w,
             ),
-            onPressed: () {
-              controller.playOrPause();
-            },
+            onPressed: controller.playOrPause,
           ),
-          SizedBox(
-            width: 55.w,
-          ),
+          SizedBox(width: 55.w),
           IconButton(
             icon: Icon(
               TablerIcons.player_skip_forward_filled,
@@ -305,37 +276,9 @@ class _RoamingState extends State<Roaming> {
               }
             },
           ),
-          SizedBox(
-            width: 60.w,
-          ),
+          SizedBox(width: 60.w),
           GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  context: context,
-                  builder: (context) {
-                    return Obx(() {
-                      return Container(
-                        padding:
-                            EdgeInsets.only(top: 40.w, left: 20.w, right: 20.w),
-                        child: PlayList(
-                          mediaItems: controller.mediaItems,
-                          currentItem: controller.mediaItem.value,
-                          onItemTap: (index) {
-                            controller.playByIndex(index, 'roaming',
-                                mediaItem: controller.mediaItems);
-                          },
-                          playing: controller.playing.value,
-                        ),
-                      );
-                    });
-                  });
-            },
+            onTap: () => _showPlaylist(context),
             child: Image.asset(
               ImageUtils.getImagePath('epj'),
               width: 70.w,
@@ -347,7 +290,31 @@ class _RoamingState extends State<Roaming> {
     });
   }
 
-  _buildBottomButton(BuildContext context) {
+  void _showPlaylist(BuildContext context) {
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        context: context,
+        builder: (context) {
+          return Obx(() {
+            return Container(
+              padding: EdgeInsets.only(top: 40.w, left: 20.w, right: 20.w),
+              child: PlayList(
+                mediaItems: controller.mediaItems,
+                currentItem: controller.mediaItem.value,
+                onItemTap: (index) {
+                  controller.playByIndex(index, 'roaming',
+                      mediaItem: controller.mediaItems);
+                },
+                playing: controller.playing.value,
+              ),
+            );
+          });
+        });
+  }
+
+  Widget _buildBottomButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20.w),
       child: Row(
@@ -361,9 +328,7 @@ class _RoamingState extends State<Roaming> {
             ),
             onPressed: () {},
           ),
-          SizedBox(
-            width: 140.w,
-          ),
+          SizedBox(width: 140.w),
           IconButton(
             icon: Icon(
               TablerIcons.info_square,
@@ -372,9 +337,7 @@ class _RoamingState extends State<Roaming> {
             ),
             onPressed: () {},
           ),
-          SizedBox(
-            width: 140.w,
-          ),
+          SizedBox(width: 140.w),
           IconButton(
             icon: Icon(
               TablerIcons.dots,
@@ -388,29 +351,39 @@ class _RoamingState extends State<Roaming> {
     );
   }
 
-  _buildLyric(BuildContext context) {
+  Widget _buildLyric() {
     return Container(
       constraints: BoxConstraints(maxHeight: 620.h, maxWidth: 620.w),
       child: SingleChildScrollView(
-          child: Column(
-        children: List.generate(controller.lyricLineModels.length, (index) {
-          return Text(
-            textAlign: TextAlign.center,
-            controller.lyricLineModels[index].mainText ?? '',
-            style: TextStyle(color: Colors.white, fontSize: 30.w, height: 2),
-          );
-        }),
-      )),
+        child: Column(
+          children: [
+            for (final model in controller.lyricLineModels)
+              Text(
+                model.mainText ?? '',
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Colors.white, fontSize: 30.w, height: 2),
+              )
+          ],
+        ),
+      ),
     );
   }
 
-  _buildPlayer(BuildContext context) {
+  Widget _buildPlayer() {
     return Obx(() {
+      final mediaItem = controller.mediaItem.value;
+      final imageUrl = mediaItem.extras?['image'] ?? PLACE_IMAGE_HOLDER;
+
+      // 确保图片URL有效
+      if (imageUrl.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
       return PlayAlbumCover(
         rotating: controller.playing.value,
         pading: 40.w,
-        imgPic:
-            '${controller.mediaItem.value.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
+        imgPic: imageUrl,
       );
     });
   }

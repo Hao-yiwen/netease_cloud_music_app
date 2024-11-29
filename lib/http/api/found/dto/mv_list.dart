@@ -4,7 +4,7 @@ import 'package:netease_cloud_music_app/http/api/bean.dart';
 part 'mv_list.g.dart';
 
 @JsonSerializable()
-class MvList extends ServerStatusBean{
+class MvList extends ServerStatusBean {
   int? count;
   List<Mv>? data;
 

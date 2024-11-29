@@ -19,11 +19,33 @@ class _LoginState extends State<Login> {
   final LoginController controller = LoginController.to;
   final TextEditingController phone = TextEditingController();
   final TextEditingController captcha = TextEditingController();
-  int time = 60;
+  int time = 30;
+  bool canSendCaptcha = true;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void startTimer() {
+    setState(() {
+      canSendCaptcha = false;
+      time = 30;
+    });
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() {
+        time--;
+      });
+      if (time <= 0) {
+        setState(() {
+          canSendCaptcha = true;
+        });
+        return false;
+      }
+      return true;
+    });
   }
 
   @override
@@ -66,17 +88,26 @@ class _LoginState extends State<Login> {
                     Expanded(
                       flex: 1,
                       child: GestureDetector(
-                        onTap: () => controller.sendCaptcha(phone.text),
+                        onTap: canSendCaptcha
+                            ? () {
+                                controller.sendCaptcha(phone.text);
+                                startTimer();
+                              }
+                            : null,
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
+                              color: canSendCaptcha
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5),
                               borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(50.w),
                                   bottomRight: Radius.circular(50.w))),
                           margin: EdgeInsets.symmetric(vertical: 10.w),
                           child: Center(
                             child: Text(
-                              '发送验证码',
+                              canSendCaptcha ? '发送验证码' : '${time}s',
                               style: TextStyle(
                                 fontSize: 24.sp,
                                 color: Colors.white,
@@ -111,7 +142,8 @@ class _LoginState extends State<Login> {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                onTap: () => controller.loginCallPhone(phone.text, captcha.text),
+                onTap: () =>
+                    controller.loginCallPhone(phone.text, captcha.text),
               ),
               SizedBox(height: 16),
             ],

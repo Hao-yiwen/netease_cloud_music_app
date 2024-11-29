@@ -14,88 +14,86 @@ import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
 import 'package:netease_cloud_music_app/pages/message/message_binding.dart';
-import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/mv_player/mv_player_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';
-
-import 'common/constants/colors.dart';
-import 'common/constants/url.dart';
+import 'package:netease_cloud_music_app/common/constants/colors.dart';
+import 'package:netease_cloud_music_app/common/constants/url.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // https://docs-neteasecloudmusicapi.vercel.app/docs/#/?id=_1-%e6%89%8b%e6%9c%ba%e7%99%bb%e5%bd%95
-  // 全局dio封装
-  await HttpUtils.init(baseUrl: BASE_URL);
-  // 初始化权限校验 del 在这里初始化是否有必要
-  // Get.put(AuthController());
-  // 全局依赖共享
-  final getIt = GetIt.instance;
-  await _initGetService(getIt);
-  final _appRouter = getIt<AppRouter>();
+  await _initializeApp();
+  final appRouter = GetIt.instance<AppRouter>();
 
-  runApp(ScreenUtilInit(
-    // 750想当与iphone6/7/8 plus的设计尺寸 375相当于iphone6/7/8的设计尺寸
-    // flutter中的逻辑像素 / 375 约等于 1
+  runApp(_buildApp(appRouter));
+}
+
+Future<void> _initializeApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await HttpUtils.init(baseUrl: BASE_URL);
+  await _initGetService(GetIt.instance);
+}
+
+Widget _buildApp(AppRouter appRouter) {
+  return ScreenUtilInit(
     designSize: const Size(750, 1334),
     minTextAdapt: true,
     splitScreenMode: true,
-    builder: (BuildContext context, Widget? child) {
-      ThemeBinding().dependencies();
-      LogBox.debug(
-          'Screen width: ${ScreenUtil().screenWidth} Screen height: ${ScreenUtil().screenHeight}');
-      return Obx(() {
-        return GetMaterialApp.router(
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: ThemeService.to.currentThemeMode,
-          routerDelegate: _appRouter.delegate(
-            navigatorObservers: () => [MyObserver()],
-          ),
-          initialBinding: BindingsBuilder(() {
-            HomeBinding().dependencies();
-            UserBinding().dependencies();
-            MessageBinding().dependencies();
-          }),
-          routeInformationParser: _appRouter.defaultRouteParser(),
-        );
-      });
-    },
-  ));
+    builder: (context, child) => _buildMaterialApp(context, appRouter),
+  );
+}
+
+Widget _buildMaterialApp(BuildContext context, AppRouter appRouter) {
+  ThemeBinding().dependencies();
+  LogBox.debug(
+      'Screen size: ${ScreenUtil().screenWidth}x${ScreenUtil().screenHeight}');
+
+  return Obx(() => GetMaterialApp.router(
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeService.to.currentThemeMode,
+        routerDelegate: appRouter.delegate(
+          navigatorObservers: () => [MyObserver()],
+        ),
+        initialBinding: _initializeBindings(),
+        routeInformationParser: appRouter.defaultRouteParser(),
+      ));
+}
+
+Bindings _initializeBindings() {
+  return BindingsBuilder(() {
+    HomeBinding().dependencies();
+    UserBinding().dependencies();
+    MessageBinding().dependencies();
+    Get.lazyPut(() => SplashController());
+    Get.lazyPut(() => MvPlayerController());
+    Get.lazyPut(() => LoginController()); // Add LoginController initialization
+  });
 }
 
 class MyObserver extends AutoRouterObserver {
-  _clearOrPutController(name, {bool del = false}) {
-    if (name.isEmpty) return;
-    switch (name) {
-      case Login.name:
-        del
-            ? Get.delete<LoginController>()
-            : Get.lazyPut(() => LoginController());
-        break;
-      case User.name:
-        del
-            ? Get.delete<UserController>()
-            : Get.lazyPut(() => UserController());
-        break;
-      case SplashRoute.name:
-        del
-            ? Get.delete<SplashController>()
-            : Get.lazyPut(() => SplashController());
-        break;
-      // case MessageRoute.name:
-      //   del
-      //       ? Get.delete<MessageController>()
-      //       : Get.lazyPut(() => MessageController());
-      //   break;
-      case MvPlayer.name:
-        del
-            ? Get.delete<MvPlayerController>()
-            : Get.lazyPut(() => MvPlayerController());
-        break;
+  final Map<String, dynamic Function()> _controllerFactories = {
+    Login.name: () => LoginController(),
+    User.name: () => UserController(),
+    SplashRoute.name: () => SplashController(),
+    MvPlayer.name: () => MvPlayerController(),
+  };
+
+  void _clearOrPutController(String name, {bool del = false}) {
+    if (name.isEmpty || !_controllerFactories.containsKey(name)) return;
+
+    if (del) {
+      // 在删除控制器之前先检查是否存在
+      if (Get.isRegistered(tag: name)) {
+        Get.delete(tag: name);
+      }
+    } else {
+      // 在创建控制器之前先检查是否已存在
+      if (!Get.isRegistered(tag: name)) {
+        Get.lazyPut(_controllerFactories[name]!, tag: name, fenix: true);
+      }
     }
   }
 
@@ -119,7 +117,6 @@ class MyObserver extends AutoRouterObserver {
     _clearOrPutController(route.settings.name ?? '', del: true);
   }
 
-  // only override to observer tab routes
   @override
   void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
     LogBox.info('Tab route initialized: ${route.name}');
@@ -132,14 +129,54 @@ class MyObserver extends AutoRouterObserver {
 }
 
 Future<void> _initGetService(GetIt getIt) async {
-  getIt.registerSingleton<AppRouter>(AppRouter());
-  getIt.registerSingleton<AudioPlayer>(AudioPlayer());
-  await Hive.initFlutter('music');
-  getIt.registerSingleton<Box>(await Hive.openBox('cache'));
-  getIt.registerSingleton<MusicHandler>(
-    await AudioService.init<MusicHandler>(
-      builder: () => MusicHandler(),
-      config: const AudioServiceConfig(),
+  // 创建一个经过优化配置的 AudioPlayer 实例
+  final audioPlayer = AudioPlayer(
+    audioLoadConfiguration: AudioLoadConfiguration(
+      // Optimize buffer management
+      androidLoadControl: AndroidLoadControl(
+        // Reduce minimum buffer to prevent backup
+        minBufferDuration: Duration(seconds: 3),
+        // Set reasonable maximum to balance memory usage
+        maxBufferDuration: Duration(seconds: 8),
+        // Increase initial playback buffer for smoother start
+        bufferForPlaybackDuration: Duration(milliseconds: 500),
+        // Add some safety margin after rebuffering
+        bufferForPlaybackAfterRebufferDuration: Duration(seconds: 1),
+        // Set target buffer size to reduce memory pressure
+        targetBufferBytes: 2 * 1024 * 1024,
+      ),
     ),
   );
+
+  getIt
+    ..registerSingleton<AppRouter>(AppRouter())
+    ..registerSingleton<AudioPlayer>(audioPlayer);
+
+  await Hive.initFlutter('music');
+  getIt.registerSingleton<Box>(await Hive.openBox('cache'));
+
+  final musicHandler = await AudioService.init<MusicHandler>(
+    builder: () => MusicHandler(),
+    config: const AudioServiceConfig(
+      // Android 通知栏配置
+      androidNotificationChannelId: 'com.example.netease_cloud_music_app.audio',
+      androidNotificationChannelName: '网易云音乐',
+      androidNotificationChannelDescription: '音乐播放控制',
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidShowNotificationBadge: true,
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+
+      // 通知栏显示选项
+      notificationColor: Color(0xFFe72d2c),
+      artDownscaleWidth: 300,
+      artDownscaleHeight: 300,
+
+      // 快速启动配置
+      fastForwardInterval: Duration(seconds: 10),
+      rewindInterval: Duration(seconds: 10),
+    ),
+  );
+
+  getIt.registerSingleton<MusicHandler>(musicHandler);
 }

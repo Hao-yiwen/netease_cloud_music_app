@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:netease_cloud_music_app/pages/timeline/timeline_controller.dart';
 import 'package:netease_cloud_music_app/widgets/user_event_widget.dart';
 
+import '../../widgets/shimmer_loading.dart';
 import '../home/home_controller.dart';
 
 @RoutePage()
@@ -18,79 +19,135 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
-  final controller = TimelineController.to;
+  final TimelineController controller = TimelineController.to;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
+        children: [_buildHeader(), SizedBox(height: 10.h), _buildContent()],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      child: Row(
         children: [
-          _buildHeader(),
-          const SizedBox(
-            height: 10,
+          GestureDetector(
+            onTap: () =>
+                HomeController.to.scaffoldKey.value.currentState?.openDrawer(),
+            child: Icon(TablerIcons.menu_2, size: 40.w),
           ),
-          _buildCOntainet()
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "广场",
+                  style:
+                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5.h),
+                Container(
+                  width: 30.w,
+                  height: 4.h,
+                  color: Colors.deepOrange,
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            child: Container(
+              width: 50.w,
+              height: 50.w,
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                TablerIcons.plus,
+                color: Colors.white,
+                size: 40.w,
+              ),
+            ),
+          ),
+          SizedBox(width: 20.w),
         ],
       ),
     );
   }
 
-  _buildHeader() {
-    return Row(
-      children: [
-        const SizedBox(width: 10),
-        GestureDetector(
-          child: Icon(
-            TablerIcons.menu_2,
-            size: 40.w,
-          ),
-          onTap: () {
-            HomeController.to.scaffoldKey.value.currentState?.openDrawer();
-          },
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-            child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            children: [
-              Text(
-                "广场",
-                style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 5.h), // Text 与底部线条之间的间距
-              Container(
-                width: 30.w, // 底部线条的宽度
-                height: 4.h, // 底部线条的高度
-                color: Colors.deepOrange, // 底部线条的颜色
-              ),
-            ],
-          ),
-        )),
-        const SizedBox(width: 10),
-        GestureDetector(
-          child: Container(
-            width: 50.w, // 根据你的需求调整宽度和高度
-            height: 50.w,
-            decoration: const BoxDecoration(
-              color: Colors.red, // 设置外面圆的颜色为红色
-              shape: BoxShape.circle, // 确保形状为圆形
+  Widget _buildShimmerLoading() {
+    return ListView.builder(
+      itemCount: 10,
+      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 15.w),
+          child: ShimmerLoading(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 100.w,
+                          height: 16.w,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(8.w),
+                          ),
+                        ),
+                        SizedBox(height: 5.w),
+                        Container(
+                          width: 60.w,
+                          height: 12.w,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(6.w),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.w),
+                Container(
+                  width: double.infinity,
+                  height: 200.w,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10.w),
+                  ),
+                ),
+              ],
             ),
-            child: Icon(
-              TablerIcons.plus,
-              color: Colors.white, // 图标颜色为白色
-              size: 40.w,
-            ),
           ),
-        ),
-        SizedBox(width: 20),
-      ],
+        );
+      },
     );
   }
 
-  _buildCOntainet() {
+  Widget _buildContent() {
     return Expanded(
       child: Obx(() {
+        final events = controller.hotTopicsEvents.value.events;
+
         return EasyRefresh(
           header: const ClassicHeader(
             dragText: "下拉刷新",
@@ -101,16 +158,11 @@ class _TimelineState extends State<Timeline> {
             readyText: "正在刷新...",
             messageText: "上次刷新时间 %T",
           ),
-          onRefresh: () async {
-            controller.refreshTopics();
-          },
-          child: (controller.hotTopicsEvents.value.events == null ||
-                  controller.hotTopicsEvents.value.events!.isEmpty)
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+          onRefresh: controller.refreshTopics,
+          child: events == null || events.isEmpty
+              ? _buildShimmerLoading()
               : UserEventWidget(
-                  events: controller.hotTopicsEvents.value.events,
+                  events: events,
                   showVip: false,
                 ),
         );

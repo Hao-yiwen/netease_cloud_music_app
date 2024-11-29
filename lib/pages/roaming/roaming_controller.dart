@@ -17,6 +17,7 @@ import 'package:netease_cloud_music_app/http/api/roaming/roaming_api.dart';
 import '../../common/constants/keys.dart';
 import '../../common/music_handler.dart';
 import '../../http/api/login/dto/login_status_dto.dart';
+import '../../http/api/main/dto/playlist_detail_dto.dart';
 import '../../http/api/main/dto/song_dto.dart';
 import '../user/user_controller.dart';
 
@@ -170,7 +171,8 @@ class RoamingController extends SuperController
 
   static RoamingController get to => Get.find<RoamingController>();
 
-  List<MediaItem> song2ToMedia(List<SongDto> songs) {
+  List<MediaItem> song2ToMedia(List<SongDto> songs,
+      {PlaylistDetailDto? playlistDetail}) {
     return songs
         .map((e) => MediaItem(
             id: e!.id.toString(),
@@ -186,7 +188,8 @@ class RoamingController extends SuperController
                   .join(' / '),
               'album': jsonEncode(e.al?.toJson()),
               'mv': e.mv,
-              'fee': e.fee
+              'fee': e.fee,
+              'title': playlistDetail?.playlist?.name ?? '',
             },
             title: e.name ?? "",
             album: e.al?.name,

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -21,47 +20,79 @@ import '../../routes/routes.dart';
 enum LoginStatus { login, noLogin }
 
 class UserController extends GetxController {
-  Rx<UserAccount> userAccount = UserAccount().obs;
-  RxBool loding = false.obs;
-  Rx<Events> ownEvent = Events().obs;
+  static UserController get to => Get.find();
+
+  final Rx<UserAccount> userAccount = UserAccount().obs;
+  final RxBool loading = false.obs;
+  final Rx<Events> ownEvent = Events().obs;
+  bool _isDisposed = false;
 
   @override
   void onInit() {
     super.onInit();
+    _isDisposed = false;
   }
 
   @override
   void onReady() {
     super.onReady();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getUserState();
-      _getUserAccount();
-      _getOwnEvent();
-    });
+    if (!_isDisposed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _initializeData());
+    }
+  }
+
+  @override
+  void onClose() {
+    _isDisposed = true;
+    loading.value = false;
+    super.onClose();
+  }
+
+  void _initializeData() {
+    getUserState();
+    _getUserAccount();
+    _getOwnEvent();
   }
 
   Future<void> getUserState() async {
+    if (_isDisposed) return;
+
     try {
-      LoginStatusDto loginStatusDto = await LoginApi.loginStatus();
-      if (loginStatusDto.code == 200 && loginStatusDto.profile != null) {
-        HomeController.to.userData.value = loginStatusDto;
-        HomeController.to.loginStatus.value = LoginStatus.login;
-        HomeController.to.box
-            .put(LOGIN_DATA, jsonEncode(loginStatusDto.toJson()));
+      final loginStatusDto = await LoginApi.loginStatus();
+      if (_isDisposed) return;
+
+      if (_isValidLoginStatus(loginStatusDto)) {
+        _handleSuccessfulLogin(loginStatusDto);
       } else {
-        WidgetUtil.showToast('登录失败,请重新登录');
-        HomeController.to.loginStatus.value = LoginStatus.noLogin;
-        logout();
+        _handleFailedLogin();
       }
     } catch (e) {
-      HomeController.to.loginStatus.value = LoginStatus.noLogin;
-      LogBox.error(e);
+      if (!_isDisposed) {
+        HomeController.to.loginStatus.value = LoginStatus.noLogin;
+        LogBox.error(e);
+      }
     }
+  }
+
+  bool _isValidLoginStatus(LoginStatusDto loginStatusDto) {
+    return loginStatusDto.code == 200 && loginStatusDto.profile != null;
+  }
+
+  void _handleSuccessfulLogin(LoginStatusDto loginStatusDto) {
+    HomeController.to.userData.value = loginStatusDto;
+    HomeController.to.loginStatus.value = LoginStatus.login;
+    HomeController.to.box.put(LOGIN_DATA, jsonEncode(loginStatusDto.toJson()));
+  }
+
+  void _handleFailedLogin() {
+    WidgetUtil.showToast('登录失败,请重新登录');
+    HomeController.to.loginStatus.value = LoginStatus.noLogin;
+    logout();
   }
 
   Future<void> logout() async {
     try {
-      HomeController.to.box.delete(LOGIN_DATA);
+      await HomeController.to.box.delete(LOGIN_DATA);
       GetIt.instance<AppRouter>().replaceNamed(Routes.login);
       await LoginApi.logout();
     } catch (e) {
@@ -69,46 +100,62 @@ class UserController extends GetxController {
     }
   }
 
-  static UserController get to => Get.find();
-
   Future<void> _getUserAccount() async {
+    if (_isDisposed) return;
+
     try {
-      loding.value = true;
-      if (HomeController.to.userData.value.profile != null) {
-        userAccount.value = await UserApi.getUserAccount(
-            HomeController.to.userData.value.profile!.userId!);
+      loading.value = true;
+      final profile = HomeController.to.userData.value.profile;
+      if (profile?.userId != null) {
+        final account = await UserApi.getUserAccount(profile!.userId!);
+        if (!_isDisposed) {
+          userAccount.value = account;
+        }
       }
     } catch (e) {
       LogBox.error(e);
     } finally {
-      loding.value = false;
+      if (!_isDisposed) {
+        loading.value = false;
+      }
     }
   }
 
   Future<void> refreshLoginStatus(BuildContext? context) async {
+    if (_isDisposed) return;
+
     try {
       await UserApi.loginRefresh();
     } catch (e) {
-      if (context != null) {
-        DialogUtils.showModal(context, "登录信息已过期，请重新登录", () {
-          logout();
-        }, () {});
+      if (context != null && !_isDisposed) {
+        DialogUtils.showModal(
+          context,
+          "登录信息已过期，请重新登录",
+          () => logout(),
+          () {},
+        );
       }
     }
   }
 
   Future<void> _getOwnEvent() async {
+    if (_isDisposed) return;
+
     try {
-      loding.value = true;
-      if (HomeController.to.userData.value.profile?.userId != null) {
-        final Events events = await TimelineApi.getUserEvent(
-            HomeController.to.userData.value.profile?.userId);
-        ownEvent.value = events;
+      loading.value = true;
+      final userId = HomeController.to.userData.value.profile?.userId;
+      if (userId != null) {
+        final events = await TimelineApi.getUserEvent(userId);
+        if (!_isDisposed) {
+          ownEvent.value = events;
+        }
       }
     } catch (e) {
       LogBox.error(e);
     } finally {
-      loding.value = false;
+      if (!_isDisposed) {
+        loading.value = false;
+      }
     }
   }
 }
