@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchPageBar extends StatelessWidget {
-  Function search;
-  Function setTextValue;
-  TextEditingController textEditingController;
+  final Function(BuildContext) search;
+  final Function(String) setTextValue;
+  final TextEditingController textEditingController;
 
-  SearchPageBar(
-      {super.key,
-      required this.search,
-      required this.setTextValue,
-      required this.textEditingController});
+  const SearchPageBar({
+    super.key,
+    required this.search,
+    required this.setTextValue,
+    required this.textEditingController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +32,13 @@ class SearchPageBar extends StatelessWidget {
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     isDense: true,
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     hintText: '搜索歌曲、歌手、专辑',
                     hintStyle: TextStyle(fontSize: 30.w),
                     border: InputBorder.none,
                     suffixIcon: textEditingController.text.isNotEmpty
                         ? IconButton(
-                            icon: Icon(Icons.clear),
+                            icon: const Icon(Icons.clear),
                             onPressed: () {
                               textEditingController.clear();
                               setTextValue('');
@@ -45,12 +46,8 @@ class SearchPageBar extends StatelessWidget {
                           )
                         : null,
                   ),
-                  onChanged: (value) {
-                    setTextValue(value);
-                  },
-                  onSubmitted: (value) {
-                    search(context);
-                  },
+                  onChanged: setTextValue,
+                  onSubmitted: (_) => search(context),
                 ),
               ),
             ],

@@ -19,60 +19,121 @@ class PlayList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(vertical: 10.w),
       scrollDirection: Axis.vertical,
+      itemCount: mediaItems.length,
       itemBuilder: (context, index) {
-        var borderRadius = BorderRadius.all(Radius.circular(10.w));
-        return GestureDetector(
-          onTap: () {
-            onItemTap(index);
-          },
-          child: ListTile(
-            shape: RoundedRectangleBorder(borderRadius: borderRadius),
-            contentPadding: EdgeInsets.zero,
-            tileColor: mediaItems[index] == currentItem
-                ? Colors.grey.withOpacity(0.2)
-                : Colors.transparent,
-            title: Padding(
-              padding: EdgeInsets.only(left: 20.w),
-              child: Row(
-                children: [
-                  Text(
-                    mediaItems[index].title,
-                    style: const TextStyle(color: Colors.black),
-                    // Text color for better contrast
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    (mediaItems[index].artist ?? ''),
-                    style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    // Text color for better contrast
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ],
-              ),
-            ),
-            trailing: mediaItems[index] == currentItem
-                ? Padding(
-                    padding: EdgeInsets.only(right: 20.w),
-                    child: playing
-                        ? Image.asset(
-                            ImageUtils.getImagePath(
-                                'video_playlist_icn_playing'),
-                            height: 40.w,
-                            width: 40.h,
-                            color: Colors.red)
-                        : Image.asset(ImageUtils.getImagePath('c2w'),
-                            height: 40.w, width: 40.h, color: Colors.red),
-                  )
-                : null,
-          ),
+        final item = mediaItems[index];
+        final isCurrentItem = item == currentItem;
+
+        return _buildListItem(
+          context: context,
+          item: item,
+          isCurrentItem: isCurrentItem,
+          index: index,
+          theme: theme,
         );
       },
-      itemCount: mediaItems.length,
+    );
+  }
+
+  Widget _buildListItem({
+    required BuildContext context,
+    required MediaItem item,
+    required bool isCurrentItem,
+    required int index,
+    required ThemeData theme,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.w),
+      decoration: BoxDecoration(
+        color: isCurrentItem
+            ? Color(0xFF8E9FFF).withOpacity(0.15) // 使用一个柔和的蓝紫色作为背景
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12.w),
+        border: isCurrentItem
+            ? Border.all(color: Color(0xFF8E9FFF).withOpacity(0.5))
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12.w),
+          onTap: () => onItemTap(index),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.w),
+            child: Row(
+              children: [
+                if (isCurrentItem) ...[
+                  Container(
+                    width: 6.w,
+                    height: 40.w,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF8E9FFF), // 使用相同的蓝紫色作为指示条
+                      borderRadius: BorderRadius.circular(3.w),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isCurrentItem
+                              ? Color(0xFF8E9FFF) // 使用相同的蓝紫色作为文字颜色
+                              : theme.textTheme.bodyLarge?.color,
+                          fontSize: 28.sp,
+                          fontWeight: isCurrentItem
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                      SizedBox(height: 4.w),
+                      Text(
+                        item.artist ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color
+                              ?.withOpacity(0.8),
+                          fontSize: 24.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isCurrentItem) ...[
+                  SizedBox(width: 12.w),
+                  _buildPlayingIndicator(theme),
+                ]
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayingIndicator(ThemeData theme) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: 32.w,
+      width: 32.w,
+      child: Image.asset(
+        ImageUtils.getImagePath(
+          playing ? 'video_playlist_icn_playing' : 'c2w',
+        ),
+        color: theme.colorScheme.primary,
+      ),
     );
   }
 }

@@ -90,13 +90,14 @@ class SearchpageController extends GetxController {
   }
 
   void saveSearchKeyWords(String keyWords) {
-    if(keyWords.isEmpty) {
+    if (keyWords.isEmpty) {
       WidgetUtil.showToast('搜索关键词不能为空');
       return;
     }
     const key = 'searchKeyWords';
     var searchKeyWords = box.get(key, defaultValue: <String>[]);
-    var result = searchKeyWords.where((element) => element != keyWords).toList();
+    var result =
+        searchKeyWords.where((element) => element != keyWords).toList();
     result.insert(0, keyWords);
     box.put(key, result);
     getSearchKeyWords();
@@ -110,13 +111,20 @@ class SearchpageController extends GetxController {
   void deleteSearchKeyWords(String keyWords) {
     const key = 'searchKeyWords';
     var searchKeyWords = box.get(key, defaultValue: <String>[]);
-    var result = searchKeyWords.where((element) => element != keyWords).toList();
+    var result =
+        searchKeyWords.where((element) => element != keyWords).toList();
     box.put(key, result);
     searchKey.value = result;
   }
 
   void clearData() {
     searchResult.value = SearchResult(); // 清除单曲数据
-    searchMvs.value = SearchMvs();        // 清除视频数据
+    searchMvs.value = SearchMvs(); // 清除视频数据
+  }
+
+  void clearSearchKeyWords() {
+    const key = 'searchKeyWords';
+    box.delete(key);
+    getSearchKeyWords();
   }
 }

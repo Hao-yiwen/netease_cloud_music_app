@@ -13,15 +13,18 @@ import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
+import 'package:netease_cloud_music_app/pages/main/shimmer_loading.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
 import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/custom_tag.dart';
+import '../../widgets/shimmer_loading.dart';
 
 @RoutePage()
 class Found extends StatefulWidget {
@@ -32,29 +35,42 @@ class Found extends StatefulWidget {
 }
 
 class _FoundState extends State<Found> with TickerProviderStateMixin {
-  late PageController _pageViewController;
-  late TabController _tabController;
-  int _currentPageIndex = 0;
-  final CarouselSliderController _controller = CarouselSliderController();
-  int _currentCarouselIndex = 0;
-  final FoundController controller = FoundController.to;
-  late TabController _albumTabController;
+  // 控制器
+  late final PageController _pageViewController;
+  late final TabController _tabController;
+  late final TabController _albumTabController;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
   final EasyRefreshController _refreshController = EasyRefreshController();
+  final FoundController controller = FoundController.to;
+
+  // 状态变量
+  int _currentCarouselIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _initControllers();
+  }
+
+  void _initControllers() {
     _pageViewController = PageController();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController =
+        TabController(length: AppStrings.tabTitles.length, vsync: this);
     _albumTabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
+    _disposeControllers();
     super.dispose();
+  }
+
+  void _disposeControllers() {
     _pageViewController.dispose();
     _tabController.dispose();
     _albumTabController.dispose();
+    _refreshController.dispose();
   }
 
   @override
@@ -77,79 +93,67 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(
-              width: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                HomeController.to.scaffoldKey.value.currentState!.openDrawer();
-              },
-              child: Icon(
-                TablerIcons.menu_2,
-                size: 40.w,
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              // 明确设置SingleChildScrollView的高度
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: 300,
-                  child: TabBar(
-                    controller: _tabController,
-                    dividerHeight: 0,
-                    labelPadding: EdgeInsets.zero,
-                    tabs: const [
-                      Tab(text: '音乐'),
-                      Tab(text: 'MV'),
-                      Tab(text: '直播'),
-                      Tab(text: '听书'),
-                      Tab(text: '派对'),
-                    ],
-                    labelStyle: TextStyle(
-                      fontSize: 32.sp, // 选中的字体大小
-                      fontWeight: FontWeight.normal, // 选中的字体加粗
-                    ),
-                    unselectedLabelStyle: TextStyle(
-                      fontSize: 32.sp, // 未选中的字体大小
-                      fontWeight: FontWeight.normal, // 未选中的字体常规
-                    ),
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
-                    indicator: const UnderlineTabIndicator(
-                      borderSide: BorderSide(color: Colors.red, width: 2),
-                      insets: EdgeInsets.symmetric(horizontal: 22), // 控制指示器的宽度
-                    ),
-                    onTap: (index) {
-                      _pageViewController.animateToPage(index,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.ease);
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                AutoRouter.of(context).pushNamed(Routes.search);
-              },
-              child: Icon(
-                TablerIcons.search,
-                size: 40.w,
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            )
+            const SizedBox(width: 10),
+            _buildMenuButton(),
+            const SizedBox(width: 10),
+            Expanded(child: _buildTabBar()),
+            const SizedBox(width: 10),
+            _buildSearchButton(context),
+            const SizedBox(width: 10)
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMenuButton() {
+    return GestureDetector(
+      onTap: () =>
+          HomeController.to.scaffoldKey.value.currentState!.openDrawer(),
+      child: Icon(TablerIcons.menu_2, size: 40.w),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: 300,
+        child: TabBar(
+          controller: _tabController,
+          dividerHeight: 0,
+          labelPadding: EdgeInsets.zero,
+          tabs: AppStrings.tabTitles.map((title) => Tab(text: title)).toList(),
+          labelStyle: TextStyle(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.normal,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.normal,
+          ),
+          labelColor: Colors.black,
+          unselectedLabelColor: const Color.fromARGB(255, 145, 150, 162),
+          indicator: const UnderlineTabIndicator(
+            borderSide: BorderSide(color: Colors.red, width: 2),
+            insets: EdgeInsets.symmetric(horizontal: 22),
+          ),
+          onTap: (index) {
+            _pageViewController.animateToPage(
+              index,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => AutoRouter.of(context).pushNamed(Routes.search),
+      child: Icon(TablerIcons.search, size: 40.w),
     );
   }
 
@@ -160,62 +164,36 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           _tabController.animateTo(index);
-          setState(() {
-            _currentPageIndex = index;
-          });
         },
         children: [
           _buildMusicFound(context),
           _buildMvList(context),
-          const Center(
-            child: Text('Timeline'),
-          ),
-          const Center(
-            child: Text('Timeline'),
-          ),
-          const Center(
-            child: Text('Timeline'),
-          ),
+          const Center(child: Text('Timeline')),
+          const Center(child: Text('Timeline')),
+          const Center(child: Text('Timeline')),
         ],
       ),
     );
   }
 
   Widget _buildFixTag(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 70.w,
       child: Row(
         children: [
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           Expanded(
-              child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                "推荐",
-                "歌单",
-                "排行榜",
-                "电台",
-                "直播",
-                "数字专辑",
-                "歌手",
-                "新碟上架",
-                "MV"
-              ].map((e) => CustomTag(label: e)).toList(),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children:
+                    AppStrings.fixTags.map((e) => CustomTag(label: e)).toList(),
+              ),
             ),
-          )),
-          const SizedBox(
-            width: 10,
           ),
-          Icon(
-            TablerIcons.chevron_down,
-            size: 30.w,
-          ),
-          const SizedBox(
-            width: 20,
-          )
+          const SizedBox(width: 10),
+          Icon(TablerIcons.chevron_down, size: 30.w),
+          const SizedBox(width: 20)
         ],
       ),
     );
@@ -225,82 +203,114 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     return Column(
       children: [
         _buildFixTag(context),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Expanded(
-          // 嵌套滚动要用EasyRefresh.builder
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: EasyRefresh.builder(
-              footer: null,
-              key: const Key('found'),
-              triggerAxis: Axis.vertical,
-              header: const ClassicHeader(
-                dragText: "下拉刷新",
-                armedText: "释放刷新",
-                processedText: "刷新完成",
-                failedText: "刷新失败",
-                noMoreText: "没有更多数据",
-                readyText: "正在刷新...",
-                messageText: "上次刷新时间 %T",
-              ),
-              controller: _refreshController,
-              onRefresh: () async {
-                controller.refreshHome();
-              },
-              onLoad: () async {},
-              childBuilder: (BuildContext context, ScrollPhysics physics) {
-                return Obx(() {
-                  return CustomScrollView(
-                    scrollDirection: Axis.vertical,
-                    physics: physics,
-                    slivers: [
-                      if (controller.banner.value != null &&
-                          controller.banner.value!.banners != null)
-                        _buildCarousel(context),
-                      if (controller.homeBlock.value.blocks != null &&
-                          controller.homeBlock.value.blocks!.isNotEmpty)
-                        _buildFoundContent(
-                            controller.homeBlock.value.blocks!, context),
-                      if (MainController.to.topPlayList.value.isNotEmpty)
-                        _buildPlayList(context, '甄选歌单',
-                            MainController.to.topPlayList.value),
-                    ],
-                  );
-                });
-              },
-            ),
+            child: _buildMusicFoundContent(),
           ),
         ),
       ],
     );
   }
 
-  _buildCarousel(BuildContext context) {
+  Widget _buildShimmerLoading() {
+    return ShimmerLoading(
+      child: Column(
+        children: [
+          // 轮播图骨架
+          Container(
+            height: 150.0,
+            margin: const EdgeInsets.symmetric(horizontal: 5.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // 列表骨架
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 15,
+              itemBuilder: (context, index) {
+                return Container(
+                  height: 80.w,
+                  margin: EdgeInsets.only(bottom: 10.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMusicFoundContent() {
+    return EasyRefresh.builder(
+      footer: null,
+      key: const Key('found'),
+      triggerAxis: Axis.vertical,
+      header: const ClassicHeader(
+        dragText: AppStrings.dragText,
+        armedText: AppStrings.armedText,
+        processedText: AppStrings.processedText,
+        failedText: AppStrings.failedText,
+        noMoreText: AppStrings.noMoreText,
+        readyText: AppStrings.readyText,
+        messageText: AppStrings.messageText,
+      ),
+      controller: _refreshController,
+      onRefresh: () async => controller.refreshHome(),
+      onLoad: null,
+      childBuilder: (context, physics) {
+        return Obx(() {
+          if (controller.loading.value) {
+            return _buildShimmerLoading();
+          }
+
+          return CustomScrollView(
+            physics: physics,
+            slivers: [
+              if (controller.banner.value?.banners != null)
+                _buildCarousel(context),
+              if (controller.homeBlock.value.blocks?.isNotEmpty ?? false)
+                _buildFoundContent(controller.homeBlock.value.blocks!, context),
+              if (MainController.to.topPlayList.value.isNotEmpty)
+                _buildPlayList(context, AppStrings.selectedPlaylist,
+                    MainController.to.topPlayList.value),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  Widget _buildCarousel(BuildContext context) {
     return SliverToBoxAdapter(
-        child: CarouselSlider(
-      carouselController: _controller,
-      options: CarouselOptions(
+      child: CarouselSlider(
+        carouselController: _carouselController,
+        options: CarouselOptions(
           height: 150.0,
           viewportFraction: 1.0,
           scrollDirection: Axis.horizontal,
-          onPageChanged: (index, reason) {
-            setState(() {
-              _currentCarouselIndex = index;
-            });
-          }),
-      items: controller.banner.value.banners!.map((i) {
-        return Builder(
-          builder: (BuildContext context) {
-            return GestureDetector(
-              onTap: () {
-                WidgetUtil.showToast(AppStrings.waitDevelop);
-              },
-              child: Container(
+          onPageChanged: (index, _) {
+            setState(() => _currentCarouselIndex = index);
+          },
+        ),
+        items: controller.banner.value.banners!.map((banner) {
+          return Builder(
+            builder: (context) {
+              return GestureDetector(
+                onTap: () => WidgetUtil.showToast(AppStrings.waitDevelop),
+                child: Container(
                   width: ScreenUtil().screenWidth,
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  decoration: BoxDecoration(),
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: Stack(
@@ -310,8 +320,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                             color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
-                              image: NeteaseCacheImage(picUrl: i.pic!)
-                                  .getImageProvider(),
+                              image: NetworkImage(banner.pic!),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -337,15 +346,18 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                  )),
-            );
-          },
-        );
-      }).toList(),
-    ));
+                  ),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
   }
 
-  _buildPlayList(BuildContext context, String title, List<Playlist> playLists) {
+  Widget _buildPlayList(
+      BuildContext context, String title, List<Playlist> playLists) {
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -353,47 +365,49 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(top: 15),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(title,
-                  style:
-                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold)),
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
           PlayListCard(
-              playList: playLists,
-              onTapItemIndex: (index) async {
-                final lists = await MainController.to
-                    .getPlayListDetail(playLists[index].id!);
-                GetIt.instance<AppRouter>().push(SongsList(
-                    songs: lists,
-                    title: playLists[index].name!,
-                    picUrl: playLists[index].coverImgUrl!));
-              })
+            playList: playLists,
+            onTapItemIndex: (index) async {
+              GetIt.instance<AppRouter>().push(
+                SongsList(id: playLists[index].id!),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
-  _buildFoundContent(List<BlockItem> items, BuildContext context) {
+  Widget _buildFoundContent(List<BlockItem> items, BuildContext context) {
     return SliverToBoxAdapter(
       child: Column(
-          children: items.map((item) {
-        if (item.showType == ItemTypeEnum.HOMEPAGE_NEW_SONG_NEW_ALBUM.value) {
-          return _buildNewSongNewAlbum(item, context);
-        } else if (item.showType ==
-            ItemTypeEnum.HOMEPAGE_SLIDE_LISTEN_LIVE.value) {
-          return _buildListenLive(item, context);
-        } else if (item.showType ==
-            ItemTypeEnum.HOMEPAGE_SLIDE_PLAYLIST.value) {
-          return _buildPlayListSlide(item, context);
-        } else if (item.showType ==
-            ItemTypeEnum.HOMEPAGE_SLIDE_SONGLIST_ALIGN.value) {
-          return _buildSongListAlign(item, context);
-        } else if (item.showType == ItemTypeEnum.SHUFFLE_MUSIC_CALENDAR.value) {
-          return _buildShuffleMusicCalendar(item, context);
-        } else {
-          return Container();
-        }
-      }).toList()),
+        children: items.map((item) {
+          final type = ItemTypeEnum.values.firstWhere(
+              (e) => e.value == item.showType,
+              orElse: () => ItemTypeEnum.HOMEPAGE_SLIDE_PLAYLIST // 默认类型
+              );
+          switch (type) {
+            case ItemTypeEnum.HOMEPAGE_NEW_SONG_NEW_ALBUM:
+              return _buildNewSongNewAlbum(item, context);
+            case ItemTypeEnum.HOMEPAGE_SLIDE_LISTEN_LIVE:
+              return _buildListenLive(item, context);
+            case ItemTypeEnum.HOMEPAGE_SLIDE_PLAYLIST:
+              return _buildPlayListSlide(item, context);
+            case ItemTypeEnum.HOMEPAGE_SLIDE_SONGLIST_ALIGN:
+              return _buildSongListAlign(item, context);
+            case ItemTypeEnum.SHUFFLE_MUSIC_CALENDAR:
+              return _buildShuffleMusicCalendar(item, context);
+            default:
+              return Container();
+          }
+        }).toList(),
+      ),
     );
   }
 
@@ -410,41 +424,31 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
               controller: _albumTabController,
               dividerHeight: 0,
               labelPadding: EdgeInsets.only(left: 0.w, right: 20.w),
-              // 移除左侧的额外padding
               labelStyle: TextStyle(
-                fontSize: 32.sp, // 选中的字体大小
-                fontWeight: FontWeight.normal, // 选中的字体加粗
+                fontSize: 32.sp,
+                fontWeight: FontWeight.normal,
               ),
               unselectedLabelStyle: TextStyle(
-                fontSize: 30.sp, // 未选中的字体大小
-                fontWeight: FontWeight.normal, // 未选中的字体常规
+                fontSize: 30.sp,
+                fontWeight: FontWeight.normal,
               ),
               labelColor: Colors.black,
-              unselectedLabelColor: Color.fromARGB(255, 145, 150, 162),
+              unselectedLabelColor: const Color.fromARGB(255, 145, 150, 162),
               indicatorColor: Colors.transparent,
-              // 取消进度条
               isScrollable: true,
-              // 允许Tab根据内容自适应宽度
-              tabs: const [
-                Text("新歌"), // 直接使用Text即可，IntrinsicWidth不再必要
-                Text("新碟"),
-              ],
+              tabs: const [Text(AppStrings.newSong), Text(AppStrings.newAlbum)],
             ),
           ),
-          SizedBox(
-            height: 10.w,
-          ),
+          SizedBox(height: 10.w),
           Expanded(
             child: TabBarView(
               controller: _albumTabController,
               children: [
-                SongsListWidget(
-                  songs: controller.newSong.value,
-                ),
-                SongsListWidget(songs: controller.newAlbum)
+                SongsListWidget(songs: controller.newSong.value),
+                SongsListWidget(songs: controller.newAlbum),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -455,6 +459,10 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
   }
 
   Widget _buildPlayListSlide(BlockItem item, BuildContext context) {
+    if (item.creatives == null || item.creatives!.isEmpty) {
+      return Container();
+    }
+
     return Container(
       height: 360.w,
       padding: EdgeInsets.only(top: 20.w),
@@ -462,33 +470,35 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCreativeTitle(item, context),
-          SizedBox(
-            height: 20.w,
-          ),
+          SizedBox(height: 20.w),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              itemCount: item.creatives!.length,
               itemBuilder: (context, index) {
+                final creative = item.creatives![index];
+                if (creative.uiElement?.image?.imageUrl == null ||
+                    creative.uiElement?.mainTitle?.title == null ||
+                    creative.resources == null ||
+                    creative.resources!.isEmpty ||
+                    creative.resources![0]?.resourceId == null) {
+                  return Container();
+                }
+
                 return Padding(
                   padding: EdgeInsets.only(right: 20.w),
                   child: SongCard(
-                    picUrl: item.creatives![index].uiElement!.image!.imageUrl!,
-                    title: item.creatives![index].uiElement!.mainTitle!.title!,
+                    picUrl: creative.uiElement!.image!.imageUrl!,
+                    title: creative.uiElement!.mainTitle!.title!,
                     onTapItem: () async {
-                      final lists = await MainController.to.getPlayListDetail(
-                          int.parse(item
-                              .creatives![index].resources![0]!.resourceId!));
-                      GetIt.instance<AppRouter>().push(SongsList(
-                          songs: lists,
-                          title: item
-                              .creatives![index].uiElement!.mainTitle!.title!,
-                          picUrl: item
-                              .creatives![index].uiElement!.image!.imageUrl!));
+                      GetIt.instance<AppRouter>().push(
+                        SongsList(
+                            id: int.parse(creative.resources![0]!.resourceId!)),
+                      );
                     },
                   ),
                 );
               },
-              itemCount: item.creatives!.length,
             ),
           ),
         ],
@@ -504,37 +514,45 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCreativeTitle(item, context),
-          SizedBox(
-            height: 10.w,
-          ),
+          SizedBox(height: 10.w),
           SongsListWidget(songs: controller.slideSongListAlign.value),
         ],
       ),
     );
   }
 
-  _buildCreativeTitle(BlockItem item, BuildContext context) {
-    return Text(
-      item.uiElement!.mainTitle!.title!.isNotEmpty
-          ? item.uiElement!.mainTitle!.title!
-          : (item.uiElement!.subTitle!.title!.isNotEmpty
-              ? item.uiElement!.subTitle!.title!
-              : ""),
-      style: TextStyle(
-        fontSize: 32.sp,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+  Widget _buildCreativeTitle(BlockItem item, BuildContext context) {
+    if (item.uiElement?.mainTitle?.title?.isNotEmpty ?? false) {
+      return Text(
+        item.uiElement!.mainTitle!.title!,
+        style: TextStyle(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else if (item.uiElement?.subTitle?.title?.isNotEmpty ?? false) {
+      return Text(
+        item.uiElement!.subTitle!.title!,
+        style: TextStyle(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+    return Container();
   }
 
   Widget _buildShuffleMusicCalendar(BlockItem item, BuildContext context) {
-    final creatives = item.creatives!;
-    var res = [];
-    for (var el in creatives) {
-      for (var al in el.resources!) {
-        res.add(al);
-      }
-    }
+    if (item.creatives == null) return Container();
+
+    final resources = item.creatives!
+        .where((e) => e.resources != null)
+        .expand((e) => e.resources!)
+        .where((r) => r != null)
+        .toList();
+
+    if (resources.isEmpty) return Container();
+
     return Container(
       padding: EdgeInsets.only(top: 20.w),
       height: 230.h,
@@ -542,13 +560,18 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCreativeTitle(item, context),
-          SizedBox(
-            height: 10.w,
-          ),
+          SizedBox(height: 10.w),
           Expanded(
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
+              itemCount: resources.length,
               itemBuilder: (context, index) {
+                final resource = resources[index];
+                if (resource.uiElement?.mainTitle?.title == null ||
+                    resource.uiElement?.image?.imageUrl == null) {
+                  return Container();
+                }
+
                 return Container(
                   padding: EdgeInsets.only(bottom: 20.w),
                   height: 120.w,
@@ -556,7 +579,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     children: [
                       Expanded(
                         child: Text(
-                          res[index].uiElement!.mainTitle!.title!,
+                          resource.uiElement!.mainTitle!.title!,
                           style: TextStyle(
                             fontSize: 28.sp,
                             fontWeight: FontWeight.bold,
@@ -566,7 +589,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.w),
                         child: NeteaseCacheImage(
-                          picUrl: res[index].uiElement!.image!.imageUrl!,
+                          picUrl: resource.uiElement!.image!.imageUrl!,
                           size: Size(100.w, 100.w),
                         ),
                       )
@@ -574,7 +597,6 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                   ),
                 );
               },
-              itemCount: res.length,
             ),
           ),
         ],
@@ -582,50 +604,93 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     );
   }
 
-  _buildMvList(BuildContext context) {
+  Widget _buildMvList(BuildContext context) {
     return EasyRefresh.builder(
-        footer: null,
-        key: const Key('found'),
-        triggerAxis: Axis.vertical,
-        header: const ClassicHeader(
-          dragText: "下拉刷新",
-          armedText: "释放刷新",
-          processedText: "刷新完成",
-          failedText: "刷新失败",
-          noMoreText: "没有更多数据",
-          readyText: "正在刷新...",
-          messageText: "上次刷新时间 %T",
-        ),
-        controller: _refreshController,
-        onRefresh: () async {
-          controller.refreshMv();
-        },
-        onLoad: () async {},
-        childBuilder: (BuildContext context, ScrollPhysics physics) {
+      footer: null,
+      key: const Key('found'),
+      triggerAxis: Axis.vertical,
+      header: const ClassicHeader(
+        dragText: AppStrings.dragText,
+        armedText: AppStrings.armedText,
+        processedText: AppStrings.processedText,
+        failedText: AppStrings.failedText,
+        noMoreText: AppStrings.noMoreText,
+        readyText: AppStrings.readyText,
+        messageText: AppStrings.messageText,
+      ),
+      controller: _refreshController,
+      onRefresh: () async => controller.refreshMv(),
+      onLoad: null,
+      childBuilder: (context, physics) {
+        return Obx(() {
+          if (controller.loading.value) {
+            return ListView.builder(
+              physics: physics,
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 20.w),
+                  child: ShimmerLoading(
+                    child: ListTile(
+                      leading: Container(
+                        width: 80.w,
+                        height: 80.w,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4.w),
+                        ),
+                      ),
+                      title: Container(
+                        height: 32.w,
+                        width: 400.w,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4.w),
+                        ),
+                      ),
+                      subtitle: Container(
+                        height: 28.w,
+                        width: 3000.w,
+                        margin: EdgeInsets.only(top: 8.w),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4.w),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+
           return ListView.builder(
             physics: physics,
+            itemCount: controller.mvList.value.data?.length ?? 0,
             itemBuilder: (context, index) {
+              final mv = controller.mvList.value.data![index];
               return Padding(
                 padding: EdgeInsets.only(top: 20.w),
                 child: GestureDetector(
                   onTap: () {
-                    GetIt.instance<AppRouter>().push(MvPlayer(
-                      title: controller.mvList.value.data![index].name!,
-                      id: controller.mvList.value.data![index].id!,
-                      artist: controller.mvList.value.data![index].artistName!,
-                    ));
+                    GetIt.instance<AppRouter>().push(
+                      MvPlayer(
+                        title: mv.name!,
+                        id: mv.id!,
+                        artist: mv.artistName!,
+                      ),
+                    );
                   },
                   child: ListTile(
-                    leading: NeteaseCacheImage(
-                        picUrl: controller.mvList.value.data![index].cover!),
+                    leading: NeteaseCacheImage(picUrl: mv.cover!),
                     title: Text(
-                      controller.mvList.value.data![index].name!,
+                      mv.name!,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                     subtitle: Text(
-                      controller.mvList.value.data![index].artistName!,
+                      mv.artistName!,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary,
                       ),
@@ -634,8 +699,9 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                 ),
               );
             },
-            itemCount: controller.mvList.value.data?.length ?? 0,
           );
         });
+      },
+    );
   }
 }

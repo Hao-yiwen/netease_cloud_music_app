@@ -40,4 +40,50 @@ class AppStrings {
   static const String fontColorBrown = '棕色';
   static const String fontColorGray = '灰色';
   static const String darkMode = '深色模式';
+  static const String selectedPodcastsForYou = '为你精选的音乐播客';
+  static const String radarPlaylist = '的雷达歌单';
+  static const String myPlaylist = '我的歌单';
+  static const String similarSongsRecommendation = '你的红心歌曲相似推荐';
+  static const String dailyRecommend = '每日推荐';
+  static const String freshSongsForYourTaste = '符合你口味的新鲜好歌';
+  static const String personalRoaming = '私人漫游';
+  static const String multiplePlayModes = '多种听歌模式随心播放';
+  static const String privateRadar = '私人雷达';
+  static const String worthRepeatedListening = '你爱的歌值得反复聆听';
+  static const String similarSongs = '相似歌曲';
+  static const String startFromYourFavorites = '从你喜欢的歌听起';
+  static const String musicPodcast = '音乐播客';
+  static const String goodMorning = '早上好';
+  static const String goodAfternoon = '下午好';
+  static const String goodEvening = '晚上好';
+  static const String lateNight = '夜深了';
+  static const String search = '搜索';
+  static const String searchHistory = '搜索历史';
+  static const String hotSearch = '热门搜索';
+  static const String pleaseEnterSearchContent = '请输入搜索内容';
+  static const String continueSearch = '继续输入...';
+  static const List<String> tabTitles = ['音乐', 'MV', '直播', '听书', '派对'];
+  static const List<String> fixTags = [
+    "推荐",
+    "歌单",
+    "排行榜",
+    "电台",
+    "直播",
+    "数字专辑",
+    "歌手",
+    "新碟上架",
+    "MV"
+  ];
+
+  static const String dragText = "下拉刷新";
+  static const String armedText = "释放刷新";
+  static const String processedText = "刷新完成";
+  static const String failedText = "刷新失败";
+  static const String noMoreText = "没有更多数据";
+  static const String readyText = "正在刷新...";
+  static const String messageText = "上次刷新时间 %T";
+
+  static const String newSong = "新歌";
+  static const String newAlbum = "新碟";
+  static const String selectedPlaylist = "甄选歌单";
 }

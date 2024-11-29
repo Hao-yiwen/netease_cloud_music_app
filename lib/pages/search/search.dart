@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/pages/search/searchpage_controller.dart';
 import 'package:netease_cloud_music_app/pages/search/widgets/search_page_bar.dart';
@@ -21,100 +22,134 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  late SearchpageController controller;
-  TextEditingController textEditingController = TextEditingController();
+  late final SearchpageController controller;
+  final TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
+    super.initState();
+    _initController();
+  }
+
+  void _initController() {
     Get.lazyPut(() => SearchpageController());
     controller = Get.find<SearchpageController>();
     textEditingController.text = controller.textvalue.value;
     controller.getSearchKeyWords();
-    super.initState();
   }
 
-  _gotoSearchDetail(BuildContext context) {
-    if (controller.textvalue.value.isEmpty) {
-      WidgetUtil.showToast('请输入搜索内容');
+  void _gotoSearchDetail(BuildContext context) {
+    final searchText = controller.textvalue.value;
+    if (searchText.isEmpty) {
+      WidgetUtil.showToast(AppStrings.pleaseEnterSearchContent);
       return;
     }
+
     GetIt.instance<AppRouter>().push(SearchDetail());
-    controller.searchKeyWords(controller.textvalue.value);
-    // 保存搜索结果
-    controller.saveSearchKeyWords(controller.textvalue.value);
+    controller.searchKeyWords(searchText);
+    controller.saveSearchKeyWords(searchText);
+  }
+
+  void _handleKeywordTap(String keyword) {
+    textEditingController.text = keyword;
+    controller.textvalue.value = keyword;
+    _gotoSearchDetail(context);
+  }
+
+  void _clearSearchText() {
+    textEditingController.clear();
+    controller.textvalue.value = '';
   }
 
   @override
   Widget build(BuildContext context) {
-    double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Center(
-              child: Icon(
-            TablerIcons.chevron_left,
-            size: 60.w,
-          )),
-        ),
-        leadingWidth: 40,
-        title: SearchPageBar(
-          search: _gotoSearchDetail,
-          setTextValue: (value) {
-            controller.textvalue.value = value;
-            controller.searchSuggest(value);
-          },
-          textEditingController: textEditingController,
-        ),
-        actions: [
-          SizedBox(
-            width: 15,
-          ),
-          GestureDetector(
-            onTap: () {
-              _gotoSearchDetail(context);
-            },
-            child: Text('搜索', style: TextStyle(fontSize: 30.w)),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-        ],
-      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
       body: Stack(
         children: [
           _buildContent(),
-          Positioned(
-              bottom: 0,
-              left: 0, // 确保有约束条件
-              right: 0, //
-              child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: bottomPadding),
-                  child: const BottomPlayerBar(),
-                ),
-              )),
+          _buildBottomPlayerBar(bottomPadding),
           _buildKeyWords(context),
         ],
       ),
     );
   }
 
-  _buildContent() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      titleSpacing: 0,
+      leading: _buildBackButton(),
+      leadingWidth: 40,
+      title: SearchPageBar(
+        search: _gotoSearchDetail,
+        setTextValue: _handleTextValueChange,
+        textEditingController: textEditingController,
+      ),
+      actions: _buildAppBarActions(context),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: Center(
+        child: Icon(
+          TablerIcons.chevron_left,
+          size: 60.w,
+          color: Theme.of(context).iconTheme.color,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildAppBarActions(BuildContext context) {
+    return [
+      const SizedBox(width: 15),
+      GestureDetector(
+        onTap: () => _gotoSearchDetail(context),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.w),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(20.w),
+          ),
+          child: Text(
+            AppStrings.search,
+            style: TextStyle(
+              fontSize: 28.w,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(width: 15),
+    ];
+  }
+
+  void _handleTextValueChange(String value) {
+    controller.textvalue.value = value;
+    controller.searchSuggest(value);
+  }
+
+  Widget _buildContent() {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      padding: const EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(20.w),
       child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSearchHistory(),
+            SizedBox(height: 30.w),
             _buildSearchHot(),
           ],
         ),
@@ -122,120 +157,218 @@ class _SearchState extends State<Search> {
     );
   }
 
-  _buildSearchHistory() {
-    return Container(
-      child: Obx(() {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('搜索历史'),
-            SizedBox(
-              height: 10,
-            ),
-            Wrap(
-              spacing: 10, // 控制水平间距
-              runSpacing: 15, // 控制垂直间距
-              children: controller.searchKey.map((e) {
-                return GestureDetector(
-                  onTap: () {
-                    textEditingController.text = e;
-                    controller.textvalue.value = e;
-                    _gotoSearchDetail(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          e,
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: GestureDetector(
-                            onTap: () {
-                              controller.deleteSearchKeyWords(e);
-                            },
-                            child: Icon(TablerIcons.trash, size: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        );
-      }),
-    );
-  }
-
-  _buildSearchHot() {
-    return Container(
-      padding: EdgeInsets.only(top: 20),
-      child: Column(
-        children: [Text('热门搜索')],
+  Widget _buildBottomPlayerBar(double bottomPadding) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: const BottomPlayerBar(),
+        ),
       ),
     );
   }
 
-  _buildKeyWords(BuildContext context) {
+  Widget _buildSearchHistory() {
     return Obx(() {
-      if (controller.textvalue.value.isNotEmpty) {
-        return Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: Theme.of(context).scaffoldBackgroundColor,
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10),
-          child: controller
-                      .keyWordsSuggest.value?.result?.allMatch?.isNotEmpty ==
-                  true
-              ? ListView.builder(
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        textEditingController.text = controller.keyWordsSuggest
-                                .value?.result?.allMatch?[index].keyword ??
-                            '';
-                        controller.textvalue.value = controller.keyWordsSuggest
-                                .value?.result?.allMatch?[index].keyword ??
-                            '';
-                        _gotoSearchDetail(context);
-                      },
-                      child: ListTile(
-                        leading: Icon(
-                          TablerIcons.search,
-                          color: Colors.grey,
-                        ),
-                        title: Text(
-                          controller.keyWordsSuggest.value?.result
-                                  ?.allMatch?[index].keyword ??
-                              '',
-                          style: TextStyle(
-                              fontSize: 25.w, color: Colors.grey[800]),
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: controller
-                          .keyWordsSuggest.value?.result?.allMatch?.length ??
-                      0,
-                )
-              : Container(
-                  child: Text(
-                    '继续搜索',
-                    style: TextStyle(fontSize: 30.w, color: Colors.blueAccent),
+      if (controller.searchKey.isEmpty) return const SizedBox();
+
+      return Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16.w),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppStrings.searchHistory,
+                  style: TextStyle(
+                    fontSize: 32.w,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
-        );
-      }
-      return Container();
+                IconButton(
+                  onPressed: () => controller.clearSearchKeyWords(),
+                  icon: Icon(
+                    TablerIcons.trash,
+                    size: 40.w,
+                    color: Theme.of(context).hintColor,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.w),
+            _buildHistoryKeywords(),
+          ],
+        ),
+      );
     });
+  }
+
+  Widget _buildHistoryKeywords() {
+    return Wrap(
+      spacing: 12.w,
+      runSpacing: 12.w,
+      children: controller.searchKey.map((keyword) {
+        return _buildKeywordChip(keyword);
+      }).toList(),
+    );
+  }
+
+  Widget _buildKeywordChip(String keyword) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _handleKeywordTap(keyword),
+        borderRadius: BorderRadius.circular(20.w),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+            vertical: 8.w,
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20.w),
+            border: Border.all(
+              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                TablerIcons.clock,
+                size: 28.w,
+                color: Theme.of(context).primaryColor,
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                keyword,
+                style: TextStyle(
+                  fontSize: 28.w,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              GestureDetector(
+                onTap: () => controller.deleteSearchKeyWords(keyword),
+                child: Icon(
+                  TablerIcons.x,
+                  size: 28.w,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchHot() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppStrings.hotSearch,
+          style: TextStyle(
+            fontSize: 32.w,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 20.w),
+        // TODO: Add hot search content
+      ],
+    );
+  }
+
+  Widget _buildKeyWords(BuildContext context) {
+    return Obx(() {
+      if (controller.textvalue.value.isEmpty) {
+        return Container();
+      }
+
+      return Container(
+        height: double.infinity,
+        width: double.infinity,
+        color: Theme.of(context).scaffoldBackgroundColor,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: _buildSuggestionsList(),
+      );
+    });
+  }
+
+  Widget _buildSuggestionsList() {
+    final hasMatches =
+        controller.keyWordsSuggest.value?.result?.allMatch?.isNotEmpty == true;
+
+    if (!hasMatches) {
+      return Center(
+        child: Text(
+          AppStrings.continueSearch,
+          style: TextStyle(
+            fontSize: 28.w,
+            color: Colors.grey[600],
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount:
+          controller.keyWordsSuggest.value?.result?.allMatch?.length ?? 0,
+      itemBuilder: (context, index) {
+        final keyword = controller
+                .keyWordsSuggest.value?.result?.allMatch?[index].keyword ??
+            '';
+        return _buildSuggestionItem(keyword);
+      },
+    );
+  }
+
+  Widget _buildSuggestionItem(String keyword) {
+    return InkWell(
+      onTap: () => _handleKeywordTap(keyword),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.w),
+        child: Row(
+          children: [
+            Icon(
+              TablerIcons.search,
+              size: 40.w,
+              color: Colors.grey[600],
+            ),
+            SizedBox(width: 20.w),
+            Expanded(
+              child: Text(
+                keyword,
+                style: TextStyle(
+                  fontSize: 28.w,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

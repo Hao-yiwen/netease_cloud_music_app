@@ -8,7 +8,6 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:audio_service/audio_service.dart' as _i21;
 import 'package:auto_route/auto_route.dart' as _i19;
 import 'package:flutter/material.dart' as _i20;
 import 'package:netease_cloud_music_app/pages/about.dart' as _i1;
@@ -318,13 +317,10 @@ class Search extends _i19.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i13.SearchDetail]
-class SearchDetail extends _i19.PageRouteInfo<SearchDetailArgs> {
-  SearchDetail({
-    _i20.Key? key,
-    List<_i19.PageRouteInfo>? children,
-  }) : super(
+class SearchDetail extends _i19.PageRouteInfo<void> {
+  const SearchDetail({List<_i19.PageRouteInfo>? children})
+      : super(
           SearchDetail.name,
-          args: SearchDetailArgs(key: key),
           initialChildren: children,
         );
 
@@ -333,22 +329,9 @@ class SearchDetail extends _i19.PageRouteInfo<SearchDetailArgs> {
   static _i19.PageInfo page = _i19.PageInfo(
     name,
     builder: (data) {
-      final args =
-          data.argsAs<SearchDetailArgs>(orElse: () => const SearchDetailArgs());
-      return _i13.SearchDetail(key: args.key);
+      return const _i13.SearchDetail();
     },
   );
-}
-
-class SearchDetailArgs {
-  const SearchDetailArgs({this.key});
-
-  final _i20.Key? key;
-
-  @override
-  String toString() {
-    return 'SearchDetailArgs{key: $key}';
-  }
 }
 
 /// generated route for
@@ -356,17 +339,13 @@ class SearchDetailArgs {
 class SongsList extends _i19.PageRouteInfo<SongsListArgs> {
   SongsList({
     _i20.Key? key,
-    required List<_i21.MediaItem> songs,
-    required String title,
-    required String picUrl,
+    required int id,
     List<_i19.PageRouteInfo>? children,
   }) : super(
           SongsList.name,
           args: SongsListArgs(
             key: key,
-            songs: songs,
-            title: title,
-            picUrl: picUrl,
+            id: id,
           ),
           initialChildren: children,
         );
@@ -379,9 +358,7 @@ class SongsList extends _i19.PageRouteInfo<SongsListArgs> {
       final args = data.argsAs<SongsListArgs>();
       return _i14.SongsList(
         key: args.key,
-        songs: args.songs,
-        title: args.title,
-        picUrl: args.picUrl,
+        id: args.id,
       );
     },
   );
@@ -390,22 +367,16 @@ class SongsList extends _i19.PageRouteInfo<SongsListArgs> {
 class SongsListArgs {
   const SongsListArgs({
     this.key,
-    required this.songs,
-    required this.title,
-    required this.picUrl,
+    required this.id,
   });
 
   final _i20.Key? key;
 
-  final List<_i21.MediaItem> songs;
-
-  final String title;
-
-  final String picUrl;
+  final int id;
 
   @override
   String toString() {
-    return 'SongsListArgs{key: $key, songs: $songs, title: $title, picUrl: $picUrl}';
+    return 'SongsListArgs{key: $key, id: $id}';
   }
 }
 

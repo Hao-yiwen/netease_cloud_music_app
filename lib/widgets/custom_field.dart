@@ -16,32 +16,39 @@ class CustomField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final BorderRadiusGeometry? borderRadius;
 
-  const CustomField(
-      {super.key,
-      this.iconData,
-      this.hitText,
-      this.hintStyle,
-      required this.textEditingController,
-      this.pass,
-      this.autoFocus,
-      this.padding,
-      this.margin,
-      this.textInputType,
-      this.onSubmitted,
-      this.textInputAction,
-      this.borderRadius});
+  const CustomField({
+    super.key,
+    this.iconData,
+    this.hitText,
+    this.hintStyle,
+    required this.textEditingController,
+    this.pass,
+    this.autoFocus,
+    this.padding,
+    this.margin,
+    this.textInputType,
+    this.onSubmitted,
+    this.textInputAction,
+    this.borderRadius,
+  });
 
   @override
   State<CustomField> createState() => _CustomFieldState();
 }
 
 class _CustomFieldState extends State<CustomField> {
-  bool isPass = false;
+  late bool isPass;
 
   @override
   void initState() {
     super.initState();
     isPass = widget.pass ?? false;
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      isPass = !isPass;
+    });
   }
 
   @override
@@ -56,44 +63,42 @@ class _CustomFieldState extends State<CustomField> {
       ),
       child: Row(
         children: [
-          widget.iconData != null
-              ? Icon(
-                  widget.iconData,
-                  size: 42.sp,
-                )
-              : const SizedBox.shrink(),
+          if (widget.iconData != null)
+            Icon(
+              widget.iconData,
+              size: 42.sp,
+            ),
           Expanded(
-              child: TextField(
-            obscureText: isPass,
-            controller: widget.textEditingController,
-            keyboardType: widget.textInputType ?? TextInputType.text,
-            cursorColor: Theme.of(context).primaryColor.withOpacity(.4),
-            onSubmitted: widget.onSubmitted,
-            textInputAction: widget.textInputAction,
-            autofocus: widget.autoFocus ?? false,
-            decoration: InputDecoration(
+            child: TextField(
+              obscureText: isPass,
+              controller: widget.textEditingController,
+              keyboardType: widget.textInputType ?? TextInputType.text,
+              cursorColor: Theme.of(context).primaryColor.withOpacity(.4),
+              onSubmitted: widget.onSubmitted,
+              textInputAction: widget.textInputAction,
+              autofocus: widget.autoFocus ?? false,
+              decoration: InputDecoration(
                 hintText: widget.hitText ?? '',
-                hintStyle: TextStyle(fontSize: 28.sp, color: Colors.grey),
+                hintStyle: widget.hintStyle ??
+                    TextStyle(fontSize: 28.sp, color: Colors.grey),
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 10.w, horizontal: 15.w),
                 border: const UnderlineInputBorder(borderSide: BorderSide.none),
-                isDense: true),
-          )),
-          Visibility(
-            visible: widget.pass ?? false,
-            child: Padding(
+                isDense: true,
+              ),
+            ),
+          ),
+          if (widget.pass ?? false)
+            Padding(
               padding: EdgeInsets.only(right: 10.w),
               child: GestureDetector(
-                onTap: () {
-                  isPass = !isPass;
-                },
+                onTap: _togglePasswordVisibility,
                 child: Icon(
                   isPass ? TablerIcons.eye_off : TablerIcons.eye,
                   size: 40.sp,
                 ),
               ),
             ),
-          )
         ],
       ),
     );

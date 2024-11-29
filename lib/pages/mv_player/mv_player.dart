@@ -8,12 +8,16 @@ import 'package:video_player/video_player.dart';
 
 @RoutePage()
 class MvPlayer extends StatefulWidget {
-  String title;
-  int id;
-  String artist;
+  final String title;
+  final int id;
+  final String artist;
 
-  MvPlayer(
-      {super.key, required this.title, required this.id, required this.artist});
+  const MvPlayer({
+    super.key,
+    required this.title,
+    required this.id,
+    required this.artist,
+  });
 
   @override
   State<MvPlayer> createState() => _MvPlayerState();
@@ -32,28 +36,36 @@ class _MvPlayerState extends State<MvPlayer> {
 
   Future<void> _fetchMvDetail() async {
     await controller.getMvDetail(widget.id);
-    print('mvDetail: ${controller.mvDetail.value.data?.url ?? 'null'}');
-    if (controller.mvDetail.value.data != null &&
-        controller.mvDetail.value.data?.url != null &&
-        controller.mvDetail.value.data!.url!.isNotEmpty) {
-      _videoPlayerController = VideoPlayerController.networkUrl(
-          Uri.parse(controller.mvDetail.value.data!.url!));
+    final mvUrl = controller.mvDetail.value.data?.url;
+
+    if (mvUrl != null && mvUrl.isNotEmpty) {
+      _videoPlayerController =
+          VideoPlayerController.networkUrl(Uri.parse(mvUrl));
       await _videoPlayerController.initialize();
-      setState(() {
-        _chewieController = ChewieController(
-          videoPlayerController: _videoPlayerController,
-          autoPlay: true,
-          looping: true,
-          aspectRatio: 16 / 9,
-          allowFullScreen: true,
-          allowMuting: true,
-          showControls: true,
-          showControlsOnInitialize: true,
-          showOptions: false,
-        );
-      });
-    } else {
-      print('Video URL is null or empty');
+
+      if (mounted) {
+        setState(() {
+          _chewieController = ChewieController(
+            videoPlayerController: _videoPlayerController,
+            autoPlay: true,
+            looping: false,
+            aspectRatio: 16 / 9,
+            allowFullScreen: true,
+            allowMuting: true,
+            showControls: true,
+            showControlsOnInitialize: true,
+            showOptions: false,
+            placeholder: Container(
+              color: Colors.black,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          );
+        });
+      }
     }
   }
 
@@ -67,49 +79,86 @@ class _MvPlayerState extends State<MvPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Obx(() {
-              if (controller.loading.value) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (_chewieController != null) {
-                // 如果是横屏则使用全屏
-                if (MediaQuery.of(context).orientation ==
-                    Orientation.landscape) {
-                  return SizedBox(
-                    width: 1.sw, // 使用屏幕宽度
-                    height: 1.sh, // 使用屏幕高度
-                    child: Chewie(controller: _chewieController!),
-                  );
-                }
-                return SizedBox(
-                  width: 1.sw, // 使用屏幕宽度
-                  height: 1.sh / 3, // 屏幕高度的三分之一
-                  child: Chewie(controller: _chewieController!),
-                );
-              }
-              return const Center();
-            }),
-            SizedBox(
-              height: 20.w,
+      backgroundColor: Colors.black,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          title: Text(
+            widget.title,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 36.sp,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Text(
-                textAlign: TextAlign.left,
-                "作者:" + widget.artist ?? '',
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+          ),
+          backgroundColor: Colors.black,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Obx(() {
+            return SizedBox(
+              width: 1.sw,
+              height: 1.sh / 3,
+              child: controller.loading.value
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    )
+                  : _chewieController != null
+                      ? OrientationBuilder(
+                          builder: (context, orientation) {
+                            if (orientation == Orientation.landscape) {
+                              return SizedBox(
+                                width: 1.sw,
+                                height: 1.sh,
+                                child: Chewie(controller: _chewieController!),
+                              );
+                            }
+                            return Chewie(controller: _chewieController!);
+                          },
+                        )
+                      : const SizedBox.shrink(),
+            );
+          }),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.w),
+                  topRight: Radius.circular(20.w),
                 ),
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontSize: 48.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 12.w),
+                  Text(
+                    "演唱者: ${widget.artist}",
+                    style: TextStyle(
+                      fontSize: 32.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

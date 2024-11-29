@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:netease_cloud_music_app/pages/songs_list/songs_list_binding.dart';
 import 'package:netease_cloud_music_app/routes/auth_guard.dart';
 import 'routes.gr.dart';
 
@@ -54,10 +55,9 @@ abstract class _Paths {
 class AppRouter extends RootStackRouter {
   @override
   RouteType get defaultRouteType => const RouteType.custom(
-    transitionsBuilder: TransitionsBuilders.slideLeft,
-    durationInMilliseconds: 100,
-    reverseDurationInMilliseconds: 200
-  );
+      transitionsBuilder: TransitionsBuilders.slideLeft,
+      durationInMilliseconds: 100,
+      reverseDurationInMilliseconds: 200);
 
   @override
   List<AutoRoute> get routes => [
@@ -87,7 +87,10 @@ class AppRouter extends RootStackRouter {
             transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
             durationInMilliseconds: 200,
             path: Routes.webview),
-        AutoRoute(path: Routes.songsList, page: SongsList.page),
+        AutoRoute(
+          path: Routes.songsList,
+          page: SongsList.page,
+        ),
         AutoRoute(path: Routes.comment, page: CommentRoute.page),
         AutoRoute(path: Routes.mvPlayer, page: MvPlayer.page),
         AutoRoute(path: Routes.searchDetail, page: SearchDetail.page),
