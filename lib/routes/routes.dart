@@ -53,7 +53,11 @@ abstract class _Paths {
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
   @override
-  RouteType get defaultRouteType => const RouteType.material();
+  RouteType get defaultRouteType => const RouteType.custom(
+    transitionsBuilder: TransitionsBuilders.slideLeft,
+    durationInMilliseconds: 100,
+    reverseDurationInMilliseconds: 200
+  );
 
   @override
   List<AutoRoute> get routes => [

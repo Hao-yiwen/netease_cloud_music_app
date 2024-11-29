@@ -154,7 +154,7 @@ class Main extends GetView<MainController> {
                                   context,
                                   '为你精选的音乐播客',
                                   controller
-                                      .personalizedDjprogramDto.value.result!),
+                                      .personalizedDjprogramDto.value?.result ?? []),
                             if (controller.recommendResourceDto.value != null &&
                                 controller.recommendResourceDto.value!
                                         .recommend !=
