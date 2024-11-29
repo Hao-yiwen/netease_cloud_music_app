@@ -7,6 +7,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
+import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/pages/main/constants.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/widgets/shimmer_loading.dart';
@@ -382,14 +383,20 @@ class Main extends GetView<MainController> {
   }
 
   Widget _buildDailyRecommendCard() {
+    final dailySong = controller.dailySongs[0];
+    final songId = dailySong.extras?['songId'] as int?;
+
+    if (songId == null) {
+      LogBox.error('Daily song ID is null');
+      return const SizedBox.shrink();
+    }
+
     return MusicCard(
       title: AppStrings.dailyRecommend,
       subTitle: AppStrings.freshSongsForYourTaste,
       icon: TablerIcons.calendar,
-      cardPic: controller.dailySongs[0].extras?['image'] ?? '',
-      onTapHandle: () => _navigateToSongsList(
-        controller.dailySongs[0].id! as int,
-      ),
+      cardPic: dailySong.extras?['image'] ?? '',
+      onTapHandle: () => _navigateToSongsList(songId),
     );
   }
 
@@ -404,14 +411,20 @@ class Main extends GetView<MainController> {
   }
 
   Widget _buildPrivateRadarCard() {
+    final song = controller.privateRadarSongs.value[0];
+    final songId = song.extras?['songId'] as int?;
+
+    if (songId == null) {
+      LogBox.error('Private radar song ID is null');
+      return const SizedBox.shrink();
+    }
+
     return MusicCard(
       title: AppStrings.privateRadar,
       subTitle: AppStrings.worthRepeatedListening,
       icon: TablerIcons.radio,
-      cardPic: controller.privateRadarSongs.value[0].extras?['image'] ?? '',
-      onTapHandle: () => _navigateToSongsList(
-        controller.privateRadarSongs.value[0].id! as int,
-      ),
+      cardPic: song.extras?['image'] ?? '',
+      onTapHandle: () => _navigateToSongsList(songId),
     );
   }
 

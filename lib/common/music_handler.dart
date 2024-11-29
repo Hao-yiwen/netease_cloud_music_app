@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -13,7 +11,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:netease_cloud_music_app/common/audio_player_handler.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
-import 'package:netease_cloud_music_app/http/api/roaming/dto/song_info_dto.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 
@@ -69,7 +66,9 @@ class RootIsolateData {
   RootIsolateData(this.rootIsolateToken, {this.playList, this.items});
 }
 
-class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler implements AudioPlayerHandler {
+class MusicHandler extends BaseAudioHandler
+    with SeekHandler, QueueHandler
+    implements AudioPlayerHandler {
   final AudioPlayer _audioPlayer = GetIt.instance<AudioPlayer>();
   final Box _box = GetIt.instance<Box>();
   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
@@ -78,14 +77,19 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
   AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
   int _currentIndex = 0;
 
+  // 预加载的下一首歌曲URL
+  String? _nextSongUrl;
+  // 预加载的上一首歌曲URL
+  String? _previousSongUrl;
+
   MusicHandler() {
-    // 获取缓存
     _loadPlayListByStorage();
-    _notifyAudioHandlerAboutPositionEvents();
-    _notifyAudioHandlerAboutPlayStateEvents();
+    _listenToPlaybackState();
+    _listenToPositionEvents();
+    _listenToSequenceState();
   }
 
-  void _notifyAudioHandlerAboutPlayStateEvents() {
+  void _listenToPlaybackState() {
     _audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _audioPlayer.playing;
       playbackState.add(playbackState.value.copyWith(
@@ -111,6 +115,8 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
         ],
         systemActions: const {
           MediaAction.seek,
+          MediaAction.seekForward,
+          MediaAction.seekBackward,
         },
         androidCompactActionIndices: const [1, 2, 3],
         processingState: const {
@@ -120,6 +126,7 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
           ProcessingState.ready: AudioProcessingState.ready,
           ProcessingState.completed: AudioProcessingState.completed,
         }[_audioPlayer.processingState]!,
+        repeatMode: _audioServiceRepeatMode,
         shuffleMode: (_audioPlayer.shuffleModeEnabled)
             ? AudioServiceShuffleMode.all
             : AudioServiceShuffleMode.none,
@@ -132,21 +139,24 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
     });
   }
 
-  void _notifyAudioHandlerAboutPositionEvents() {
-    _audioPlayer.playerStateStream.listen((state) {
-      switch (state.processingState) {
-        case ProcessingState.idle:
-          break;
-        case ProcessingState.loading:
-          break;
-        case ProcessingState.buffering:
-          break;
-        case ProcessingState.ready:
-          break;
-        case ProcessingState.completed:
-          skipToNext();
-          print('object=====下一首${_currentIndex}');
-          break;
+  void _listenToPositionEvents() {
+    _audioPlayer.positionStream.listen((position) {
+      playbackState.add(playbackState.value.copyWith(
+        updatePosition: position,
+      ));
+
+      // 当播放进度超过80%时预加载下一首
+      if (position.inMilliseconds >
+          (_audioPlayer.duration?.inMilliseconds ?? 0) * 0.8) {
+        _preloadNextSong();
+      }
+    });
+  }
+
+  void _listenToSequenceState() {
+    _audioPlayer.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        skipToNext();
       }
     });
   }
@@ -161,7 +171,6 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
     if (playList.isNotEmpty) {
       List<MediaItem> items = await compute(getCachePlayList,
           RootIsolateData(rootIsolateToken, playList: playList));
-      // 更新播放列表
       await changeQueueLists(items, init: true, index: _currentIndex);
     }
   }
@@ -263,51 +272,86 @@ class MusicHandler extends BaseAudioHandler with SeekHandler, QueueHandler imple
     await readySongUrl(playIt: playIt);
   }
 
-  @override
-  Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
-    bool high = !playIt
-        ? _box.get(HIGH_SONG) ?? false
-        : RoamingController.to.high.value;
-    if (queue.value.isEmpty) return;
-    var song = queue.value[_currentIndex];
-    _box.put(PLAY_ID, song.id);
-    String? url;
+  Future<String?> _preloadSongUrl(MediaItem song) async {
+    // 首先检查缓存
     if (song.extras?["type"] == MediaType.local.name ||
         song.extras?['type'] == MediaType.neteaseCache.name) {
-      url = song.extras?['url'];
+      return song.extras?['url'];
     }
-    if (url != null) {
-      song.extras?.putIfAbsent('cache', () => true);
+
+    // 获取在线URL
+    try {
+      final songUrl = await RoamingApi.getSongInfo([song.id]);
+      return ((songUrl.data ?? [])[0].url ?? '').split("?")[0];
+    } catch (e) {
+      print('Failed to get song URL: $e');
+      return null;
+    }
+  }
+
+  // 预加载下一首歌曲
+  Future<void> _preloadNextSong() async {
+    if (_nextSongUrl != null) return; // 已经预加载过了
+
+    var nextIndex = _currentIndex + 1;
+    if (nextIndex >= queue.value.length) {
+      nextIndex = 0;
+    }
+
+    var nextSong = queue.value[nextIndex];
+    _nextSongUrl = await _preloadSongUrl(nextSong);
+  }
+
+  // 预加载上一首歌曲
+  Future<void> _preloadPreviousSong() async {
+    if (_previousSongUrl != null) return;
+
+    var prevIndex = _currentIndex - 1;
+    if (prevIndex < 0) {
+      prevIndex = queue.value.length - 1;
+    }
+
+    var prevSong = queue.value[prevIndex];
+    _previousSongUrl = await _preloadSongUrl(prevSong);
+  }
+
+  Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
+    try {
+      if (queue.value.isEmpty) return;
+      var song = queue.value[_currentIndex];
       mediaItem.add(song);
-      if (song.extras?["type"] == MediaType.local.name) {
-        await _audioPlayer.setFilePath(url);
+
+      String? url;
+      // 使用预加载的URL
+      if (isNext && _nextSongUrl != null) {
+        url = _nextSongUrl;
+        _nextSongUrl = null;
+      } else if (!isNext && _previousSongUrl != null) {
+        url = _previousSongUrl;
+        _previousSongUrl = null;
+      } else {
+        url = await _preloadSongUrl(song);
       }
-      if (song.extras?["type"] == MediaType.neteaseCache.name) {
-        _audioPlayer.setAudioSource(
-            StreamSource(url, url.replaceAll('.uc!', '').split('.').last));
+
+      if (url == null) return;
+
+      await _audioPlayer.setUrl(
+        url,
+        initialPosition: Duration.zero,
+        preload: true,
+      );
+
+      if (playIt) {
+        await _audioPlayer.play();
       }
-      if (playIt) _audioPlayer.play();
-      return;
-    }
-    if (url != null && File(url).existsSync()) {
-      song.extras?.putIfAbsent('cache', () => true);
-      mediaItem.add(song);
-      _audioPlayer.setFilePath(url);
-      if (playIt) _audioPlayer.play();
-    } else {
-      mediaItem.add(song);
-      SongInfoListDto songUrl = await RoamingApi.getSongInfo([song.id]);
-      // todo
-      url = ((songUrl.data ?? [])[0].url ?? '').split("?")[0];
-    }
-    if (url.isNotEmpty) {
-      await _audioPlayer.setUrl(url);
-      if (playIt) _audioPlayer.play();
-    } else {
+
+      // 开始预加载下一首和上一首
+      _preloadNextSong();
+      _preloadPreviousSong();
+    } catch (e) {
+      print('Audio playback error: $e');
       if (isNext) {
-        {
-          await skipToNext();
-        }
+        await skipToNext();
       } else {
         await skipToPrevious();
       }
@@ -484,21 +528,31 @@ Map<String, dynamic>? castMap(Map? map) {
 enum MediaType { local, playlist, fm, radio, neteaseCache }
 
 class StreamSource extends StreamAudioSource {
-  String uri;
-  String fileType;
+  final String uri;
+  final String fileType;
 
   StreamSource(this.uri, this.fileType);
 
   @override
   Future<StreamAudioResponse> request([int? start, int? end]) async {
-    Uint8List fileBytes = Uint8List.fromList(
-        File(uri).readAsBytesSync().map((e) => e * 0xa3).toList());
+    try {
+      final file = File(uri);
+      final fileLength = await file.length();
 
-    return StreamAudioResponse(
-        sourceLength: fileBytes.length,
-        contentLength: (start ?? 0) - (end ?? fileBytes.length),
-        offset: start ?? 0,
-        stream: Stream.fromIterable([fileBytes.sublist(start ?? 0, end)]),
-        contentType: fileType);
+      start = start ?? 0;
+      end = end ?? fileLength;
+
+      final contentLength = end - start;
+      final stream = file.openRead(start, end);
+
+      return StreamAudioResponse(
+          sourceLength: fileLength,
+          contentLength: contentLength,
+          offset: start,
+          stream: stream,
+          contentType: fileType);
+    } catch (e) {
+      throw Exception('Error loading audio file: $e');
+    }
   }
 }

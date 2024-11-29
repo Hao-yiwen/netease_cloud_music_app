@@ -13,6 +13,7 @@ import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
+import 'package:audio_service/audio_service.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../common/music_handler.dart';
@@ -75,6 +76,17 @@ class _RoamingState extends State<Roaming> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // 确保 MediaItem 信息在 Android 端正确设置
+    audioHandler.mediaItem.listen((mediaItem) {
+      if (mediaItem != null) {
+        AudioServiceBackground.setMediaItem(mediaItem);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -128,6 +140,10 @@ class _RoamingState extends State<Roaming> {
         children: [
           Obx(() {
             final mediaItem = controller.mediaItem.value;
+            // 确保 MediaItem 包含必要信息
+            if (mediaItem.title.isEmpty || mediaItem.artist == null) {
+              return const SizedBox.shrink();
+            }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -181,6 +197,12 @@ class _RoamingState extends State<Roaming> {
     return Obx(() {
       final duration = controller.duration.value;
       final mediaItem = controller.mediaItem.value;
+
+      // 确保 duration 有效
+      if (mediaItem.duration == null ||
+          mediaItem.duration!.inMilliseconds <= 0) {
+        return const SizedBox.shrink();
+      }
 
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.w),
@@ -351,10 +373,17 @@ class _RoamingState extends State<Roaming> {
   Widget _buildPlayer() {
     return Obx(() {
       final mediaItem = controller.mediaItem.value;
+      final imageUrl = mediaItem.extras?['image'] ?? PLACE_IMAGE_HOLDER;
+
+      // 确保图片URL有效
+      if (imageUrl.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
       return PlayAlbumCover(
         rotating: controller.playing.value,
         pading: 40.w,
-        imgPic: '${mediaItem.extras?['image'] ?? PLACE_IMAGE_HOLDER}',
+        imgPic: imageUrl,
       );
     });
   }

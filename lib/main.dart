@@ -69,6 +69,7 @@ Bindings _initializeBindings() {
     MessageBinding().dependencies();
     Get.lazyPut(() => SplashController());
     Get.lazyPut(() => MvPlayerController());
+    Get.lazyPut(() => LoginController()); // Add LoginController initialization
   });
 }
 
@@ -128,16 +129,54 @@ class MyObserver extends AutoRouterObserver {
 }
 
 Future<void> _initGetService(GetIt getIt) async {
+  // 创建一个经过优化配置的 AudioPlayer 实例
+  final audioPlayer = AudioPlayer(
+    audioLoadConfiguration: AudioLoadConfiguration(
+      // Optimize buffer management
+      androidLoadControl: AndroidLoadControl(
+        // Reduce minimum buffer to prevent backup
+        minBufferDuration: Duration(seconds: 3),
+        // Set reasonable maximum to balance memory usage
+        maxBufferDuration: Duration(seconds: 8),
+        // Increase initial playback buffer for smoother start
+        bufferForPlaybackDuration: Duration(milliseconds: 500),
+        // Add some safety margin after rebuffering
+        bufferForPlaybackAfterRebufferDuration: Duration(seconds: 1),
+        // Set target buffer size to reduce memory pressure
+        targetBufferBytes: 2 * 1024 * 1024,
+      ),
+    ),
+  );
+
   getIt
     ..registerSingleton<AppRouter>(AppRouter())
-    ..registerSingleton<AudioPlayer>(AudioPlayer());
+    ..registerSingleton<AudioPlayer>(audioPlayer);
 
   await Hive.initFlutter('music');
   getIt.registerSingleton<Box>(await Hive.openBox('cache'));
 
   final musicHandler = await AudioService.init<MusicHandler>(
     builder: () => MusicHandler(),
-    config: const AudioServiceConfig(),
+    config: const AudioServiceConfig(
+      // Android 通知栏配置
+      androidNotificationChannelId: 'com.example.netease_cloud_music_app.audio',
+      androidNotificationChannelName: '网易云音乐',
+      androidNotificationChannelDescription: '音乐播放控制',
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidShowNotificationBadge: true,
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+
+      // 通知栏显示选项
+      notificationColor: Color(0xFFe72d2c),
+      artDownscaleWidth: 300,
+      artDownscaleHeight: 300,
+
+      // 快速启动配置
+      fastForwardInterval: Duration(seconds: 10),
+      rewindInterval: Duration(seconds: 10),
+    ),
   );
+
   getIt.registerSingleton<MusicHandler>(musicHandler);
 }
