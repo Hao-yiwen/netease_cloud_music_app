@@ -81,24 +81,64 @@ class MainController extends GetxController {
     try {
       loading.value = true;
 
-      await Future.wait([
-        // 获取私人雷达
-        _getPrivateRadar(),
-        // 获取推荐歌曲
-        _getRecommandSongs(),
-        // 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
-        _getSameSongsFromSomeRadomMusic(),
-        // 获取私人fm音乐
-        _getPersonalFm(),
-        // 获取网友推荐顶级歌单
-        _getRandomTopPlayList(),
-        // 获取推荐歌单
-        _getPersonalizedPlayLists(),
-        // 获取个人歌单
-        _getOwnPlayList(),
-        // 获取推荐播客
-        getPersonalizedDjProgram(),
-      ] as Iterable<Future>);
+      // 1. 先并行获取所有原始数据
+      final results = await Future.wait([
+        MainApi.getRecommendResource(), // 私人雷达资源
+        MainApi.getRecommendSongs(), // 推荐歌曲
+        MainApi.getLikeSongs(), // 喜欢的音乐
+        MainApi.getPersonalFm(), // 私人FM
+        MainApi.getTopPlayList(), // 顶级歌单
+        MainApi.getPersonalizedPlaylists(), // 个性化歌单推荐
+        MainApi.getUserPlaylists(
+            HomeController.to.userData.value.profile?.userId ?? 0), // 用户歌单
+        MainApi.getDjProgramRecommend(), // 播客推荐
+      ]);
+
+      // 2. 处理获取到的数据
+      // 处理私人雷达
+      recommendResourceDto.value = results[0] as RecommendResourceDto;
+      final privateRadarId = recommendResourceDto.value.recommend?[0]?.id ?? 0;
+      if (privateRadarId != 0) {
+        final playlistDetail = await MainApi.getPlaylistDetail(privateRadarId);
+        if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
+          privateRadarSongs.value = RoamingController.to
+              .song2ToMedia(playlistDetail.playlist!.tracks!);
+        }
+      }
+
+      // 处理推荐歌曲
+      recommendSongsDto.value = results[1] as RecommendSongsDto;
+      if (recommendSongsDto.value.dailySongs?.isNotEmpty ?? false) {
+        dailySongs.value = RoamingController.to
+            .song2ToMedia(recommendSongsDto.value.dailySongs!);
+      }
+
+      // 处理喜欢的音乐及相似推荐
+      likeSongDto.value = results[2] as LikeSongDto;
+      await _processSimilarSongs(likeSongDto.value);
+
+      // 处理私人FM
+      final personalFmDto = results[3] as PersonalFmDto;
+      await _processPersonalFmSongs(personalFmDto);
+
+      // 处理顶级歌单
+      final topPlaylistsDto = results[4] as TopPlaylistsDto;
+      await _processTopPlaylist(topPlaylistsDto);
+
+      // 处理个性化歌单推荐
+      final personalizedPlayLists = results[5] as PersonalizedPlayLists;
+      if (personalizedPlayLists.result != null) {
+        this.personalizedPlayLists.value = personalizedPlayLists.result!;
+      }
+
+      // 处理用户歌单
+      final userPlaylists = results[6] as UserPlaylists;
+      if (userPlaylists.playlist != null) {
+        ownPlayList.value = userPlaylists.playlist!;
+      }
+
+      // 处理播客推荐
+      personalizedDjprogramDto.value = results[7] as PersonalizedDjprogramDto;
     } catch (e) {
       LogBox.error(e);
     } finally {
@@ -106,41 +146,102 @@ class MainController extends GetxController {
     }
   }
 
-  _getRecommandSongs() async {
-    try {
-      recommendSongsDto?.value = await MainApi.getRecommendSongs();
-      if (recommendSongsDto.value.dailySongs?.isNotEmpty ?? false) {
-        dailySongs.value = RoamingController.to
-            .song2ToMedia(recommendSongsDto.value!.dailySongs!);
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
+// 处理相似歌曲的逻辑
+  Future<void> _processSimilarSongs(LikeSongDto likeSongDto) async {
+    final likeSongIds = likeSongDto.ids ?? [];
+    if (likeSongIds.isEmpty) return;
+
+    final threeLikeSongs = _getRandomSongs(likeSongIds, RANDOM_SONGS_COUNT);
+    final simiSongs = await _getSimiSongsForIds(threeLikeSongs);
+    await _processSimiSongsDetail(simiSongs);
   }
 
-  _getPrivateRadar() async {
-    try {
-      // 首先先从推荐资源拿到私人雷达的歌单id
-      recommendResourceDto.value = await MainApi.getRecommendResource();
-      int privateRadarId = recommendResourceDto.value.recommend?[0]?.id ?? 0;
-      if (privateRadarId != 0) {
-        // 通过歌单id获取歌曲详细信息
-        final playlistDetail = await MainApi.getPlaylistDetail(privateRadarId);
-        if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
-          privateRadarSongs.value = RoamingController.to
-              .song2ToMedia(playlistDetail.playlist!.tracks!);
+  // 从列表中随机获取指定数量的歌曲ID
+  List<int> _getRandomSongs(List<int> songIds, int count) {
+    if (songIds.isEmpty || count <= 0) return [];
+
+    final random = Random();
+    final selectedIds = <int>[];
+
+    while (selectedIds.length < count && selectedIds.length < songIds.length) {
+      final randomId = songIds[random.nextInt(songIds.length)];
+      if (!selectedIds.contains(randomId)) {
+        selectedIds.add(randomId);
+      }
+    }
+
+    return selectedIds;
+  }
+
+// 获取相似歌曲
+  Future<List<SimiSong>> _getSimiSongsForIds(List<int> songIds) async {
+    final List<SimiSong> allSimiSongs = [];
+
+    for (final id in songIds) {
+      try {
+        final simiSongsDto = await MainApi.getSimiSongs(id);
+        if (simiSongsDto?.songs?.isNotEmpty ?? false) {
+          // 每个ID最多取6首相似歌曲
+          final count = min(simiSongsDto!.songs!.length, 6);
+          allSimiSongs.addAll(simiSongsDto.songs!.sublist(0, count));
         }
+      } catch (e) {
+        LogBox.error(e);
+      }
+    }
+
+    return allSimiSongs;
+  }
+
+// 处理相似歌曲的详细信息
+  Future<void> _processSimiSongsDetail(List<SimiSong> simiSongs) async {
+    if (simiSongs.isEmpty) return;
+
+    try {
+      // 构建ID字符串
+      final ids = simiSongs.map((song) => song.id.toString()).join(',');
+
+      // 获取歌曲详情
+      final songsDetailDto = await MainApi.getSongsDetail(ids);
+      if (songsDetailDto.songs?.isNotEmpty ?? false) {
+        // 最多展示18首音乐
+        final songs = songsDetailDto.songs!;
+        similarSongs.value = RoamingController.to
+            .song2ToMedia(songs.length > 18 ? songs.sublist(0, 18) : songs);
       }
     } catch (e) {
       LogBox.error(e);
     }
   }
 
-  _getLikeSongs() async {
-    try {
-      likeSongDto.value = await MainApi.getLikeSongs();
-    } catch (e) {
-      LogBox.error(e);
+// 处理私人FM歌曲的逻辑
+  Future<void> _processPersonalFmSongs(PersonalFmDto personalFmDto) async {
+    if (personalFmDto.data?.isEmpty ?? true) return;
+
+    final ids = personalFmDto.data!.map((item) => item.id.toString()).join(',');
+
+    final songsDetailDto = await MainApi.getSongsDetail(ids);
+    if (songsDetailDto.songs?.isNotEmpty ?? false) {
+      personalFmSongs.value =
+          RoamingController.to.song2ToMedia(songsDetailDto.songs!);
+    }
+  }
+
+// 处理顶级歌单的逻辑
+  Future<void> _processTopPlaylist(TopPlaylistsDto topPlaylistsDto) async {
+    if (topPlaylistsDto.playlists?.isEmpty ?? true) return;
+
+    topPlayList.value = topPlaylistsDto.playlists!;
+    randomPlaylist.value =
+        topPlayList.value[Random().nextInt(topPlayList.value.length)];
+
+    final playlistSongs =
+        await MainApi.getPlaylistDetail(randomPlaylist.value.id!);
+
+    if (playlistSongs.playlist?.tracks?.isNotEmpty ?? false) {
+      final tracks = playlistSongs.playlist!.tracks!;
+      randomPlaylistSongs.value = RoamingController.to
+          .song2ToMedia(tracks.length > 18 ? tracks.sublist(0, 18) : tracks);
     }
   }
 
@@ -155,137 +256,6 @@ class MainController extends GetxController {
       LogBox.error(e);
     }
     return <MediaItem>[];
-  }
-
-  /**
-   * @description: 从喜欢的音乐中选择多首音乐，然后生成相似音乐 从相似音乐分别选择6首音译额，共计需要18首音乐
-   */
-  _getSameSongsFromSomeRadomMusic() async {
-    try {
-      // 获取喜欢的音乐
-      await _getLikeSongs();
-      // 从喜欢的音乐中选择多首音乐
-      List<int> likeSongIds = likeSongDto.value.ids ?? [];
-      if (likeSongIds.isNotEmpty) {
-        List<int> threeLikeSongs = [];
-        // 从多少首音乐中选择相似音乐
-        for (int i = 0; i < RANDOM_SONGS_COUNT; i++) {
-          threeLikeSongs.add(likeSongIds[Random().nextInt(likeSongIds.length)]);
-        }
-        List<SimiSong> simiSongs = [];
-        // 生成三首音乐的相似音乐
-        for (int id in threeLikeSongs) {
-          final simiSongsDto = await MainApi.getSimiSongs(id);
-          if (simiSongsDto != null && simiSongsDto.songs!.isNotEmpty) {
-            int minLen = min(simiSongsDto.songs!.length, 6);
-            for (int i = 0; i < minLen; i++) {
-              simiSongs.add(simiSongsDto.songs![i]);
-            }
-          }
-        }
-        // 获取18音乐的详细信息
-        String ids = "";
-        for (int i = 0; i < simiSongs.length; i++) {
-          if (simiSongs[i].id != null) {
-            ids += simiSongs[i].id.toString();
-            if (i != simiSongs.length - 1) {
-              ids += ",";
-            }
-          }
-        }
-        SongsDetailDto songsDetailDto = await MainApi.getSongsDetail(ids);
-        if (songsDetailDto.songs?.isNotEmpty ?? false) {
-          // 最多展示18首音乐
-          if (songsDetailDto.songs!.length > 18) {
-            similarSongs.value = RoamingController.to
-                .song2ToMedia(songsDetailDto.songs!.sublist(0, 18));
-          } else {
-            similarSongs.value =
-                RoamingController.to.song2ToMedia(songsDetailDto.songs!);
-          }
-        }
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
-  }
-
-  _getPersonalFm() async {
-    try {
-      PersonalFmDto personalFmDto = await MainApi.getPersonalFm();
-      if (personalFmDto != null && personalFmDto.data!.isNotEmpty) {
-        String ids = "";
-        for (int i = 0; i < personalFmDto.data!.length; i++) {
-          if (personalFmDto.data![i].id != null) {
-            ids += personalFmDto.data![i].id.toString();
-            if (i != personalFmDto.data!.length - 1) {
-              ids += ",";
-            }
-          }
-        }
-        SongsDetailDto songsDetailDto = await MainApi.getSongsDetail(ids);
-        if (songsDetailDto.songs?.isNotEmpty ?? false) {
-          personalFmSongs.value =
-              RoamingController.to.song2ToMedia(songsDetailDto.songs!);
-        }
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
-  }
-
-  _getRandomTopPlayList() async {
-    try {
-      // 获取网友推荐顶级歌单
-      TopPlaylistsDto topPlaylistsDto = await MainApi.getTopPlayList();
-      if (topPlaylistsDto != null && topPlaylistsDto.playlists != null) {
-        topPlayList.value = topPlaylistsDto.playlists!;
-        // 从歌单随机选取一个歌单
-        randomPlaylist.value =
-            topPlayList.value[Random().nextInt(topPlayList.value.length)];
-        // 获取歌单中的min(18,歌单中的歌曲数量)首歌曲
-        final playlistSongs =
-            await MainApi.getPlaylistDetail(randomPlaylist.value.id!);
-        if (playlistSongs.playlist?.tracks!.isNotEmpty ?? false) {
-          if (playlistSongs.playlist!.tracks!.length > 18) {
-            randomPlaylistSongs.value = RoamingController.to
-                .song2ToMedia(playlistSongs.playlist!.tracks!.sublist(0, 18));
-          } else {
-            randomPlaylistSongs.value = RoamingController.to
-                .song2ToMedia(playlistSongs.playlist!.tracks!);
-          }
-        }
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
-  }
-
-  _getPersonalizedPlayLists() async {
-    try {
-      PersonalizedPlayLists personalizedPlayLists =
-          await MainApi.getPersonalizedPlaylists();
-      if (personalizedPlayLists != null &&
-          personalizedPlayLists.result != null) {
-        this.personalizedPlayLists.value = personalizedPlayLists.result!;
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
-  }
-
-  _getOwnPlayList() async {
-    try {
-      if (HomeController.to.userData.value.profile != null) {
-        UserPlaylists userPlaylists = await MainApi.getUserPlaylists(
-            HomeController.to.userData.value.profile!.userId!);
-        if (userPlaylists != null && userPlaylists.playlist != null) {
-          ownPlayList.value = userPlaylists.playlist!;
-        }
-      }
-    } catch (e) {
-      LogBox.error(e);
-    }
   }
 
   getPersonalizedDjProgram() async {
