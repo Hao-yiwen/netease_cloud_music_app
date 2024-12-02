@@ -5,7 +5,6 @@
 ![Android](https://img.shields.io/badge/Android-6.0+-brightgreen)
 
 
-
 ## 项目简介
 
 这是一个使用 Flutter 开发的网易云音乐第三方客户端，致力于还原官方 App 的用户体验。
@@ -31,19 +30,12 @@
 
 ### 环境配置
 
-1. 启动后端服务（默认端口 3000）
-   ```bash
-   git clone https://gitlab.com/Binaryify/neteasecloudmusicapi.git
-   npm install
-   node app.js
-   ```
+1. 运行 Flutter 项目 (因为服务部署在`Vercel`部署，延迟较大情况下可本地部署)
+```bash
+flutter run -d <your-device>
+```
 
-2. 运行 Flutter 项目
-   ```bash
-   flutter run -d <your-device>
-   ```
-
-3. 使用手机号码和短信验证码登录即可开始体验
+2. 使用手机号码和短信验证码登录即可开始体验
 
 ## 已知问题
 
