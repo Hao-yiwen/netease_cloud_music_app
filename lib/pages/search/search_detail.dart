@@ -130,7 +130,6 @@ class _SearchDetailState extends State<SearchDetail>
         Tab(text: '视频'),
         Tab(text: '歌单'),
         Tab(text: '歌手'),
-        Tab(text: '专辑'),
       ],
       labelStyle: TextStyle(
         fontSize: 32.sp,
@@ -163,7 +162,6 @@ class _SearchDetailState extends State<SearchDetail>
           const MvList(key: PageStorageKey('Tab1')),
           _buildSongList(),
           const Center(child: Text('歌手')),
-          const Center(child: Text('专辑')),
         ],
       );
     });

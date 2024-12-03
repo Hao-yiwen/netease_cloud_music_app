@@ -32,7 +32,6 @@ class _SearchState extends State<Search> {
   }
 
   void _initController() {
-    Get.lazyPut(() => SearchpageController());
     controller = Get.find<SearchpageController>();
     textEditingController.text = controller.textvalue.value;
     controller.getSearchKeyWords();

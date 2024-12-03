@@ -15,7 +15,9 @@ class SongList extends GetView<SearchpageController> {
   Widget build(BuildContext context) {
     return Obx(() {
       final songs = controller.searchResult.value.result?.songs;
-      if (songs == null || songs.isEmpty) {
+      final searchSongs = controller.searchSongs.value;
+
+      if (songs == null || songs.isEmpty || searchSongs.isEmpty) {
         return const Center(child: Text('暂无数据'));
       }
 
@@ -23,13 +25,16 @@ class SongList extends GetView<SearchpageController> {
         itemCount: songs.length,
         itemBuilder: (context, index) {
           final song = songs[index];
+          if (index >= searchSongs.length) {
+            return null;
+          }
           return GestureDetector(
-            key: ValueKey(controller.searchSongs.value[index].id),
+            key: ValueKey(searchSongs[index].id),
             onTap: () {
               RoamingController.to.playByIndex(
                 index,
                 'queueTitle',
-                mediaItem: controller.searchSongs.value,
+                mediaItem: searchSongs,
               );
               Roaming.showBottomPlayer(context);
             },

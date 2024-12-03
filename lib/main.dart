@@ -13,8 +13,9 @@ import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:netease_cloud_music_app/pages/home/home_binding.dart';
 import 'package:netease_cloud_music_app/pages/login/login_controller.dart';
-import 'package:netease_cloud_music_app/pages/message/message_binding.dart';
+import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/mv_player/mv_player_controller.dart';
+import 'package:netease_cloud_music_app/pages/search/searchpage_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
@@ -65,11 +66,12 @@ Widget _buildMaterialApp(BuildContext context, AppRouter appRouter) {
 Bindings _initializeBindings() {
   return BindingsBuilder(() {
     HomeBinding().dependencies();
-    UserBinding().dependencies();
-    MessageBinding().dependencies();
+    Get.lazyPut(() => UserController());
+    Get.lazyPut(() => MessageController());
     Get.lazyPut(() => SplashController());
     Get.lazyPut(() => MvPlayerController());
-    Get.lazyPut(() => LoginController()); // Add LoginController initialization
+    Get.lazyPut(() => LoginController());
+    Get.lazyPut(() => SearchpageController());
   });
 }
 
@@ -131,7 +133,7 @@ class MyObserver extends AutoRouterObserver {
 Future<void> _initGetService(GetIt getIt) async {
   // 创建一个经过优化配置的 AudioPlayer 实例
   final audioPlayer = AudioPlayer(
-    audioLoadConfiguration: AudioLoadConfiguration(
+    audioLoadConfiguration: const AudioLoadConfiguration(
       // Optimize buffer management
       androidLoadControl: AndroidLoadControl(
         // Reduce minimum buffer to prevent backup
