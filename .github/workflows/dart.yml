@@ -40,8 +40,14 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build AAR
+      - name: Build APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk

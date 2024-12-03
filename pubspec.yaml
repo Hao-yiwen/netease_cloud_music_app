@@ -57,7 +57,6 @@ dependencies:
   path_provider: ^2.1.4
   json_annotation: ^4.9.0
   hive: ^2.2.3
-  isar_flutter_libs: ^4.0.0-dev.3
   hive_flutter: ^1.1.0
   auto_route: ^9.2.1+1
   carousel_slider: ^5.0.0
