@@ -15,6 +15,10 @@
 - **路由管理**: GoRouter/AutoRouter
 - **后端接口**: [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
+## 扫码下载
+
+<img src="showcase/android_v1.0.0.png" width="30%" />
+
 ### 快速开始
 
 1. 运行项目:
