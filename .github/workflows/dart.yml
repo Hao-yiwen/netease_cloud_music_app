@@ -57,10 +57,16 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Export DART_DEFINE_JSON to JSON
+        id: create-json
+        uses: jsdaniell/create-json@v1
+        with:
+          name: "dart_define.json"
+          json: ${{ secrets.DART_DEFINE_JSON || '{}' }}
+
       - name: Build APK
-        env:
-          COMPILE_OPTIONS: ${{ secrets.compile_options }}
-        run: flutter build apk --release $COMPILE_OPTIONS
+        run: |
+          flutter build apk --release --dart-define-from-file=dart_define.json
 
       - name: Print Folder Tree
         uses: jaywcjlove/github-action-folder-tree@main
