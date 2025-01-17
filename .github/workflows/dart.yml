@@ -58,7 +58,9 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
+        env:
+          COMPILE_OPTIONS: ${{ secrets.compile_options }}
+        run: flutter build apk --release $COMPILE_OPTIONS
 
       - name: Print Folder Tree
         uses: jaywcjlove/github-action-folder-tree@main
