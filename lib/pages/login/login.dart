@@ -3,7 +3,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:netease_cloud_music_app/common/constants/url.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
+import 'package:netease_cloud_music_app/http/http_utils.dart';
 import '../../widgets/custom_field.dart';
 import 'login_controller.dart';
 
@@ -59,13 +61,47 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 180),
-                child: Image.asset(
-                  ImageUtils.getImagePath('erq'),
-                  height: 150.w,
-                  width: 150.w,
-                ),
+              GestureDetector(
+                onDoubleTap: () async {
+                  final baseUrl = await UrlConstants.BASE_URL;
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      TextEditingController urlController = TextEditingController(text: baseUrl);
+                      return AlertDialog(
+                        title: Text("更改 BASE_URL"),
+                        content: TextField(
+                          controller: urlController,
+                          decoration: InputDecoration(hintText: "輸入新的 BASE_URL"),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () async {
+                              await UrlConstants.setBaseUrl(urlController.text);
+                              await HttpUtils.init(baseUrl: urlController.text);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("確定"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("取消"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 180),
+                  child: Image.asset(
+                    ImageUtils.getImagePath('erq'),
+                    height: 150.w,
+                    width: 150.w,
+                  ),
+                )
               ),
               SizedBox(height: 330.w),
               IntrinsicHeight(

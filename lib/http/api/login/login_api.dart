@@ -9,12 +9,22 @@ class LoginApi {
       {required String phone,
       String? password = '',
       String? captcha = ''}) async {
+    String? countryCode;
+    if (phone.startsWith('+')) {
+      // Split with space
+      final parts = phone.split(' ');
+      if (parts.length == 2) {
+        countryCode = parts[0].substring(1); // Remove the +
+        phone = parts[1];
+      }
+    }
     final params = {
       'phone': phone,
       if (captcha?.isNotEmpty == true)
         'captcha': captcha
       else
         'password': password,
+      if (countryCode != null) 'countrycode': countryCode,
     };
     final res = await HttpUtils.get('/login/cellphone', params: params);
     var info = LoginStatusDto.fromJson(res);
@@ -24,9 +34,20 @@ class LoginApi {
   }
 
   static Future<ServerStatusBean> captcha(String phone) async {
-    final res = await HttpUtils.get('/captcha/sent', params: {
+    String? countryCode;
+    if (phone.startsWith('+')) {
+      // Split with space
+      final parts = phone.split(' ');
+      if (parts.length == 2) {
+        countryCode = parts[0].substring(1); // Remove the +
+        phone = parts[1];
+      }
+    }
+    final params = {
       'phone': phone,
-    });
+      if (countryCode != null) 'ctcode': countryCode,
+    };
+    final res = await HttpUtils.get('/captcha/sent', params: params);
     return ServerStatusBean.fromJson(res);
   }
 

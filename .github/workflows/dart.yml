@@ -1,57 +1,119 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Dart
+name: Build Android App
 
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+  release:
+    types: [released]
 
 jobs:
-  build:
+  test:
+    name: Test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      # Note: This workflow uses the latest stable version of the Dart SDK.
-      # You can specify other versions if desired, see documentation here:
-      # https://github.com/dart-lang/setup-dart/blob/main/README.md
-      # - uses: dart-lang/setup-dart@v1
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.27.0'
-          channel: 'stable'
 
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+      
       - name: Install dependencies
         run: flutter pub get
 
       - name: Run tests
         run: flutter test
 
-      - name: Generate Gradle Wrapper
-        working-directory: android
-        run: gradle wrapper
+  build:
+    name: Build
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
 
       - name: Build APK
-        working-directory: android
         run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease
+          flutter build apk --release
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v3
+      - name: Print Folder Tree
+        uses: jaywcjlove/github-action-folder-tree@main
         with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+            exclude: "node_modules|dist|.git|.husky"
+            path: ./build
+            depth: 10
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  release:
+    name: Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag the repository (pre-release)
+        if: github.event_name != 'release' || github.event.action != 'created'
+        id: tag
+        run: |
+          TAG=nightly.$(date -Iseconds | sed 's/[T:\+]/-/g')
+          TIME=$(date '+%Y/%m/%d %H:%M')
+          echo "$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "time=$TIME" >> $GITHUB_OUTPUT
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
+          git push origin $TAG
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release (pre-release)
+        uses: softprops/action-gh-release@v2
+        if: github.event_name != 'release' || github.event.action != 'created'
+        with:
+          files: artifacts/*/*
+          prerelease: true
+          make_latest: false
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.time }}
+
+      - name: Create release (release)
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'release' && github.event.action == 'created'
+        with:
+          files: artifacts/*/*
+          prerelease: false
+          make_latest: true

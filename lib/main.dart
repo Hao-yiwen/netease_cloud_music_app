@@ -33,7 +33,7 @@ Future<void> main() async {
 
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HttpUtils.init(baseUrl: BASE_URL);
+  await HttpUtils.init(baseUrl: await UrlConstants.BASE_URL);
   await _initGetService(GetIt.instance);
 }
 
