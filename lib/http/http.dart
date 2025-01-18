@@ -142,8 +142,7 @@ class Http {
       "refresh": refresh,
     });
     Map<String, dynamic> queryParams = {
-      ...?params,
-      "realIP": "10.131.4.220",
+      ...?params
     };
     Response response;
     // 拼接 &realIP=116.25.146.177
