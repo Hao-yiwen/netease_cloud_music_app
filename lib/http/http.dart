@@ -27,7 +27,7 @@ class Http {
   }
 
   static late Dio _dio;
-  static final String baseUrl = "http://127.0.0.1:3000";
+  static late String baseUrl;
 
   static late CookieManager cookieManager;
   static late PathProvider pathProvider;
@@ -57,6 +57,7 @@ class Http {
     int? receiveTimeout,
     List<Interceptor>? interceptors,
   }) async {
+    Http.baseUrl = baseUrl;
     _dio = Dio(BaseOptions(
         baseUrl: baseUrl,
         connectTimeout: Duration(milliseconds: CONNECT_TIMEOUT),

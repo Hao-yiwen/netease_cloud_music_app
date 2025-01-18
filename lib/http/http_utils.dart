@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:netease_cloud_music_app/http/http.dart';
 
 class HttpUtils {
-  static late final Http _http;
+  static late Http _http;
 
   static Future<void> init(
       {required String baseUrl,
