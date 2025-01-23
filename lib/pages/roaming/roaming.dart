@@ -373,7 +373,7 @@ class _RoamingState extends State<Roaming> {
   Widget _buildPlayer() {
     return Obx(() {
       final mediaItem = controller.mediaItem.value;
-      final imageUrl = mediaItem.extras?['image'] ?? PLACE_IMAGE_HOLDER;
+      final imageUrl = mediaItem.extras?['image'] ?? UrlConstants.PLACE_IMAGE_HOLDER;
 
       // 确保图片URL有效
       if (imageUrl.isEmpty) {

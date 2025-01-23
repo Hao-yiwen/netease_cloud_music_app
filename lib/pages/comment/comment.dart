@@ -61,7 +61,7 @@ class CommentPage extends StatelessWidget {
       ),
       child: ClipOval(
         child: NeteaseCacheImage(
-          picUrl: avatarUrl ?? PLACE_IMAGE_HOLDER,
+          picUrl: avatarUrl ?? UrlConstants.PLACE_IMAGE_HOLDER,
           size: Size(55.w, 55.w),
         ),
       ),

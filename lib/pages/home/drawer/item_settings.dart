@@ -139,7 +139,7 @@ List<DrawerItem> getListSettings(BuildContext context) {
         text: "个人信息收集与使用清单",
         onTap: () {
           GetIt.instance<AppRouter>().push(
-              WebViewRoute(url: NETEASE_INFO_LIST, title: "网易云音乐个人信息第三方共享清单"));
+              WebViewRoute(url: UrlConstants.NETEASE_INFO_LIST, title: "网易云音乐个人信息第三方共享清单"));
         }),
     DrawerItem(
       icon: TablerIcons.notes,

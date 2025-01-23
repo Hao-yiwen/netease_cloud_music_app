@@ -212,7 +212,7 @@ class _BottomPlayerBarState extends State<BottomPlayerBar>
               child: ClipOval(
                 child: Image.network(
                   controller.mediaItem.value.extras?["image"] ??
-                      PLACE_IMAGE_HOLDER,
+                      UrlConstants.PLACE_IMAGE_HOLDER,
                   fit: BoxFit.cover,
                 ),
               ),
