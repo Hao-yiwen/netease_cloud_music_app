@@ -25,7 +25,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: '3.50.0'
           channel: 'stable'
       
       - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: '3.50.0'
           channel: 'stable'
 
       - name: Install dependencies
@@ -59,7 +59,16 @@ jobs:
 
       - name: Build APK
         run: |
-          flutter build apk --release
+          set -euo pipefail
+          # Maven Central 对 Kotlin BOM 偶发 429，Flutter 自带重试间隔只有 100ms，这里再做退避重试。
+          for attempt in 1 2 3 4; do
+            if flutter build apk --release; then
+              exit 0
+            fi
+            echo "release build failed on attempt ${attempt}, waiting before retry"
+            sleep $((attempt * 20))
+          done
+          exit 1
 
       - name: Print Folder Tree
         uses: jaywcjlove/github-action-folder-tree@main
