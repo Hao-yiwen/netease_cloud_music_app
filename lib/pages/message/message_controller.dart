@@ -8,10 +8,6 @@ class MessageController extends GetxController {
   RxBool loading = false.obs;
   Rx<PrivateMessage> privateMessage = PrivateMessage().obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<void> getPrivateMessage() async {
     try {

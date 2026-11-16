@@ -123,7 +123,7 @@ class _BottomPlayerBarState extends State<BottomPlayerBar>
             "- ${controller.mediaItem.value.artist}",
             style: TextStyle(
               fontSize: 26.w,
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
               fontFamily: 'Roboto',
               decoration: TextDecoration.none,
             ),

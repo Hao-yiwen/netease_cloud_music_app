@@ -22,10 +22,10 @@ class ParserQrc extends LyricParse {
       return [];
     }
     List<LyricsLineModel> lineList = [];
-    lines.forEach((line) {
+    for (var line in lines) {
       var time = advancedPattern.stringMatch(line);
       if (time == null) {
-        return;
+        continue;
       }
       // 转时间戳
       var ts = int.parse(
@@ -41,7 +41,7 @@ class ParserQrc extends LyricParse {
         ..startTime = ts
         ..spanList = spanList;
       lineList.add(lineModel);
-    });
+    }
     return lineList;
   }
 

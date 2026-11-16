@@ -29,19 +29,16 @@ SearchDetail _$SearchDetailFromJson(Map<String, dynamic> json) => SearchDetail()
       .toList();
 
 Map<String, dynamic> _$SearchDetailToJson(SearchDetail instance) =>
-    <String, dynamic>{
-      'songCount': instance.songCount,
-      'songs': instance.songs,
-    };
+    <String, dynamic>{'songCount': instance.songCount, 'songs': instance.songs};
 
 AlbumDto _$AlbumDtoFromJson(Map<String, dynamic> json) => AlbumDto()
   ..id = (json['id'] as num?)?.toInt()
   ..name = json['name'] as String?;
 
 Map<String, dynamic> _$AlbumDtoToJson(AlbumDto instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-    };
+  'id': instance.id,
+  'name': instance.name,
+};
 
 SongDetail _$SongDetailFromJson(Map<String, dynamic> json) => SongDetail()
   ..id = (json['id'] as num?)?.toInt()

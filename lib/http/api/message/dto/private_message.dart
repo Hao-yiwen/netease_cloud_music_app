@@ -13,6 +13,7 @@ class PrivateMessage extends ServerStatusBean{
   factory PrivateMessage.fromJson(Map<String, dynamic> json) =>
       _$PrivateMessageFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$PrivateMessageToJson(this);
 }
 

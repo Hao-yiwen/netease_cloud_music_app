@@ -15,11 +15,11 @@ HotTopics _$HotTopicsFromJson(Map<String, dynamic> json) => HotTopics()
       .toList();
 
 Map<String, dynamic> _$HotTopicsToJson(HotTopics instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'hot': instance.hot,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'hot': instance.hot,
+};
 
 HotTopic _$HotTopicFromJson(Map<String, dynamic> json) => HotTopic()
   ..actId = (json['actId'] as num?)?.toInt()
@@ -27,7 +27,7 @@ HotTopic _$HotTopicFromJson(Map<String, dynamic> json) => HotTopic()
   ..text = (json['text'] as List<dynamic>?)?.map((e) => e as String).toList();
 
 Map<String, dynamic> _$HotTopicToJson(HotTopic instance) => <String, dynamic>{
-      'actId': instance.actId,
-      'title': instance.title,
-      'text': instance.text,
-    };
+  'actId': instance.actId,
+  'title': instance.title,
+  'text': instance.text,
+};

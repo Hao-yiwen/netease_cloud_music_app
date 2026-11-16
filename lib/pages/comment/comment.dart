@@ -32,7 +32,7 @@ class CommentPage extends StatelessWidget {
       height: 50.0,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.red.withOpacity(0.1), Colors.transparent],
+          colors: [Colors.red.withValues(alpha: 0.1), Colors.transparent],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -55,7 +55,7 @@ class CommentPage extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.red.withOpacity(0.3),
+          color: Colors.red.withValues(alpha: 0.3),
           width: 2.w,
         ),
       ),
@@ -84,7 +84,7 @@ class CommentPage extends StatelessWidget {
         timeStr ?? '',
         style: TextStyle(
           fontSize: 22.sp,
-          color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+          color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
         ),
       ),
     );
@@ -108,7 +108,7 @@ class CommentPage extends StatelessWidget {
           SizedBox(height: 20.h),
           Container(
             height: 0.5.w,
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
           )
         ],
       ),
@@ -171,7 +171,7 @@ class CommentPage extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   itemCount: _controller.comments.length,
                   itemBuilder: (context, sectionIndex) {
-                    final section = _controller.comments.value[sectionIndex];
+                    final section = _controller.comments[sectionIndex];
                     return Column(
                       children: [
                         _buildSectionHeader(section.title ?? ''),

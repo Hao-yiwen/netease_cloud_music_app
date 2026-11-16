@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/playlist_dto.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/recommend_resource_dto.dart';
-import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 
 const double _cardHeight = 278;
 

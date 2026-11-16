@@ -11,6 +11,7 @@ class HomeBlock extends ServerStatusBean {
 
   factory HomeBlock.fromJson(Map<String, dynamic> json) => _$HomeBlockFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$HomeBlockToJson(this);
 }
 

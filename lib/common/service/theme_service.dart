@@ -27,7 +27,8 @@ class ThemeService extends GetxService with WidgetsBindingObserver {
   }
 
   void syncWithSystem() {
-    Brightness brightness = WidgetsBinding.instance.window.platformBrightness;
+    Brightness brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     themeMode.value =
         brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
   }

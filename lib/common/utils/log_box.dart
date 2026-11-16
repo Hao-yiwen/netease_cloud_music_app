@@ -24,7 +24,7 @@ class LogBox {
   }
 
   static void error(Object error, {
-    dynamic? msg,
+    dynamic msg,
   }) {
     logger.e(msg ?? "", error: error);
   }

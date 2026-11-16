@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/search/dto/search_keys.dart';
@@ -32,8 +32,7 @@ class SearchpageController extends GetxController {
       searchDetailLoading.value = true;
       searchResult.value = await SearchApi.search(keyWords);
       // 获取音乐单曲播放信息
-      if (searchResult.value != null &&
-          (searchResult.value.result?.songs?.isNotEmpty ?? false)) {
+      if ((searchResult.value.result?.songs?.isNotEmpty ?? false)) {
         String ids = "";
         for (int i = 0; i < searchResult.value.result!.songs!.length; i++) {
           if (searchResult.value.result!.songs![i].id != null) {

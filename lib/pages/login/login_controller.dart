@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,7 +25,7 @@ class LoginController extends GetxController{
         return;
       } else {
         UserController.to.getUserState();
-        AutoRouter.of(buildContext).pushNamed('/home');
+        AutoRouter.of(buildContext).pushPath('/home');
       }
     } catch (e) {
       WidgetUtil.closeLoadingDialog(buildContext);
@@ -50,9 +49,9 @@ class LoginController extends GetxController{
         return;
       } else {
         UserController.to.getUserState();
-        AutoRouter.of(buildContext).pushNamed('/home');
+        AutoRouter.of(buildContext).pushPath('/home');
       }
-    } on Exception catch (e) {
+    } on Exception {
       WidgetUtil.closeLoadingDialog(buildContext);
       WidgetUtil.showToast('登录失败，请检查网络');
     }
@@ -86,7 +85,7 @@ class LoginController extends GetxController{
       if (res != null) {
         if (res) {
           UserController.to.getUserState();
-          AutoRouter.of(buildContext).pushNamed('/home');
+          AutoRouter.of(buildContext).pushPath('/home');
           return;
         } else {
           WidgetUtil.showToast('登錄错误');

@@ -32,12 +32,12 @@ SimiSong _$SimiSongFromJson(Map<String, dynamic> json) => SimiSong()
       .toList();
 
 Map<String, dynamic> _$SimiSongToJson(SimiSong instance) => <String, dynamic>{
-      'popularity': instance.popularity,
-      'name': instance.name,
-      'id': instance.id,
-      'recommendReason': instance.recommendReason,
-      'artists': instance.artists,
-    };
+  'popularity': instance.popularity,
+  'name': instance.name,
+  'id': instance.id,
+  'recommendReason': instance.recommendReason,
+  'artists': instance.artists,
+};
 
 Artist _$ArtistFromJson(Map<String, dynamic> json) => Artist()
   ..id = (json['id'] as num?)?.toInt()
@@ -46,8 +46,8 @@ Artist _$ArtistFromJson(Map<String, dynamic> json) => Artist()
   ..followed = json['followed'] as bool?;
 
 Map<String, dynamic> _$ArtistToJson(Artist instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'picUrl': instance.picUrl,
-      'followed': instance.followed,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'picUrl': instance.picUrl,
+  'followed': instance.followed,
+};

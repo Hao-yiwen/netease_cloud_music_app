@@ -8,9 +8,7 @@ class UrlConstants {
     static String? _baseUrl;
 
     static Future<String> get BASE_URL async {
-        if (_baseUrl == null) {
-            _baseUrl = await asyncPrefs.getString('BASE_URL') ?? 'https://neteasecloudmusicapi-one-tan.vercel.app/';
-        }
+        _baseUrl ??= await asyncPrefs.getString('BASE_URL') ?? 'https://neteasecloudmusicapi-one-tan.vercel.app/';
         return _baseUrl!;
     }
 

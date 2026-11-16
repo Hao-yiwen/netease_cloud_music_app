@@ -152,7 +152,7 @@ class MainController extends GetxController {
   // 处理推荐资源
   Future<void> _processRecommendResource(RecommendResourceDto dto) async {
     recommendResourceDto.value = dto;
-    final privateRadarId = dto.recommend?[0]?.id;
+    final privateRadarId = dto.recommend?[0].id;
     if (privateRadarId != null) {
       await _loadPrivateRadarSongs(privateRadarId);
     }
@@ -187,7 +187,7 @@ class MainController extends GetxController {
 
   // 处理相似歌曲
   Future<void> _processSimilarSongs(LikeSongDto dto) async {
-    final likeSongIds = dto.ids ?? [];
+    final likeSongIds = dto.ids;
     if (likeSongIds.isEmpty) return;
 
     try {
@@ -223,8 +223,8 @@ class MainController extends GetxController {
     for (final id in songIds) {
       try {
         final simiSongsDto = await MainApi.getSimiSongs(id);
-        if (simiSongsDto?.songs?.isNotEmpty ?? false) {
-          final count = min(simiSongsDto!.songs!.length, 6);
+        if (simiSongsDto.songs?.isNotEmpty ?? false) {
+          final count = min(simiSongsDto.songs!.length, 6);
           allSimiSongs.addAll(simiSongsDto.songs!.sublist(0, count));
         }
       } catch (e) {

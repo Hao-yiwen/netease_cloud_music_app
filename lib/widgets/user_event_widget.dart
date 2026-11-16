@@ -10,15 +10,15 @@ import '../http/api/timeline/dto/events.dart';
 import 'netease_cache_image.dart';
 
 class UserEventWidget extends StatelessWidget {
-  UserEventWidget(
-      {super.key, required this.events, this.canScroll, this.showVip}) {
-    canScroll ??= true;
-    showVip ??= true;
-  }
+  const UserEventWidget(
+      {super.key,
+      required this.events,
+      this.canScroll = true,
+      this.showVip = true});
 
   final List<Event>? events;
-  bool? canScroll;
-  bool? showVip;
+  final bool canScroll;
+  final bool showVip;
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +33,10 @@ class UserEventWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           final event = events![index];
           Map<String, dynamic> jsonMap = {};
-          if (event?.json != null) {
-            String jsonString = event!.json!;
+          if (event.json != null) {
+            String jsonString = event.json!;
             jsonString = jsonString.replaceAll('\\', '');
-            jsonMap = jsonDecode(event!.json!);
+            jsonMap = jsonDecode(event.json!);
           }
           return Container(
             padding: EdgeInsets.only(top: 20.w),
@@ -53,7 +53,7 @@ class UserEventWidget extends StatelessWidget {
               children: [
                 ClipOval(
                   child: NeteaseCacheImage(
-                    picUrl: event?.user?.avatarUrl ?? "",
+                    picUrl: event.user?.avatarUrl ?? "",
                     size: Size(50.w, 50.w),
                   ),
                 ),
@@ -67,7 +67,7 @@ class UserEventWidget extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              event?.user?.nickname ?? "",
+                              event.user?.nickname ?? "",
                               style: TextStyle(
                                 fontSize: 26.sp,
                                 fontWeight: FontWeight.bold,
@@ -76,9 +76,9 @@ class UserEventWidget extends StatelessWidget {
                             SizedBox(
                               width: 20.w,
                             ),
-                            if (showVip!)
+                            if (showVip)
                               NeteaseCacheImage(
-                                  picUrl: event?.user?.vipRights?.associator
+                                  picUrl: event.user?.vipRights?.associator
                                           ?.iconUrl ??
                                       "",
                                   color: Colors.transparent,
@@ -86,7 +86,7 @@ class UserEventWidget extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          FormatTime(event?.eventTime ?? 0),
+                          FormatTime(event.eventTime ?? 0),
                           style: TextStyle(
                             fontSize: 22.sp,
                             color: AppTheme.userScrollColor,
@@ -176,19 +176,18 @@ class UserEventWidget extends StatelessWidget {
           );
         },
         itemCount: events!.length,
-        physics: canScroll!
+        physics: canScroll
             ? const AlwaysScrollableScrollPhysics()
             : const NeverScrollableScrollPhysics(),
       );
     }
-    ;
   }
 
   _buildPicsShow(BuildContext context, Event event) {
     // 3x3
     // 2x2
     // 1
-    if (event!.pics!.length >= 4) {
+    if (event.pics!.length >= 4) {
       return GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
@@ -198,19 +197,19 @@ class UserEventWidget extends StatelessWidget {
         ),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        children: List.generate(event?.pics?.length ?? 0, (index) {
-          double imageWidth = event?.pics?[index]?.width?.toDouble() ?? 90.w;
-          double imageHeight = event?.pics?[index]?.height?.toDouble() ?? 90.h;
+        children: List.generate(event.pics?.length ?? 0, (index) {
+          double imageWidth = event.pics?[index].width?.toDouble() ?? 90.w;
+          double imageHeight = event.pics?[index].height?.toDouble() ?? 90.h;
           imageHeight = imageHeight / 3;
           imageWidth = imageWidth / 3;
           return NeteaseCacheImage(
-            picUrl: event?.pics?[index].originUrl ?? "",
+            picUrl: event.pics?[index].originUrl ?? "",
             size: Size(ScreenUtil().setWidth(imageWidth),
                 ScreenUtil().setWidth(imageHeight)),
           );
         }),
       );
-    } else if (event!.pics!.length >= 2 && event!.pics!.length < 4) {
+    } else if (event.pics!.length >= 2 && event.pics!.length < 4) {
       return GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -220,21 +219,21 @@ class UserEventWidget extends StatelessWidget {
         ),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        children: List.generate(event?.pics?.length ?? 0, (index) {
-          double imageWidth = event?.pics?[index]?.width?.toDouble() ?? 120.w;
-          double imageHeight = event?.pics?[index]?.height?.toDouble() ?? 120.h;
+        children: List.generate(event.pics?.length ?? 0, (index) {
+          double imageWidth = event.pics?[index].width?.toDouble() ?? 120.w;
+          double imageHeight = event.pics?[index].height?.toDouble() ?? 120.h;
           imageHeight = imageHeight / 3;
           imageWidth = imageWidth / 3;
           return NeteaseCacheImage(
-            picUrl: event?.pics?[index].originUrl ?? "",
+            picUrl: event.pics?[index].originUrl ?? "",
             size: Size(ScreenUtil().setWidth(imageWidth),
                 ScreenUtil().setWidth(imageHeight)),
           );
         }),
       );
-    } else if (event!.pics!.length == 1) {
-      double imageWidth = event?.pics?[0]?.width?.toDouble() ?? 180.w;
-      double imageHeight = event?.pics?[0]?.height?.toDouble() ?? 180.h;
+    } else if (event.pics!.length == 1) {
+      double imageWidth = event.pics?[0].width?.toDouble() ?? 180.w;
+      double imageHeight = event.pics?[0].height?.toDouble() ?? 180.h;
       imageHeight = imageHeight / 3;
       imageWidth = imageWidth / 3;
       return ConstrainedBox(
@@ -243,7 +242,7 @@ class UserEventWidget extends StatelessWidget {
           maxHeight: 600.w,
         ),
         child: NeteaseCacheImage(
-          picUrl: event?.pics?[0].originUrl ?? "",
+          picUrl: event.pics?[0].originUrl ?? "",
           size: Size(ScreenUtil().setWidth(imageWidth),
               ScreenUtil().setWidth(imageHeight)),
         ),

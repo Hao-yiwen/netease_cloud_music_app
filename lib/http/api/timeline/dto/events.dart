@@ -16,6 +16,7 @@ class Events extends ServerStatusBean{
     return _$EventsFromJson(json);
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return _$EventsToJson(this);
   }

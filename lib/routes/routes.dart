@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:netease_cloud_music_app/pages/songs_list/songs_list_binding.dart';
 import 'package:netease_cloud_music_app/routes/auth_guard.dart';
 import 'routes.gr.dart';
 
@@ -54,7 +53,7 @@ abstract class _Paths {
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
   @override
-  RouteType get defaultRouteType => const RouteType.custom(
+  RouteType get defaultRouteType => RouteType.custom(
       transitionsBuilder: TransitionsBuilders.slideLeft,
       durationInMilliseconds: 100,
       reverseDurationInMilliseconds: 200);

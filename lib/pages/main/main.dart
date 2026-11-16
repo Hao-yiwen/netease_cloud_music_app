@@ -50,7 +50,7 @@ class Main extends GetView<MainController> {
   }
 
   Widget _buildProgramsListSection() {
-    final programs = controller.personalizedDjprogramDto.value?.result ?? [];
+    final programs = controller.personalizedDjprogramDto.value.result ?? [];
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -62,7 +62,7 @@ class Main extends GetView<MainController> {
   }
 
   Widget _buildRecommendPlayListSection() {
-    final playlists = controller.recommendResourceDto.value?.recommend ?? [];
+    final playlists = controller.recommendResourceDto.value.recommend ?? [];
     final title =
         '${HomeController.to.userData.value.profile?.nickname ?? ""}${AppStrings.radarPlaylist}';
 
@@ -94,7 +94,7 @@ class Main extends GetView<MainController> {
   }
 
   Future<void> _handlePlaylistTap(int index) async {
-    final playlist = controller.recommendResourceDto.value?.recommend?[index];
+    final playlist = controller.recommendResourceDto.value.recommend?[index];
     if (playlist == null) return;
     _navigateToSongsList(playlist.id!);
   }
@@ -133,7 +133,7 @@ class Main extends GetView<MainController> {
   Widget _buildMicButton() => Icon(TablerIcons.microphone, size: 40.w);
 
   Widget _buildSearchBar(BuildContext context) => SearchBarWidget(
-        onTap: () => AutoRouter.of(context).pushNamed(Routes.search),
+        onTap: () => AutoRouter.of(context).pushPath(Routes.search),
       );
 
   Widget _buildSkeletonEveryDayRecommendSection(BuildContext context) {
@@ -328,7 +328,7 @@ class Main extends GetView<MainController> {
   }
 
   bool _shouldShowRecommendedPlaylists() {
-    return controller.recommendResourceDto.value?.recommend != null;
+    return controller.recommendResourceDto.value.recommend != null;
   }
 
   Widget _buildSectionTitle(String title) {
@@ -378,7 +378,7 @@ class Main extends GetView<MainController> {
   }
 
   bool _hasPrograms() {
-    return controller.personalizedDjprogramDto.value?.result?.isNotEmpty ??
+    return controller.personalizedDjprogramDto.value.result?.isNotEmpty ??
         false;
   }
 
@@ -438,7 +438,7 @@ class Main extends GetView<MainController> {
   }
 
   Widget _buildProgramsCard(BuildContext context) {
-    final program = controller.personalizedDjprogramDto.value?.result?.first;
+    final program = controller.personalizedDjprogramDto.value.result?.first;
     return MusicCard(
       title: AppStrings.musicPodcast,
       subTitle: program?.name ?? "",

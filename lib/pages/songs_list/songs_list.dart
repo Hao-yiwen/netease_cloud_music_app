@@ -84,8 +84,8 @@ class SongsList extends GetView<SongListController> {
       leading: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black.withOpacity(0.3)
-              : Colors.white.withOpacity(0.3),
+              ? Colors.black.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(50.w),
         ),
         margin: EdgeInsets.all(8.w),
@@ -128,8 +128,8 @@ class SongsList extends GetView<SongListController> {
       leading: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black.withOpacity(0.3)
-              : Colors.white.withOpacity(0.3),
+              ? Colors.black.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(50.w),
         ),
         margin: EdgeInsets.all(8.w),
@@ -164,12 +164,12 @@ class SongsList extends GetView<SongListController> {
                             Shadow(
                               offset: Offset(2.w, 2.w),
                               blurRadius: 4.w,
-                              color: Colors.black.withOpacity(0.4),
+                              color: Colors.black.withValues(alpha: 0.4),
                             ),
                             Shadow(
                               offset: Offset(-1.w, -1.w),
                               blurRadius: 4.w,
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                             ),
                           ]
                         : null,
@@ -193,7 +193,7 @@ class SongsList extends GetView<SongListController> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.5),
+                        Colors.black.withValues(alpha: 0.5),
                       ],
                     ),
                   ),
@@ -256,14 +256,14 @@ class SongsList extends GetView<SongListController> {
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
           decoration: BoxDecoration(
-            color: isCurrentSong ? theme.primaryColor.withOpacity(0.1) : null,
+            color: isCurrentSong ? theme.primaryColor.withValues(alpha: 0.1) : null,
             borderRadius: BorderRadius.circular(12.w),
           ),
           child: ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
             leading: _buildLeadingWidget(index, isCurrentSong),
             title: Text(
-              song.title!,
+              song.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -277,7 +277,7 @@ class SongsList extends GetView<SongListController> {
             subtitle: Text(
               song.artist!,
               style: TextStyle(
-                color: theme.colorScheme.onPrimary.withOpacity(0.7),
+                color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                 fontSize: 24.sp,
               ),
               maxLines: 1,
@@ -331,7 +331,7 @@ class SongsList extends GetView<SongListController> {
           color: Theme.of(context).scaffoldBackgroundColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               offset: Offset(0, -2.w),
               blurRadius: 10.w,
             ),

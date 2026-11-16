@@ -55,11 +55,6 @@ class _SearchState extends State<Search> {
     _gotoSearchDetail(context);
   }
 
-  void _clearSearchText() {
-    textEditingController.clear();
-    controller.textvalue.value = '';
-  }
-
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -181,7 +176,7 @@ class _SearchState extends State<Search> {
           borderRadius: BorderRadius.circular(16.w),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -242,10 +237,10 @@ class _SearchState extends State<Search> {
             vertical: 8.w,
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20.w),
             border: Border.all(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -316,7 +311,7 @@ class _SearchState extends State<Search> {
 
   Widget _buildSuggestionsList() {
     final hasMatches =
-        controller.keyWordsSuggest.value?.result?.allMatch?.isNotEmpty == true;
+        controller.keyWordsSuggest.value.result?.allMatch?.isNotEmpty == true;
 
     if (!hasMatches) {
       return Center(
@@ -333,10 +328,10 @@ class _SearchState extends State<Search> {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       itemCount:
-          controller.keyWordsSuggest.value?.result?.allMatch?.length ?? 0,
+          controller.keyWordsSuggest.value.result?.allMatch?.length ?? 0,
       itemBuilder: (context, index) {
         final keyword = controller
-                .keyWordsSuggest.value?.result?.allMatch?[index].keyword ??
+                .keyWordsSuggest.value.result?.allMatch?[index].keyword ??
             '';
         return _buildSuggestionItem(keyword);
       },

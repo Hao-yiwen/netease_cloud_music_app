@@ -11,6 +11,7 @@ class SimiSongsDto extends ServerStatusBean{
 
   factory SimiSongsDto.fromJson(Map<String, dynamic> json) => _$SimiSongsDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SimiSongsDtoToJson(this);
 }
 

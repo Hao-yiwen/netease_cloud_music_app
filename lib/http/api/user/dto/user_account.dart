@@ -22,6 +22,7 @@ class UserAccount extends ServerStatusBean {
   factory UserAccount.fromJson(Map<String, dynamic> json) =>
       _$UserAccountFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$UserAccountToJson(this);
 }
 

@@ -12,6 +12,7 @@ class MvList extends ServerStatusBean {
 
   factory MvList.fromJson(Map<String, dynamic> json) => _$MvListFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$MvListToJson(this);
 }
 

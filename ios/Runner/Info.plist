@@ -13,6 +13,10 @@
       <array>
         <string>audio</string>
       </array>
+    <key>UIStatusBarHidden</key>
+    <false/>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 	<key>CFBundleDisplayName</key>
 	<string>网易云音乐</string>
 	<key>CFBundleExecutable</key>

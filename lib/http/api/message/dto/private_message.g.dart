@@ -33,10 +33,10 @@ Msg _$MsgFromJson(Map<String, dynamic> json) => Msg()
   ..lastMsgTime = (json['lastMsgTime'] as num?)?.toInt();
 
 Map<String, dynamic> _$MsgToJson(Msg instance) => <String, dynamic>{
-      'fromUser': instance.fromUser,
-      'lastMsg': instance.lastMsg,
-      'lastMsgTime': instance.lastMsgTime,
-    };
+  'fromUser': instance.fromUser,
+  'lastMsg': instance.lastMsg,
+  'lastMsgTime': instance.lastMsgTime,
+};
 
 FromUser _$FromUserFromJson(Map<String, dynamic> json) => FromUser()
   ..nickname = json['nickname'] as String?
@@ -46,9 +46,9 @@ FromUser _$FromUserFromJson(Map<String, dynamic> json) => FromUser()
   ..userId = (json['userId'] as num?)?.toInt();
 
 Map<String, dynamic> _$FromUserToJson(FromUser instance) => <String, dynamic>{
-      'nickname': instance.nickname,
-      'detailDescription': instance.detailDescription,
-      'avatarUrl': instance.avatarUrl,
-      'userType': instance.userType,
-      'userId': instance.userId,
-    };
+  'nickname': instance.nickname,
+  'detailDescription': instance.detailDescription,
+  'avatarUrl': instance.avatarUrl,
+  'userType': instance.userType,
+  'userId': instance.userId,
+};

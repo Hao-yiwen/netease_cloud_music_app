@@ -13,5 +13,6 @@ class TopPlaylistsDto extends ServerStatusBean{
   factory TopPlaylistsDto.fromJson(Map<String, dynamic> json) =>
       _$TopPlaylistsDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$TopPlaylistsDtoToJson(this);
 }

@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
@@ -8,6 +9,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:auto_route/auto_route.dart' as _i19;
 import 'package:flutter/material.dart' as _i20;
 import 'package:netease_cloud_music_app/pages/about.dart' as _i1;
@@ -36,10 +38,7 @@ import 'package:netease_cloud_music_app/pages/webview/webview.dart' as _i18;
 /// [_i1.About]
 class About extends _i19.PageRouteInfo<void> {
   const About({List<_i19.PageRouteInfo>? children})
-      : super(
-          About.name,
-          initialChildren: children,
-        );
+    : super(About.name, initialChildren: children);
 
   static const String name = 'About';
 
@@ -54,22 +53,21 @@ class About extends _i19.PageRouteInfo<void> {
 /// generated route for
 /// [_i2.CommentPage]
 class CommentRoute extends _i19.PageRouteInfo<CommentRouteArgs> {
-  CommentRoute({
-    _i20.Key? key,
-    List<_i19.PageRouteInfo>? children,
-  }) : super(
-          CommentRoute.name,
-          args: CommentRouteArgs(key: key),
-          initialChildren: children,
-        );
+  CommentRoute({_i20.Key? key, List<_i19.PageRouteInfo>? children})
+    : super(
+        CommentRoute.name,
+        args: CommentRouteArgs(key: key),
+        initialChildren: children,
+      );
 
   static const String name = 'CommentRoute';
 
   static _i19.PageInfo page = _i19.PageInfo(
     name,
     builder: (data) {
-      final args =
-          data.argsAs<CommentRouteArgs>(orElse: () => const CommentRouteArgs());
+      final args = data.argsAs<CommentRouteArgs>(
+        orElse: () => const CommentRouteArgs(),
+      );
       return _i2.CommentPage(key: args.key);
     },
   );
@@ -84,23 +82,30 @@ class CommentRouteArgs {
   String toString() {
     return 'CommentRouteArgs{key: $key}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! CommentRouteArgs) return false;
+    return key == other.key;
+  }
+
+  @override
+  int get hashCode => key.hashCode;
 }
 
 /// generated route for
 /// [_i3.EmptyPage]
 class EmptyRoute extends _i19.PageRouteInfo<void> {
   const EmptyRoute({List<_i19.PageRouteInfo>? children})
-      : super(
-          EmptyRoute.name,
-          initialChildren: children,
-        );
+    : super(EmptyRoute.name, initialChildren: children);
 
   static const String name = 'EmptyRoute';
 
   static _i19.PageInfo page = _i19.PageInfo(
     name,
     builder: (data) {
-      return _i3.EmptyPage();
+      return const _i3.EmptyPage();
     },
   );
 }
@@ -109,10 +114,7 @@ class EmptyRoute extends _i19.PageRouteInfo<void> {
 /// [_i4.ErrorPage]
 class ErrorRoute extends _i19.PageRouteInfo<void> {
   const ErrorRoute({List<_i19.PageRouteInfo>? children})
-      : super(
-          ErrorRoute.name,
-          initialChildren: children,
-        );
+    : super(ErrorRoute.name, initialChildren: children);
 
   static const String name = 'ErrorRoute';
 
@@ -128,10 +130,7 @@ class ErrorRoute extends _i19.PageRouteInfo<void> {
 /// [_i5.Found]
 class Found extends _i19.PageRouteInfo<void> {
   const Found({List<_i19.PageRouteInfo>? children})
-      : super(
-          Found.name,
-          initialChildren: children,
-        );
+    : super(Found.name, initialChildren: children);
 
   static const String name = 'Found';
 
@@ -147,10 +146,7 @@ class Found extends _i19.PageRouteInfo<void> {
 /// [_i6.Home]
 class Home extends _i19.PageRouteInfo<void> {
   const Home({List<_i19.PageRouteInfo>? children})
-      : super(
-          Home.name,
-          initialChildren: children,
-        );
+    : super(Home.name, initialChildren: children);
 
   static const String name = 'Home';
 
@@ -166,10 +162,7 @@ class Home extends _i19.PageRouteInfo<void> {
 /// [_i7.Login]
 class Login extends _i19.PageRouteInfo<void> {
   const Login({List<_i19.PageRouteInfo>? children})
-      : super(
-          Login.name,
-          initialChildren: children,
-        );
+    : super(Login.name, initialChildren: children);
 
   static const String name = 'Login';
 
@@ -185,10 +178,7 @@ class Login extends _i19.PageRouteInfo<void> {
 /// [_i8.Main]
 class Main extends _i19.PageRouteInfo<void> {
   const Main({List<_i19.PageRouteInfo>? children})
-      : super(
-          Main.name,
-          initialChildren: children,
-        );
+    : super(Main.name, initialChildren: children);
 
   static const String name = 'Main';
 
@@ -204,10 +194,7 @@ class Main extends _i19.PageRouteInfo<void> {
 /// [_i9.MessagePage]
 class MessageRoute extends _i19.PageRouteInfo<void> {
   const MessageRoute({List<_i19.PageRouteInfo>? children})
-      : super(
-          MessageRoute.name,
-          initialChildren: children,
-        );
+    : super(MessageRoute.name, initialChildren: children);
 
   static const String name = 'MessageRoute';
 
@@ -229,15 +216,10 @@ class MvPlayer extends _i19.PageRouteInfo<MvPlayerArgs> {
     required String artist,
     List<_i19.PageRouteInfo>? children,
   }) : super(
-          MvPlayer.name,
-          args: MvPlayerArgs(
-            key: key,
-            title: title,
-            id: id,
-            artist: artist,
-          ),
-          initialChildren: children,
-        );
+         MvPlayer.name,
+         args: MvPlayerArgs(key: key, title: title, id: id, artist: artist),
+         initialChildren: children,
+       );
 
   static const String name = 'MvPlayer';
 
@@ -275,16 +257,27 @@ class MvPlayerArgs {
   String toString() {
     return 'MvPlayerArgs{key: $key, title: $title, id: $id, artist: $artist}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MvPlayerArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        id == other.id &&
+        artist == other.artist;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^ title.hashCode ^ id.hashCode ^ artist.hashCode;
 }
 
 /// generated route for
 /// [_i11.NewsSongs]
 class NewsSongs extends _i19.PageRouteInfo<void> {
   const NewsSongs({List<_i19.PageRouteInfo>? children})
-      : super(
-          NewsSongs.name,
-          initialChildren: children,
-        );
+    : super(NewsSongs.name, initialChildren: children);
 
   static const String name = 'NewsSongs';
 
@@ -300,10 +293,7 @@ class NewsSongs extends _i19.PageRouteInfo<void> {
 /// [_i12.Search]
 class Search extends _i19.PageRouteInfo<void> {
   const Search({List<_i19.PageRouteInfo>? children})
-      : super(
-          Search.name,
-          initialChildren: children,
-        );
+    : super(Search.name, initialChildren: children);
 
   static const String name = 'Search';
 
@@ -319,10 +309,7 @@ class Search extends _i19.PageRouteInfo<void> {
 /// [_i13.SearchDetail]
 class SearchDetail extends _i19.PageRouteInfo<void> {
   const SearchDetail({List<_i19.PageRouteInfo>? children})
-      : super(
-          SearchDetail.name,
-          initialChildren: children,
-        );
+    : super(SearchDetail.name, initialChildren: children);
 
   static const String name = 'SearchDetail';
 
@@ -342,13 +329,10 @@ class SongsList extends _i19.PageRouteInfo<SongsListArgs> {
     required int id,
     List<_i19.PageRouteInfo>? children,
   }) : super(
-          SongsList.name,
-          args: SongsListArgs(
-            key: key,
-            id: id,
-          ),
-          initialChildren: children,
-        );
+         SongsList.name,
+         args: SongsListArgs(key: key, id: id),
+         initialChildren: children,
+       );
 
   static const String name = 'SongsList';
 
@@ -356,19 +340,13 @@ class SongsList extends _i19.PageRouteInfo<SongsListArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<SongsListArgs>();
-      return _i14.SongsList(
-        key: args.key,
-        id: args.id,
-      );
+      return _i14.SongsList(key: args.key, id: args.id);
     },
   );
 }
 
 class SongsListArgs {
-  const SongsListArgs({
-    this.key,
-    required this.id,
-  });
+  const SongsListArgs({this.key, required this.id});
 
   final _i20.Key? key;
 
@@ -378,16 +356,23 @@ class SongsListArgs {
   String toString() {
     return 'SongsListArgs{key: $key, id: $id}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SongsListArgs) return false;
+    return key == other.key && id == other.id;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ id.hashCode;
 }
 
 /// generated route for
 /// [_i15.SplashPage]
 class SplashRoute extends _i19.PageRouteInfo<void> {
   const SplashRoute({List<_i19.PageRouteInfo>? children})
-      : super(
-          SplashRoute.name,
-          initialChildren: children,
-        );
+    : super(SplashRoute.name, initialChildren: children);
 
   static const String name = 'SplashRoute';
 
@@ -403,10 +388,7 @@ class SplashRoute extends _i19.PageRouteInfo<void> {
 /// [_i16.Timeline]
 class Timeline extends _i19.PageRouteInfo<void> {
   const Timeline({List<_i19.PageRouteInfo>? children})
-      : super(
-          Timeline.name,
-          initialChildren: children,
-        );
+    : super(Timeline.name, initialChildren: children);
 
   static const String name = 'Timeline';
 
@@ -422,10 +404,7 @@ class Timeline extends _i19.PageRouteInfo<void> {
 /// [_i17.User]
 class User extends _i19.PageRouteInfo<void> {
   const User({List<_i19.PageRouteInfo>? children})
-      : super(
-          User.name,
-          initialChildren: children,
-        );
+    : super(User.name, initialChildren: children);
 
   static const String name = 'User';
 
@@ -447,15 +426,15 @@ class WebViewRoute extends _i19.PageRouteInfo<WebViewRouteArgs> {
     bool isHideTitle = false,
     List<_i19.PageRouteInfo>? children,
   }) : super(
-          WebViewRoute.name,
-          args: WebViewRouteArgs(
-            key: key,
-            url: url,
-            title: title,
-            isHideTitle: isHideTitle,
-          ),
-          initialChildren: children,
-        );
+         WebViewRoute.name,
+         args: WebViewRouteArgs(
+           key: key,
+           url: url,
+           title: title,
+           isHideTitle: isHideTitle,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'WebViewRoute';
 
@@ -493,4 +472,18 @@ class WebViewRouteArgs {
   String toString() {
     return 'WebViewRouteArgs{key: $key, url: $url, title: $title, isHideTitle: $isHideTitle}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! WebViewRouteArgs) return false;
+    return key == other.key &&
+        url == other.url &&
+        title == other.title &&
+        isHideTitle == other.isHideTitle;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^ url.hashCode ^ title.hashCode ^ isHideTitle.hashCode;
 }

@@ -36,7 +36,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
 
   Color _appBarBackgroundColor = Colors.transparent;
   Color _iconColor = Colors.white;
-  double _imageHeight = 850.w;
+  final double _imageHeight = 850.w;
   bool _isPinned = false;
 
   String _formatNumber(int number) {
@@ -74,9 +74,9 @@ class _UserState extends State<User> with TickerProviderStateMixin {
 
     setState(() {
       _appBarBackgroundColor =
-          (isDark ? Colors.grey[900]! : Colors.white).withOpacity(opacity);
+          (isDark ? Colors.grey[900]! : Colors.white).withValues(alpha: opacity);
       _iconColor = opacity > 0.5
-          ? (isDark ? Colors.white : Colors.black).withOpacity(opacity)
+          ? (isDark ? Colors.white : Colors.black).withValues(alpha: opacity)
           : Colors.white;
     });
   }
@@ -101,7 +101,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final headerHeight = statusBarHeight + 120.w;
-    final userData = HomeController.to.userData.value!;
+    final userData = HomeController.to.userData.value;
     final events = _controller.ownEvent.value.events;
 
     return Stack(
@@ -134,7 +134,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
                       width: double.infinity,
                       child: NeteaseCacheImage(
                         picUrl: userData.profile?.backgroundUrl ?? "",
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                       ),
                     ),
                   ),
@@ -212,7 +212,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
           ),
           const Spacer(),
           GestureDetector(
-            onTap: () => AutoRouter.of(context).pushNamed(Routes.search),
+            onTap: () => AutoRouter.of(context).pushPath(Routes.search),
             child: Icon(TablerIcons.search, color: _iconColor),
           ),
           Padding(
@@ -247,7 +247,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
           ),
           labelColor: theme.colorScheme.onPrimary,
           dividerHeight: 0,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withOpacity(0.5),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.5),
           indicator: const UnderlineTabIndicator(
             borderSide: BorderSide(color: Colors.red, width: 2),
             insets: EdgeInsets.symmetric(horizontal: 22),

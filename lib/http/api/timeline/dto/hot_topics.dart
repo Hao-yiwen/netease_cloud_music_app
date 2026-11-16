@@ -11,6 +11,7 @@ class HotTopics extends ServerStatusBean {
 
   factory HotTopics.fromJson(Map<String, dynamic> json) => _$HotTopicsFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$HotTopicsToJson(this);
 }
 

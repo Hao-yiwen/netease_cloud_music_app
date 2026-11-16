@@ -18,6 +18,7 @@ class SongInfoDto extends ServerStatusBean {
   factory SongInfoDto.fromJson(Map<String, dynamic> json) =>
       _$SongInfoDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SongInfoDtoToJson(this);
 }
 
@@ -30,5 +31,6 @@ class SongInfoListDto extends ServerStatusBean {
   factory SongInfoListDto.fromJson(Map<String, dynamic> json) =>
       _$SongInfoListDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SongInfoListDtoToJson(this);
 }

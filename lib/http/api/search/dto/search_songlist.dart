@@ -12,6 +12,7 @@ class SearchSonglist extends ServerStatusBean{
 
   factory SearchSonglist.fromJson(Map<String, dynamic> json) => _$SearchSonglistFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SearchSonglistToJson(this);
 }
 

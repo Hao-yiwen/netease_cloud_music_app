@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:netease_cloud_music_app/common/lyric_parser/LyricsLineModel.dart';
 import 'package:netease_cloud_music_app/common/lyric_parser/parser_lrc.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
@@ -175,7 +175,7 @@ class RoamingController extends SuperController
       {PlaylistDetailDto? playlistDetail}) {
     return songs
         .map((e) => MediaItem(
-            id: e!.id.toString(),
+            id: e.id.toString(),
             duration: Duration(milliseconds: e.dt ?? 0),
             artUri: Uri.parse('${e.al?.picUrl ?? ''}?param=500y500'),
             extras: {
@@ -281,17 +281,17 @@ class RoamingController extends SuperController
       if (commentMusic.code == 200) {
         commentCount.value = commentMusic.total ?? 0;
         if (commentMusic.topComments?.isNotEmpty ?? false) {
-          comments.value.add(CommentSection()
+          comments.add(CommentSection()
             ..title = '置顶评论'
             ..comments = commentMusic.topComments!);
         }
         if (commentMusic.hotComments?.isNotEmpty ?? false) {
-          comments.value.add(CommentSection()
+          comments.add(CommentSection()
             ..title = '热门评论'
             ..comments = commentMusic.hotComments!);
         }
         if (commentMusic.comments?.isNotEmpty ?? false) {
-          comments.value
+          comments
             ..clear()
             ..add(CommentSection()
               ..title = '精彩评论'

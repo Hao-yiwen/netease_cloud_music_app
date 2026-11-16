@@ -58,7 +58,7 @@ class _CustomFieldState extends State<CustomField> {
           EdgeInsets.symmetric(horizontal: 15.w, vertical: 12.w),
       margin: widget.margin ?? EdgeInsets.symmetric(vertical: 10.w),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSecondary.withOpacity(.6),
+        color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: .6),
         borderRadius: widget.borderRadius ?? BorderRadius.circular(20.w),
       ),
       child: Row(
@@ -73,7 +73,7 @@ class _CustomFieldState extends State<CustomField> {
               obscureText: isPass,
               controller: widget.textEditingController,
               keyboardType: widget.textInputType ?? TextInputType.text,
-              cursorColor: Theme.of(context).primaryColor.withOpacity(.4),
+              cursorColor: Theme.of(context).primaryColor.withValues(alpha: .4),
               onSubmitted: widget.onSubmitted,
               textInputAction: widget.textInputAction,
               autofocus: widget.autoFocus ?? false,

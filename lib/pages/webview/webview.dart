@@ -10,12 +10,11 @@ class WebViewPage extends StatefulWidget {
   final String title;
   final bool isHideTitle;
 
-  WebViewPage(
-      {Key? key,
+  const WebViewPage(
+      {super.key,
       required this.url,
       required this.title,
-      this.isHideTitle = false})
-      : super(key: key);
+      this.isHideTitle = false});
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
@@ -83,7 +82,8 @@ class _WebViewPageState extends State<WebViewPage> {
               ),
             ),
       body: PopScope(
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
           if (await _controller.canGoBack()) {
             _controller.goBack();
           } else {

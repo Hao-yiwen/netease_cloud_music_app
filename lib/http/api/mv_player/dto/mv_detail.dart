@@ -11,6 +11,7 @@ class MvDetail extends ServerStatusBean{
 
   factory MvDetail.fromJson(Map<String, dynamic> json) => _$MvDetailFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$MvDetailToJson(this);
 }
 
@@ -24,5 +25,6 @@ class MvData extends ServerStatusBean{
 
   factory MvData.fromJson(Map<String, dynamic> json) => _$MvDataFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$MvDataToJson(this);
 }

@@ -14,10 +14,7 @@ CommentSection _$CommentSectionFromJson(Map<String, dynamic> json) =>
           .toList();
 
 Map<String, dynamic> _$CommentSectionToJson(CommentSection instance) =>
-    <String, dynamic>{
-      'title': instance.title,
-      'comments': instance.comments,
-    };
+    <String, dynamic>{'title': instance.title, 'comments': instance.comments};
 
 CommentMusic _$CommentMusicFromJson(Map<String, dynamic> json) => CommentMusic()
   ..code = dynamicToInt(json['code'])
@@ -61,11 +58,11 @@ Comment _$CommentFromJson(Map<String, dynamic> json) => Comment()
   ..commentId = (json['commentId'] as num?)?.toInt();
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
-      'user': instance.user,
-      'content': instance.content,
-      'time': instance.time,
-      'timeStr': instance.timeStr,
-      'likedCount': instance.likedCount,
-      'liked': instance.liked,
-      'commentId': instance.commentId,
-    };
+  'user': instance.user,
+  'content': instance.content,
+  'time': instance.time,
+  'timeStr': instance.timeStr,
+  'likedCount': instance.likedCount,
+  'liked': instance.liked,
+  'commentId': instance.commentId,
+};

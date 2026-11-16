@@ -15,6 +15,7 @@ class PersonalFmDto extends ServerStatusBean {
   factory PersonalFmDto.fromJson(Map<String, dynamic> json) =>
       _$PersonalFmDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$PersonalFmDtoToJson(this);
 }
 

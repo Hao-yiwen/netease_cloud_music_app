@@ -99,7 +99,7 @@ class _LoginState extends State<Login> {
                           ? Theme.of(context).primaryColor
                           : Theme.of(context)
                           .primaryColor
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(50.w),
                           bottomRight: Radius.circular(50.w))),

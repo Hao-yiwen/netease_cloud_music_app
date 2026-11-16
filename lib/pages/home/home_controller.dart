@@ -4,7 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:netease_cloud_music_app/common/constants/keys.dart';
 import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';

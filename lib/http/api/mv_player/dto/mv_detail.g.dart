@@ -15,11 +15,11 @@ MvDetail _$MvDetailFromJson(Map<String, dynamic> json) => MvDetail()
       : MvData.fromJson(json['data'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$MvDetailToJson(MvDetail instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'data': instance.data,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'data': instance.data,
+};
 
 MvData _$MvDataFromJson(Map<String, dynamic> json) => MvData()
   ..code = dynamicToInt(json['code'])
@@ -30,10 +30,10 @@ MvData _$MvDataFromJson(Map<String, dynamic> json) => MvData()
   ..size = (json['size'] as num?)?.toInt();
 
 Map<String, dynamic> _$MvDataToJson(MvData instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'id': instance.id,
-      'url': instance.url,
-      'size': instance.size,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'id': instance.id,
+  'url': instance.url,
+  'size': instance.size,
+};

@@ -20,7 +20,7 @@ class SearchPageBar extends StatelessWidget {
         Container(
           height: 40,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(

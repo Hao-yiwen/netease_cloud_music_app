@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netease_cloud_music_app/http/api/main/dto/song_dto.dart';
 
@@ -18,5 +16,6 @@ class RecommendSongsDto extends ServerStatusBean {
   factory RecommendSongsDto.fromJson(Map<String, dynamic> json) =>
       _$RecommendSongsDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$RecommendSongsDtoToJson(this);
 }

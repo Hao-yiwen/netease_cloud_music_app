@@ -12,6 +12,7 @@ class PersonalizedDjprogramDto extends ServerStatusBean {
   factory PersonalizedDjprogramDto.fromJson(Map<String, dynamic> json) =>
       _$PersonalizedDjprogramDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$PersonalizedDjprogramDtoToJson(this);
 }
 

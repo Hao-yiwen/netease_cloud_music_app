@@ -16,12 +16,12 @@ Events _$EventsFromJson(Map<String, dynamic> json) => Events()
       .toList();
 
 Map<String, dynamic> _$EventsToJson(Events instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'size': instance.size,
-      'events': instance.events,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'size': instance.size,
+  'events': instance.events,
+};
 
 Event _$EventFromJson(Map<String, dynamic> json) => Event()
   ..actName = json['actName'] as String?
@@ -40,15 +40,15 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event()
       .toList();
 
 Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
-      'actName': instance.actName,
-      'json': instance.json,
-      'id': instance.id,
-      'user': instance.user,
-      'eventTime': instance.eventTime,
-      'pics': instance.pics,
-      'actId': instance.actId,
-      'bottomActivityInfos': instance.bottomActivityInfos,
-    };
+  'actName': instance.actName,
+  'json': instance.json,
+  'id': instance.id,
+  'user': instance.user,
+  'eventTime': instance.eventTime,
+  'pics': instance.pics,
+  'actId': instance.actId,
+  'bottomActivityInfos': instance.bottomActivityInfos,
+};
 
 Pic _$PicFromJson(Map<String, dynamic> json) => Pic()
   ..height = (json['height'] as num?)?.toInt()
@@ -59,13 +59,13 @@ Pic _$PicFromJson(Map<String, dynamic> json) => Pic()
   ..format = json['format'] as String?;
 
 Map<String, dynamic> _$PicToJson(Pic instance) => <String, dynamic>{
-      'height': instance.height,
-      'originUrl': instance.originUrl,
-      'squareUrl': instance.squareUrl,
-      'rectangleUrl': instance.rectangleUrl,
-      'width': instance.width,
-      'format': instance.format,
-    };
+  'height': instance.height,
+  'originUrl': instance.originUrl,
+  'squareUrl': instance.squareUrl,
+  'rectangleUrl': instance.rectangleUrl,
+  'width': instance.width,
+  'format': instance.format,
+};
 
 BottomActivityInfo _$BottomActivityInfoFromJson(Map<String, dynamic> json) =>
     BottomActivityInfo()

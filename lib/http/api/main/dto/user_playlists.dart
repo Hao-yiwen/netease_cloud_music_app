@@ -13,5 +13,6 @@ class UserPlaylists extends ServerStatusBean{
   factory UserPlaylists.fromJson(Map<String, dynamic> json) =>
       _$UserPlaylistsFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$UserPlaylistsToJson(this);
 }

@@ -47,10 +47,10 @@ playlist _$playlistFromJson(Map<String, dynamic> json) => playlist()
   ..description = json['description'] as String?;
 
 Map<String, dynamic> _$playlistToJson(playlist instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'coverImgUrl': instance.coverImgUrl,
-      'playCount': instance.playCount,
-      'creator': instance.creator,
-      'description': instance.description,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'coverImgUrl': instance.coverImgUrl,
+  'playCount': instance.playCount,
+  'creator': instance.creator,
+  'description': instance.description,
+};

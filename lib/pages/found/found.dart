@@ -13,11 +13,9 @@ import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
-import 'package:netease_cloud_music_app/pages/main/shimmer_loading.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
@@ -152,7 +150,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
 
   Widget _buildSearchButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => AutoRouter.of(context).pushNamed(Routes.search),
+      onTap: () => AutoRouter.of(context).pushPath(Routes.search),
       child: Icon(TablerIcons.search, size: 40.w),
     );
   }
@@ -277,7 +275,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
           return CustomScrollView(
             physics: physics,
             slivers: [
-              if (controller.banner.value?.banners != null)
+              if (controller.banner.value.banners != null)
                 _buildCarousel(context),
               if (controller.homeBlock.value.blocks?.isNotEmpty ?? false)
                 _buildFoundContent(controller.homeBlock.value.blocks!, context),
@@ -332,7 +330,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                             child: DotsIndicator(
                               dotsCount:
                                   controller.banner.value.banners!.length,
-                              position: _currentCarouselIndex,
+                              position: _currentCarouselIndex.toDouble(),
                               decorator: DotsDecorator(
                                 activeColor: Colors.red,
                                 size: const Size.square(6.0),
@@ -444,7 +442,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _albumTabController,
               children: [
-                SongsListWidget(songs: controller.newSong.value),
+                SongsListWidget(songs: controller.newSong),
                 SongsListWidget(songs: controller.newAlbum),
               ],
             ),
@@ -481,7 +479,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     creative.uiElement?.mainTitle?.title == null ||
                     creative.resources == null ||
                     creative.resources!.isEmpty ||
-                    creative.resources![0]?.resourceId == null) {
+                    creative.resources![0].resourceId == null) {
                   return Container();
                 }
 
@@ -493,7 +491,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                     onTapItem: () async {
                       GetIt.instance<AppRouter>().push(
                         SongsList(
-                            id: int.parse(creative.resources![0]!.resourceId!)),
+                            id: int.parse(creative.resources![0].resourceId!)),
                       );
                     },
                   ),
@@ -515,7 +513,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
         children: [
           _buildCreativeTitle(item, context),
           SizedBox(height: 10.w),
-          SongsListWidget(songs: controller.slideSongListAlign.value),
+          SongsListWidget(songs: controller.slideSongListAlign),
         ],
       ),
     );
@@ -548,7 +546,6 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
     final resources = item.creatives!
         .where((e) => e.resources != null)
         .expand((e) => e.resources!)
-        .where((r) => r != null)
         .toList();
 
     if (resources.isEmpty) return Container();

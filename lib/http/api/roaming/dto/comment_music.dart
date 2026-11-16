@@ -32,6 +32,7 @@ class CommentMusic extends ServerStatusBean {
   factory CommentMusic.fromJson(Map<String, dynamic> json) =>
       _$CommentMusicFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$CommentMusicToJson(this);
 }
 

@@ -7,14 +7,14 @@ part of 'user_account.dart';
 // **************************************************************************
 
 UserAccount _$UserAccountFromJson(Map<String, dynamic> json) => UserAccount(
-      id: (json['id'] as num).toInt(),
-      userName: json['userName'] as String?,
-      type: (json['type'] as num?)?.toInt(),
-      status: (json['status'] as num?)?.toInt(),
-      createTime: (json['createTime'] as num?)?.toInt(),
-      ban: (json['ban'] as num?)?.toInt(),
-      vipType: (json['vipType'] as num?)?.toInt(),
-    );
+  id: (json['id'] as num).toInt(),
+  userName: json['userName'] as String?,
+  type: (json['type'] as num?)?.toInt(),
+  status: (json['status'] as num?)?.toInt(),
+  createTime: (json['createTime'] as num?)?.toInt(),
+  ban: (json['ban'] as num?)?.toInt(),
+  vipType: (json['vipType'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$UserAccountToJson(UserAccount instance) =>
     <String, dynamic>{
