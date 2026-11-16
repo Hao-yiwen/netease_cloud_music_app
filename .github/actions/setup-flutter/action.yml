@@ -1,0 +1,18 @@
+name: Setup Flutter
+description: 安装 CI 固定的 JDK 21 与 Flutter 3.50.0，并缓存 pub。
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '21'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.50.0'
+        channel: stable
+        cache: true

@@ -2,32 +2,31 @@ name: Build Android App
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   workflow_dispatch:
   release:
     types: [released]
+
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  # master 上的构建会发布当前版本的正式包，不中途取消。pull request 只保留最新一次。
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.50.0'
-          channel: 'stable'
-          cache: true
+        uses: ./.github/actions/setup-flutter
 
       - name: Install dependencies
         run: flutter pub get
@@ -40,89 +39,107 @@ jobs:
 
   build:
     name: Build
-    needs: [test]
     runs-on: ubuntu-latest
-
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: ./.github/actions/setup-flutter
+
+      - name: Cache Android NDK
+        uses: actions/cache@v4
         with:
-          flutter-version: '3.50.0'
-          channel: 'stable'
-          cache: true
+          path: ${{ env.ANDROID_HOME }}/ndk
+          key: android-ndk-${{ runner.os }}-flutter-3.50.0
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build arm64 APK
+        id: package
         run: |
           set -euo pipefail
-          for i in 1 2 3 4; do
-            if flutter build apk --release; then
-              exit 0
-            fi
-            echo "release build failed, retry ${i}"
-            sleep $((i * 20))
-          done
-          exit 1
+          build_apk() {
+            flutter build apk --release --target-platform android-arm64
+          }
+          if ! build_apk; then
+            echo "release build failed, retrying once"
+            sleep 20
+            build_apk
+          fi
+
+          version="$(awk '/^version:/{print $2}' pubspec.yaml)"
+          short="${GITHUB_SHA::7}"
+          name="netease-${version}-${short}-arm64.apk"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/${name}"
+          bytes="$(stat -c%s "dist/${name}")"
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "bytes=${bytes}" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Android arm64"
+            echo "- 版本 \`${version}\`"
+            echo "- \`${name}\`"
+            echo "- $(numfmt --to=iec "${bytes}")"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: android-arm64
+          path: dist/*.apk
+          if-no-files-found: error
+          compression-level: 0
 
   release:
     name: Release
-    needs: [build]
-    if: github.event_name != 'pull_request'
+    needs: [test, build]
+    if: github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Tag the repository (pre-release)
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        id: tag
+      - name: Read version
+        id: version
         run: |
-          TAG=nightly.$(date -Iseconds | sed 's/[T:\+]/-/g')
-          TIME=$(date '+%Y/%m/%d %H:%M')
-          echo "$TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "time=$TIME" >> $GITHUB_OUTPUT
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
-          git push origin $TAG
+          set -euo pipefail
+          raw="$(awk '/^version:/{print $2; exit}' pubspec.yaml)"
+          name="${raw%%+*}"
+          echo "raw=${raw}" >> "$GITHUB_OUTPUT"
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${name}" >> "$GITHUB_OUTPUT"
 
-      - name: Download artifacts
+      - name: Download APK
         uses: actions/download-artifact@v4
         with:
+          name: android-arm64
           path: artifacts
 
-      - name: Create release (pre-release)
-        uses: softprops/action-gh-release@v2
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        with:
-          files: artifacts/*/*
-          prerelease: true
-          make_latest: false
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: ${{ steps.tag.outputs.time }}
+      - name: Name release asset
+        run: |
+          set -euo pipefail
+          src="$(find artifacts -name '*.apk' -print -quit)"
+          test -n "$src"
+          mv "$src" "artifacts/netease-${{ steps.version.outputs.name }}-arm64.apk"
 
-      - name: Create release (release)
+      - name: Publish version
         uses: softprops/action-gh-release@v2
-        if: github.event_name == 'release'
         with:
-          files: artifacts/*/*
+          files: artifacts/netease-${{ steps.version.outputs.name }}-arm64.apk
+          fail_on_unmatched_files: true
+          overwrite_files: true
           prerelease: false
-          make_latest: true
+          make_latest: "true"
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.version.outputs.tag }}
+          body: |
+            版本 `${{ steps.version.outputs.raw }}`，提交 `${{ github.sha }}`。
+            arm64 安装包 `netease-${{ steps.version.outputs.name }}-arm64.apk`，可直接装到近年的真机。

@@ -110,7 +110,7 @@ flutter build ios --debug --no-codesign
 
 ## 安装包
 
-发布构建产物在 GitHub Actions 的 `android-release` artifact，以及 master 推送产生的 nightly Release。仓库里不再附带已经失效的本地下载二维码。
+master 上的构建会按 `pubspec.yaml` 的版本名发布正式 Release，并标成仓库的 Latest。当前版本是 `v1.0.3`，安装包文件名是 `netease-1.0.3-arm64.apk`。pull request 只上传 artifact，不发 Release。这个包面向近年真机，不包含 32 位和模拟器 x86_64。
 
 ### 已知问题
 
