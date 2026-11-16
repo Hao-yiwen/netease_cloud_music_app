@@ -54,7 +54,9 @@ flutter devices
 flutter run -d <your-device>
 ```
 
-4. 使用手机号码和短信验证码登录。
+4. 使用手机号码和短信验证码登录。也可以在登录页切换邮箱或扫码。
+
+更完整的构建、分析和测试说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 网易云音乐 API
 
@@ -92,10 +94,12 @@ node app.js
 ### 常用验证命令
 
 ```bash
-flutter analyze
+flutter analyze --no-fatal-infos --no-fatal-warnings
 flutter test
 flutter build apk --debug
 ```
+
+`flutter analyze` 在 Flutter 3.50 上会对 `package:flutter/material.dart` 给出 info 级弃用提示，替换包 `package:material_ui` 还不在当前 SDK 里，因此 CI 不把 info 当成失败。error 仍然会失败。
 
 iOS（仅 macOS）：
 
@@ -104,14 +108,25 @@ cd ios && pod install && cd ..
 flutter build ios --debug --no-codesign
 ```
 
-## 扫码下载
+## 安装包
 
-<img src="showcase/android_v1.0.0.png" width="30%" />
+发布构建产物在 GitHub Actions 的 `android-release` artifact，以及 master 推送产生的 nightly Release。仓库里不再附带已经失效的本地下载二维码。
 
 ### 已知问题
 
-- 部分页面因多接口数据整合可能加载较慢，优化中
 - 第三方 API / 登录验证码依赖外部服务，可用性需自行确认
+- 通知栏上的喜欢按钮还没有接到红心接口
+- 首页仍会并发请求多份推荐数据，未登录时部分卡片为空是预期结果
+
+## 代码怎么分
+
+| 目录 | 职责 |
+| --- | --- |
+| `lib/pages` | 页面和 GetX Controller |
+| `lib/http` | Dio、缓存策略和各模块 API |
+| `lib/common` | 播放、歌词、主题和通用工具 |
+| `lib/widgets` | 跨页面组件 |
+| `test` | 不依赖设备的逻辑测试 |
 
 ## 功能状态
 

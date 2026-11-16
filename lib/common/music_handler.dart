@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
@@ -17,6 +17,7 @@ import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import '../http/api/roaming/roaming_api.dart';
 import 'constants/keys.dart';
 import 'constants/platform_utils.dart';
+import 'playback_cursor.dart';
 
 /// @date 2024/0914
 /// @desc 音乐播放handler
@@ -72,23 +73,38 @@ class MusicHandler extends BaseAudioHandler
   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
   final _playList = <MediaItem>[];
   final _playListShut = <MediaItem>[];
+  final List<StreamSubscription<dynamic>> _subscriptions = [];
   AudioServiceRepeatMode _audioServiceRepeatMode = AudioServiceRepeatMode.all;
   int _currentIndex = 0;
+  int _consecutivePlayFailures = 0;
+  int _preloadToken = 0;
+  bool _nextInFlight = false;
+  bool _previousInFlight = false;
 
-  // 预加载的下一首歌曲URL
-  String? _nextSongUrl;
-  // 预加载的上一首歌曲URL
-  String? _previousSongUrl;
+  PreparedSongUrl? _nextPrepared;
+  PreparedSongUrl? _previousPrepared;
 
   MusicHandler() {
     _loadPlayListByStorage();
     _listenToPlaybackState();
-    _listenToPositionEvents();
     _listenToSequenceState();
   }
 
+  void _clearPreparedUrls() {
+    _dropInFlightPreloads();
+    _nextPrepared = null;
+    _previousPrepared = null;
+  }
+
+  /// 丢掉还没返回的预加载，但保留已经对上歌曲 id 的结果，切歌时还能用。
+  void _dropInFlightPreloads() {
+    _preloadToken++;
+    _nextInFlight = false;
+    _previousInFlight = false;
+  }
+
   void _listenToPlaybackState() {
-    _audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
+    _subscriptions.add(_audioPlayer.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _audioPlayer.playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
@@ -134,29 +150,15 @@ class MusicHandler extends BaseAudioHandler
         speed: _audioPlayer.speed,
         queueIndex: _currentIndex,
       ));
-    });
-  }
-
-  void _listenToPositionEvents() {
-    _audioPlayer.positionStream.listen((position) {
-      playbackState.add(playbackState.value.copyWith(
-        updatePosition: position,
-      ));
-
-      // 当播放进度超过80%时预加载下一首
-      if (position.inMilliseconds >
-          (_audioPlayer.duration?.inMilliseconds ?? 0) * 0.8) {
-        _preloadNextSong();
-      }
-    });
+    }));
   }
 
   void _listenToSequenceState() {
-    _audioPlayer.playerStateStream.listen((playerState) {
+    _subscriptions.add(_audioPlayer.playerStateStream.listen((playerState) {
       if (playerState.processingState == ProcessingState.completed) {
         skipToNext();
       }
-    });
+    }));
   }
 
   Future<void> _loadPlayListByStorage() async {
@@ -169,6 +171,10 @@ class MusicHandler extends BaseAudioHandler
     if (playList.isNotEmpty) {
       List<MediaItem> items = await compute(getCachePlayList,
           RootIsolateData(rootIsolateToken, playList: playList));
+      if (items.isEmpty) return;
+      if (_currentIndex < 0 || _currentIndex >= items.length) {
+        _currentIndex = 0;
+      }
       await changeQueueLists(items, init: true, index: _currentIndex);
     }
   }
@@ -182,30 +188,35 @@ class MusicHandler extends BaseAudioHandler
 
   @override
   Future<void> removeQueueItemAt(int index) async {
+    final currentQueue = List<MediaItem>.from(queue.value);
+    if (index < 0 || index >= currentQueue.length) return;
     if (index == _currentIndex) {
       WidgetUtil.showToast('当前歌曲正在播放，无法删除');
       return;
     }
 
-    _playList.removeAt(index);
+    final removed = currentQueue.removeAt(index);
+    _playList.remove(removed);
+    _playListShut.remove(removed);
     if (index < _currentIndex) {
       _currentIndex--;
     }
-    final newQueue = queue.value..removeAt(index);
-    queue.add(newQueue);
+    _box.put(PLAY_INDEX, _currentIndex);
+    _clearPreparedUrls();
+    queue.add(currentQueue);
+    final cached = await compute(
+      setCachePlayList,
+      RootIsolateData(rootIsolateToken, items: _playList),
+    );
+    _box.put(PLAY_QUEUE, cached);
   }
 
-  // 快进 更改为 不喜欢按钮
+  // 通知栏按钮目前映射到喜欢/取消喜欢，接口尚未接入。
   @override
-  Future<void> fastForward() async {
-    // todo
-  }
+  Future<void> fastForward() async {}
 
-  // 后退 更改为 喜欢按钮
   @override
-  Future<void> rewind() async {
-    // todo
-  }
+  Future<void> rewind() async {}
 
   @override
   Future<void> play() async {
@@ -230,109 +241,143 @@ class MusicHandler extends BaseAudioHandler
   @override
   Future<void> changeQueueLists(List<MediaItem> list,
       {int index = 0, bool init = false}) async {
-    if (!init && RoamingController.to.fm.value) {
+    _clearPreparedUrls();
+    if (list.isEmpty) {
+      _playList.clear();
+      _playListShut.clear();
+      _currentIndex = 0;
+      await updateQueue(const []);
+      return;
+    }
+    if (!init &&
+        Get.isRegistered<RoamingController>() &&
+        RoamingController.to.fm.value) {
       RoamingController.to.fm.value = false;
       _box.put(FM_SP, false);
     }
+    if (index < 0 || index >= list.length) index = 0;
     _currentIndex = index;
     _playList
       ..clear()
       ..addAll(list);
-    bool isSu = _box.get(REPEAT_MODE, defaultValue: 'all') ==
+    final isShuffle = _box.get(REPEAT_MODE, defaultValue: 'all') ==
         AudioServiceRepeatMode.none.name;
-    if (isSu) {
+    if (isShuffle) {
       _playListShut
         ..clear()
         ..addAll(list)
         ..shuffle();
       await updateQueue(_playListShut);
-      String songId = list[index].id;
-      if (init) songId = _box.get(PLAY_ID, defaultValue: '');
-      int indexBy = _playListShut.indexWhere((element) => element.id == songId);
+      var songId = list[index].id;
+      if (init) songId = _box.get(PLAY_ID, defaultValue: songId);
+      final indexBy = _playListShut.indexWhere((element) => element.id == songId);
       if (indexBy != -1) {
         _currentIndex = indexBy;
       }
     } else {
+      _playListShut.clear();
       await updateQueue(_playList);
     }
-    playIndex(_currentIndex, playIt: !init);
+    await playIndex(_currentIndex, playIt: !init);
     if (!init) {
-      List<String> playList = await compute(setCachePlayList,
-          RootIsolateData(rootIsolateToken, items: _playList));
+      final playList = await compute(
+        setCachePlayList,
+        RootIsolateData(rootIsolateToken, items: _playList),
+      );
       _box.put(PLAY_QUEUE, playList);
     }
   }
 
   @override
   Future<void> playIndex(int index, {bool playIt = true}) async {
+    if (queue.value.isEmpty) return;
+    if (index < 0 || index >= queue.value.length) return;
     _currentIndex = index;
     _box.put(PLAY_INDEX, _currentIndex);
+    _clearPreparedUrls();
     await readySongUrl(playIt: playIt);
   }
 
   Future<String?> _preloadSongUrl(MediaItem song) async {
-    // 首先检查缓存
     if (song.extras?["type"] == MediaType.local.name ||
         song.extras?['type'] == MediaType.neteaseCache.name) {
-      return song.extras?['url'];
+      final localUrl = song.extras?['url'];
+      if (localUrl is String && localUrl.isNotEmpty) return localUrl;
+      return null;
     }
 
-    // 获取在线URL
     try {
       final songUrl = await RoamingApi.getSongInfo([song.id]);
-      return ((songUrl.data ?? [])[0].url ?? '').split("?")[0];
+      final songs = songUrl.data ?? [];
+      if (songs.isEmpty) return null;
+      final raw = songs.first.url ?? '';
+      if (raw.isEmpty) return null;
+      return raw.split('?').first;
     } catch (e) {
-      print('Failed to get song URL: $e');
+      LogBox.error(e, msg: '获取歌曲地址失败');
       return null;
     }
   }
 
-  // 预加载下一首歌曲
-  Future<void> _preloadNextSong() async {
-    if (_nextSongUrl != null) return; // 已经预加载过了
-
-    var nextIndex = _currentIndex + 1;
-    if (nextIndex >= queue.value.length) {
-      nextIndex = 0;
+  Future<void> _preloadAt({required bool next}) async {
+    if (queue.value.length < 2) return;
+    if (next) {
+      if (_nextPrepared != null || _nextInFlight) return;
+      _nextInFlight = true;
+    } else {
+      if (_previousPrepared != null || _previousInFlight) return;
+      _previousInFlight = true;
     }
 
-    var nextSong = queue.value[nextIndex];
-    _nextSongUrl = await _preloadSongUrl(nextSong);
-  }
-
-  // 预加载上一首歌曲
-  Future<void> _preloadPreviousSong() async {
-    if (_previousSongUrl != null) return;
-
-    var prevIndex = _currentIndex - 1;
-    if (prevIndex < 0) {
-      prevIndex = queue.value.length - 1;
+    final token = _preloadToken;
+    final index = movePlaylistIndex(
+      _currentIndex,
+      queue.value.length,
+      next: next,
+      repeatOne: false,
+    );
+    if (index == _currentIndex || index < 0 || index >= queue.value.length) {
+      if (next) {
+        _nextInFlight = false;
+      } else {
+        _previousInFlight = false;
+      }
+      return;
     }
 
-    var prevSong = queue.value[prevIndex];
-    _previousSongUrl = await _preloadSongUrl(prevSong);
+    final song = queue.value[index];
+    final url = await _preloadSongUrl(song);
+    if (token != _preloadToken) return;
+    if (next) {
+      _nextInFlight = false;
+      if (url != null) _nextPrepared = PreparedSongUrl(song.id, url);
+    } else {
+      _previousInFlight = false;
+      if (url != null) _previousPrepared = PreparedSongUrl(song.id, url);
+    }
   }
 
   @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
     try {
       if (queue.value.isEmpty) return;
-      var song = queue.value[_currentIndex];
-      mediaItem.add(song);
-
-      String? url;
-      // 使用预加载的URL
-      if (isNext && _nextSongUrl != null) {
-        url = _nextSongUrl;
-        _nextSongUrl = null;
-      } else if (!isNext && _previousSongUrl != null) {
-        url = _previousSongUrl;
-        _previousSongUrl = null;
-      } else {
-        url = await _preloadSongUrl(song);
+      if (_currentIndex < 0 || _currentIndex >= queue.value.length) {
+        _currentIndex = wrapPlaylistIndex(_currentIndex, queue.value.length);
       }
+      final song = queue.value[_currentIndex];
+      mediaItem.add(song);
+      _box.put(PLAY_ID, song.id);
 
-      if (url == null) return;
+      final prepared = isNext ? _nextPrepared : _previousPrepared;
+      if (isNext) {
+        _nextPrepared = null;
+      } else {
+        _previousPrepared = null;
+      }
+      final url = takePreparedUrl(prepared, song.id) ?? await _preloadSongUrl(song);
+      if (url == null || url.isEmpty) {
+        throw StateError('歌曲地址为空');
+      }
 
       await _audioPlayer.setUrl(
         url,
@@ -343,12 +388,18 @@ class MusicHandler extends BaseAudioHandler
       if (playIt) {
         await _audioPlayer.play();
       }
-
-      // 开始预加载下一首和上一首
-      _preloadNextSong();
-      _preloadPreviousSong();
+      _consecutivePlayFailures = 0;
+      unawaited(_preloadAt(next: true));
+      unawaited(_preloadAt(next: false));
     } catch (e) {
-      print('Audio playback error: $e');
+      LogBox.error(e, msg: '播放失败');
+      _consecutivePlayFailures++;
+      final total = queue.value.length;
+      if (total == 0 || _consecutivePlayFailures >= total) {
+        _consecutivePlayFailures = 0;
+        WidgetUtil.showToast('播放失败，请检查网络');
+        return;
+      }
       if (isNext) {
         await skipToNext();
       } else {
@@ -358,65 +409,75 @@ class MusicHandler extends BaseAudioHandler
   }
 
   void _setCurIndex({bool next = false}) {
-    if (_audioServiceRepeatMode == AudioServiceRepeatMode.one) return;
-
-    var list = _audioServiceRepeatMode == AudioServiceRepeatMode.none
+    final list = _audioServiceRepeatMode == AudioServiceRepeatMode.none
         ? _playListShut
         : _playList;
-
-    // 计算新的索引值
-    _currentIndex = next ? _currentIndex + 1 : _currentIndex - 1;
-
-    // 如果超出索引范围 循环到列表的开始或结尾
-    if (_currentIndex >= list.length) {
-      _currentIndex = 0;
-    } else if (_currentIndex < 0) {
-      _currentIndex = list.length - 1;
-    }
+    _currentIndex = movePlaylistIndex(
+      _currentIndex,
+      list.isEmpty ? queue.value.length : list.length,
+      next: next,
+      repeatOne: _audioServiceRepeatMode == AudioServiceRepeatMode.one,
+    );
     _box.put(PLAY_INDEX, _currentIndex);
   }
 
   @override
   Future<void> skipToNext() async {
+    _dropInFlightPreloads();
     _setCurIndex(next: true);
     LogBox.info('下一首$_currentIndex');
     await readySongUrl();
-    if (RoamingController.to.fm.value) {
-      if (_currentIndex == queue.value.length - 1) {
-        MainController.to.getPersonalizedDjProgram();
-      }
+    if (Get.isRegistered<RoamingController>() &&
+        RoamingController.to.fm.value &&
+        queue.value.isNotEmpty &&
+        _currentIndex == queue.value.length - 1 &&
+        Get.isRegistered<MainController>()) {
+      MainController.to.getPersonalizedDjProgram();
     }
   }
 
   @override
   Future<void> skipToPrevious() async {
     await stop();
+    _dropInFlightPreloads();
     _setCurIndex();
     await readySongUrl(isNext: false);
   }
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
-    MediaItem m = queue.value[_currentIndex];
+    _audioServiceRepeatMode = repeatMode;
+    _box.put(REPEAT_MODE, repeatMode.name);
+    if (queue.value.isEmpty || _playList.isEmpty) return;
+    final safeIndex = _currentIndex >= 0 && _currentIndex < queue.value.length
+        ? _currentIndex
+        : 0;
+    final current = queue.value[safeIndex];
+    _clearPreparedUrls();
     if (repeatMode == AudioServiceRepeatMode.none) {
-      // none是随机播放
       _playListShut
         ..clear()
         ..addAll(_playList)
         ..shuffle();
-      int index = _playListShut.indexWhere((element) => element.id == m.id);
+      final index = _playListShut.indexWhere((element) => element.id == current.id);
       if (index != -1) _currentIndex = index;
       await updateQueue(_playListShut);
     } else {
-      int index = _playList.indexWhere((element) => element.id == m.id);
+      final index = _playList.indexWhere((element) => element.id == current.id);
       if (index != -1) _currentIndex = index;
+      _playListShut.clear();
       await updateQueue(_playList);
     }
-    _audioServiceRepeatMode = repeatMode;
+    _box.put(PLAY_INDEX, _currentIndex);
   }
 
   @override
   Future<void> onTaskRemoved() async {
+    for (final subscription in _subscriptions) {
+      await subscription.cancel();
+    }
+    _subscriptions.clear();
+    _clearPreparedUrls();
     await stop();
     await _audioPlayer.dispose();
   }
@@ -424,7 +485,10 @@ class MusicHandler extends BaseAudioHandler
   @override
   Future<void> addFmItems(
       List<MediaItem> mediaItems, bool isAddcurIndex) async {
-    if (RoamingController.to.fm.value && _playList.length >= 3) {
+    _clearPreparedUrls();
+    if (Get.isRegistered<RoamingController>() &&
+        RoamingController.to.fm.value &&
+        _playList.length >= 3) {
       _playList.removeRange(0, 3);
       updateQueue(_playList);
       addQueueItems(mediaItems);
@@ -436,7 +500,10 @@ class MusicHandler extends BaseAudioHandler
     _currentIndex = 0;
     _playList.addAll(mediaItems);
     if (isAddcurIndex) _currentIndex++;
-    if (!RoamingController.to.fm.value) RoamingController.to.fm.value = true;
+    if (Get.isRegistered<RoamingController>() &&
+        !RoamingController.to.fm.value) {
+      RoamingController.to.fm.value = true;
+    }
     playIndex(_currentIndex);
     List<String> playList = await compute(
         setCachePlayList, RootIsolateData(rootIsolateToken, items: _playList));
@@ -525,37 +592,3 @@ Map<String, dynamic>? castMap(Map? map) {
 }
 
 enum MediaType { local, playlist, fm, radio, neteaseCache }
-
-// just_audio 的流式音源仍标记为 experimental，播放链路依赖该 API。
-// ignore: experimental_member_use
-class StreamSource extends StreamAudioSource {
-  final String uri;
-  final String fileType;
-
-  StreamSource(this.uri, this.fileType);
-
-  @override
-  // ignore: experimental_member_use
-  Future<StreamAudioResponse> request([int? start, int? end]) async {
-    try {
-      final file = File(uri);
-      final fileLength = await file.length();
-
-      start = start ?? 0;
-      end = end ?? fileLength;
-
-      final contentLength = end - start;
-      final stream = file.openRead(start, end);
-
-      // ignore: experimental_member_use
-      return StreamAudioResponse(
-          sourceLength: fileLength,
-          contentLength: contentLength,
-          offset: start,
-          stream: stream,
-          contentType: fileType);
-    } catch (e) {
-      throw Exception('Error loading audio file: $e');
-    }
-  }
-}

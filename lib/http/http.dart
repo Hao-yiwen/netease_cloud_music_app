@@ -5,12 +5,14 @@ import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/http_utils.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
+import 'cache_policy.dart';
 import 'error_interceptor.dart';
 import 'api/login/dto/login_status_dto.dart';
 import 'package:path/path.dart' as path;
@@ -28,6 +30,9 @@ class Http {
 
   static late Dio _dio;
   static late String baseUrl;
+  static late CacheOptions _cacheOptions;
+
+  static const Duration publicCacheMaxStale = Duration(minutes: 3);
 
   static late CookieManager cookieManager;
   static late PathProvider pathProvider;
@@ -58,55 +63,46 @@ class Http {
     List<Interceptor>? interceptors,
   }) async {
     Http.baseUrl = baseUrl;
+    final connect = Duration(milliseconds: connectTimeout ?? CONNECT_TIMEOUT);
+    final receive = Duration(milliseconds: receiveTimeout ?? RECEIVE_TIMEOUT);
     _dio = Dio(BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: Duration(milliseconds: CONNECT_TIMEOUT),
-        receiveTimeout: Duration(milliseconds: RECEIVE_TIMEOUT)));
+      baseUrl: baseUrl,
+      connectTimeout: connect,
+      receiveTimeout: receive,
+      sendTimeout: connect,
+      contentType: 'application/json; charset=utf-8',
+    ));
 
-    // 日志美化
-    if (bool.fromEnvironment('DEBUG')) {
+    if (kDebugMode) {
       _dio.interceptors.add(PrettyDioLogger(
           requestHeader: true,
           requestBody: true,
           responseBody: true,
-          responseHeader: true,
+          responseHeader: false,
           error: true,
           compact: true,
           maxWidth: 90,
           logPrint: (object) {
             if (object is String) {
-              print(object.replaceAll('║', ''));
+              debugPrint(object.replaceAll('║', ''));
             }
           }));
     }
 
-    // 错误处理
-    _dio.interceptors.add(ErrorInterceptor());
+    await _initializeCookieManager();
 
-    // 请求缓存
-    final cacheStore = MemCacheStore(maxSize: 10485760, maxEntrySize: 1048576);
-    final cacheOptions = CacheOptions(
-      store: cacheStore,
-      policy: CachePolicy.request,
-      // v4: 用 hitCacheOnErrorCodes / hitCacheOnNetworkFailure 替代 hitCacheOnErrorExcept
+    _cacheOptions = CacheOptions(
+      store: MemCacheStore(maxSize: 10485760, maxEntrySize: 1048576),
+      policy: CachePolicy.forceCache,
       hitCacheOnErrorCodes: const [500, 502, 503, 504],
       hitCacheOnNetworkFailure: true,
-      priority: CachePriority.high,
-      maxStale: const Duration(days: 7),
+      priority: CachePriority.normal,
+      maxStale: publicCacheMaxStale,
       allowPostMethod: false,
     );
-    _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
+    _dio.interceptors.add(DioCacheInterceptor(options: _cacheOptions));
+    _dio.interceptors.add(ErrorInterceptor());
 
-    await _initializeCookieManager(); // Initialize CookieManager
-
-    _dio.options = dio.options.copyWith(
-        baseUrl: baseUrl,
-        connectTimeout:
-            Duration(milliseconds: connectTimeout ?? CONNECT_TIMEOUT),
-        receiveTimeout:
-            Duration(milliseconds: receiveTimeout ?? RECEIVE_TIMEOUT),
-        contentType: 'application/json; charset=utf-8',
-        headers: {});
     if (interceptors != null && interceptors.isNotEmpty) {
       _dio.interceptors.addAll(interceptors);
     }
@@ -140,18 +136,20 @@ class Http {
     Options? options,
     bool refresh = false,
   }) async {
-    Options requestOptions = options ?? Options();
-    requestOptions = requestOptions.copyWith(extra: {
-      "refresh": refresh,
-    });
-    Map<String, dynamic> queryParams = {
-      ...?params
+    final mode = resolveHttpCacheMode(path, refresh: refresh);
+    final policy = switch (mode) {
+      HttpCacheMode.none => CachePolicy.noCache,
+      HttpCacheMode.cache => CachePolicy.forceCache,
+      HttpCacheMode.refresh => CachePolicy.refreshForceCache,
     };
-    Response response;
-    // 拼接 &realIP=116.25.146.177
-    response = await _dio.get(
+    var requestOptions = options ?? Options();
+    requestOptions = requestOptions.copyWith(extra: {
+      ...?requestOptions.extra,
+      ..._cacheOptions.copyWith(policy: policy).toExtra(),
+    });
+    final response = await _dio.get(
       path,
-      queryParameters: queryParams,
+      queryParameters: params,
       options: requestOptions,
     );
     return response.data;
@@ -287,7 +285,7 @@ class UserLoginStateController {
       }
 
       // 读取文件内容
-      String accountInfo = file.readAsStringSync();
+      final accountInfo = await file.readAsString();
       if (accountInfo.isEmpty) {
         LogBox.info("账户文件为空");
         return;
@@ -321,9 +319,15 @@ class UserLoginStateController {
     _refreshLoginStatus(LoginState.Logout);
   }
 
-  void _saveAccountInfo(LoginStatusDto? loginStatus) {
-    _saveFile()
-        .writeAsStringSync(jsonEncode(loginStatus?.toJson()), flush: true);
+  Future<void> _saveAccountInfo(LoginStatusDto? loginStatus) async {
+    try {
+      await _saveFile().writeAsString(
+        jsonEncode(loginStatus?.toJson()),
+        flush: true,
+      );
+    } catch (e, stackTrace) {
+      LogBox.error(e, msg: stackTrace);
+    }
   }
 
   void _refreshLoginStatus(LoginState logout) {

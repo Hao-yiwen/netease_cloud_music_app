@@ -140,7 +140,7 @@ class _HomeState extends State<Home> {
       _initNewController(index);
     }
 
-    if (index == TAB_ENUM.roaming.value) {
+    if (index == HomeTab.roaming.value) {
       Roaming.showBottomPlayer(_context);
     } else {
       tabsRouter.setActiveIndex(index);
@@ -148,13 +148,13 @@ class _HomeState extends State<Home> {
   }
 
   void _removeCurrentController(int currentIndex) {
-    final tab = TAB_ENUM.fromValue(currentIndex);
+    final tab = HomeTab.fromValue(currentIndex);
     switch (tab) {
-      case TAB_ENUM.found:
+      case HomeTab.found:
         Get.delete<FoundController>();
-      case TAB_ENUM.timeline:
+      case HomeTab.timeline:
         Get.delete<TimelineController>();
-      case TAB_ENUM.user:
+      case HomeTab.user:
         // 不要删除UserController,因为它需要保持登录状态
         break;
       default:
@@ -163,21 +163,21 @@ class _HomeState extends State<Home> {
   }
 
   void _initNewController(int newIndex) {
-    final tab = TAB_ENUM.fromValue(newIndex);
+    final tab = HomeTab.fromValue(newIndex);
     switch (tab) {
-      case TAB_ENUM.main:
+      case HomeTab.main:
         if (!Get.isRegistered<MainController>()) {
           Get.lazyPut(() => MainController());
         }
-      case TAB_ENUM.found:
+      case HomeTab.found:
         if (!Get.isRegistered<FoundController>()) {
           Get.lazyPut(() => FoundController());
         }
-      case TAB_ENUM.timeline:
+      case HomeTab.timeline:
         if (!Get.isRegistered<TimelineController>()) {
           Get.lazyPut(() => TimelineController());
         }
-      case TAB_ENUM.user:
+      case HomeTab.user:
         if (!Get.isRegistered<UserController>()) {
           Get.lazyPut(() => UserController());
         }

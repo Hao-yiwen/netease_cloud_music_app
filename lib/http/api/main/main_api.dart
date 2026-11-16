@@ -26,8 +26,10 @@ class MainApi {
   }
 
   // 获取歌单详情
-  static Future<PlaylistDetailDto> getPlaylistDetail(int id) async {
-    final res = await HttpUtils.get('/playlist/detail', params: {"id": id});
+  static Future<PlaylistDetailDto> getPlaylistDetail(int id,
+      {bool refresh = false}) async {
+    final res = await HttpUtils.get('/playlist/detail',
+        params: {"id": id}, refresh: refresh);
     return PlaylistDetailDto.fromJson(res);
   }
 
@@ -38,14 +40,18 @@ class MainApi {
   }
 
   // 获取相似音乐
-  static Future<SimiSongsDto> getSimiSongs(int id) async {
-    final res = await HttpUtils.get('/simi/song', params: {"id": id});
+  static Future<SimiSongsDto> getSimiSongs(int id,
+      {bool refresh = false}) async {
+    final res = await HttpUtils.get('/simi/song',
+        params: {"id": id}, refresh: refresh);
     return SimiSongsDto.fromJson(res);
   }
 
   // 获取音乐详情
-  static Future<SongsDetailDto> getSongsDetail(String ids) async {
-    final res = await HttpUtils.get('/song/detail', params: {"ids": ids});
+  static Future<SongsDetailDto> getSongsDetail(String ids,
+      {bool refresh = false}) async {
+    final res = await HttpUtils.get('/song/detail',
+        params: {"ids": ids}, refresh: refresh);
     return SongsDetailDto.fromJson(res);
   }
 
@@ -56,14 +62,16 @@ class MainApi {
   }
 
   // 获取网友推荐顶级歌单
-  static Future<TopPlaylistsDto> getTopPlayList() async {
-    final res = await HttpUtils.get('/top/playlist', params: {"limit": 10});
+  static Future<TopPlaylistsDto> getTopPlayList({bool refresh = false}) async {
+    final res = await HttpUtils.get('/top/playlist',
+        params: {"limit": 10}, refresh: refresh);
     return TopPlaylistsDto.fromJson(res);
   }
 
   // 推荐歌单
-  static Future<PersonalizedPlayLists> getPersonalizedPlaylists() async {
-    final res = await HttpUtils.get('/personalized');
+  static Future<PersonalizedPlayLists> getPersonalizedPlaylists(
+      {bool refresh = false}) async {
+    final res = await HttpUtils.get('/personalized', refresh: refresh);
     return PersonalizedPlayLists.fromJson(res);
   }
 
@@ -74,8 +82,10 @@ class MainApi {
   }
 
   // 推荐播客
-  static Future<PersonalizedDjprogramDto> getDjProgramRecommend() async {
-    final res = await HttpUtils.get('/personalized/djprogram');
+  static Future<PersonalizedDjprogramDto> getDjProgramRecommend(
+      {bool refresh = false}) async {
+    final res =
+        await HttpUtils.get('/personalized/djprogram', refresh: refresh);
     return PersonalizedDjprogramDto.fromJson(res);
   }
 }

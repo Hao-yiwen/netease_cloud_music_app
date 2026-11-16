@@ -18,10 +18,21 @@ class NeteaseCacheImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final width = size?.width;
+    final height = size?.height;
+    final memCacheWidth = width != null && width.isFinite && width > 0
+        ? (width * pixelRatio).round()
+        : null;
+    final memCacheHeight = height != null && height.isFinite && height > 0
+        ? (height * pixelRatio).round()
+        : null;
     return CachedNetworkImage(
       imageUrl: picUrl,
-      height: size?.height,
-      width: size?.width,
+      height: height,
+      width: width,
+      memCacheWidth: memCacheWidth,
+      memCacheHeight: memCacheHeight,
       fit: fit,
       color: color,
       colorBlendMode: color != null ? BlendMode.colorBurn : null,

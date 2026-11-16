@@ -91,10 +91,10 @@ class ProgramListWidget extends StatelessWidget {
               offset: Offset(offsetX, 0),
               child: Column(
                 children: songsMatrix[pageIndex]
-                    .map((pragma) => SongCell(
-                          title: pragma.name!,
-                          artist: pragma.copywriter!,
-                          picUrl: pragma.picUrl!,
+                    .map((song) => SongCell(
+                          title: song.name!,
+                          artist: song.copywriter!,
+                          picUrl: song.picUrl!,
                           onTapItem: () {},
                         ))
                     .toList(),
@@ -139,10 +139,10 @@ class PodcastListWidget extends StatelessWidget {
               offset: Offset(offsetX, 0),
               child: Column(
                 children: songsMatrix[pageIndex]
-                    .map((pragma) => PodcastCell(
-                          title: pragma.name!,
-                          artist: pragma.copywriter!,
-                          picUrl: pragma.picUrl!,
+                    .map((program) => PodcastCell(
+                          title: program.name!,
+                          artist: program.copywriter!,
+                          picUrl: program.picUrl!,
                           onTapItem: () {},
                         ))
                     .toList(),

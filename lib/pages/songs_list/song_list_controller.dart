@@ -8,9 +8,11 @@ class SongListController extends GetxController {
   RxString error = ''.obs;
   RxString title = ''.obs;
   RxString picUrl = ''.obs;
+  int? _requestedId;
 
-  // 移除onInit中的参数获取，改为直接调用方法
   Future<void> getPlayListDetail(int id) async {
+    if (_requestedId == id) return;
+    _requestedId = id;
     try {
       isLoading.value = true;
       error.value = '';
@@ -21,6 +23,7 @@ class SongListController extends GetxController {
       }
 
       final lists = await MainController.to.getPlayListDetail(id);
+      if (_requestedId != id) return;
 
       if (lists.isEmpty) {
         error.value = '暂无歌曲';

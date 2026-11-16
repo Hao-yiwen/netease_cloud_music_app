@@ -55,8 +55,8 @@ class AppRouter extends RootStackRouter {
   @override
   RouteType get defaultRouteType => RouteType.custom(
       transitionsBuilder: TransitionsBuilders.slideLeft,
-      durationInMilliseconds: 100,
-      reverseDurationInMilliseconds: 200);
+      duration: const Duration(milliseconds: 100),
+      reverseDuration: const Duration(milliseconds: 200));
 
   @override
   List<AutoRoute> get routes => [
@@ -79,12 +79,12 @@ class AppRouter extends RootStackRouter {
         CustomRoute(
             page: About.page,
             transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
-            durationInMilliseconds: 200,
+            duration: const Duration(milliseconds: 200),
             path: Routes.about),
         CustomRoute(
             page: WebViewRoute.page,
             transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
-            durationInMilliseconds: 200,
+            duration: const Duration(milliseconds: 200),
             path: Routes.webview),
         AutoRoute(
           path: Routes.songsList,
@@ -100,7 +100,7 @@ class AppRouter extends RootStackRouter {
   late final List<AutoRouteGuard> guards = [];
 }
 
-enum TAB_ENUM {
+enum HomeTab {
   main(0),
   found(1),
   roaming(2),
@@ -109,9 +109,9 @@ enum TAB_ENUM {
 
   final int value;
 
-  const TAB_ENUM(this.value);
+  const HomeTab(this.value);
 
-  static TAB_ENUM fromValue(int value) {
+  static HomeTab fromValue(int value) {
     switch (value) {
       case 0:
         return main;

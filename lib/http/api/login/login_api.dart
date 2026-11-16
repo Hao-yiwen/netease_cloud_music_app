@@ -84,10 +84,12 @@ class LoginApi {
       "key": key,
       "qrimg": "true"
     });
-    String qr = res2['data']['qrimg'];
-    var parts = qr.split(",");
-    qr = parts[1];
-    return (key, Image.memory(base64Decode(qr)));
+    final qr = res2['data']?['qrimg'];
+    if (qr is! String || !qr.contains(',')) {
+      throw StateError('二维码数据无效');
+    }
+    final payload = qr.split(',').last;
+    return (key, Image.memory(base64Decode(payload)));
   }
 
   static Future<bool?> checkQrLoginStatus(String key) async {

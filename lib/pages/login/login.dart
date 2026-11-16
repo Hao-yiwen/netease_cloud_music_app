@@ -52,6 +52,7 @@ class _LoginState extends State<Login> {
 
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 1));
+      if (!mounted) return false;
       setState(() {
         time--;
       });
@@ -63,6 +64,15 @@ class _LoginState extends State<Login> {
       }
       return true;
     });
+  }
+
+  String? _pollingQrKey;
+
+  void _ensureQrPolling(String key) {
+    if (_pollingQrKey == key) return;
+    _pollingQrKey = key;
+    qrLoginSignal.value++;
+    unawaited(controller.checkQrLoginStatus(key, qrLoginSignal));
   }
 
   List<Widget> mobileLogin(){
@@ -207,12 +217,12 @@ class _LoginState extends State<Login> {
             if (snapshot.hasError) {
               return Text("Error: ${snapshot.error}");
             } else {
-              qrLoginSignal.value++;
-              var (key as String, qr as Image) = snapshot.data;
-              unawaited(controller.checkQrLoginStatus(key, qrLoginSignal));
+              final (key as String, qr as Image) = snapshot.data;
+              _ensureQrPolling(key);
               return GestureDetector(
                   onTap: () async {
                     setState(() {
+                      _pollingQrKey = null;
                       qrLoginSignal.value++;
                       qrFuture = LoginApi.getLoginQr();
                     });
@@ -257,38 +267,43 @@ class _LoginState extends State<Login> {
                       children: [
                         GestureDetector(
                             onDoubleTap: () async {
+                              final pageContext = context;
                               final baseUrl = await UrlConstants.BASE_URL;
-                              if (mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    TextEditingController urlController = TextEditingController(text: baseUrl);
-                                    return AlertDialog(
-                                      title: const Text("更改 BASE_URL"),
-                                      content: TextField(
-                                        controller: urlController,
-                                        decoration: const InputDecoration(hintText: "輸入新的 BASE_URL"),
+                              if (!pageContext.mounted) return;
+                              showDialog(
+                                context: pageContext,
+                                builder: (BuildContext dialogContext) {
+                                  final urlController =
+                                      TextEditingController(text: baseUrl);
+                                  return AlertDialog(
+                                    title: const Text("更改 BASE_URL"),
+                                    content: TextField(
+                                      controller: urlController,
+                                      decoration: const InputDecoration(
+                                          hintText: "輸入新的 BASE_URL"),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () async {
+                                          final url = urlController.text.trim();
+                                          if (url.isEmpty) return;
+                                          await UrlConstants.setBaseUrl(url);
+                                          await HttpUtils.init(baseUrl: url);
+                                          if (!dialogContext.mounted) return;
+                                          Navigator.of(dialogContext).pop();
+                                        },
+                                        child: const Text("確定"),
                                       ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () async {
-                                            await UrlConstants.setBaseUrl(urlController.text);
-                                            await HttpUtils.init(baseUrl: urlController.text);
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text("確定"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text("取消"),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              }
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(dialogContext).pop();
+                                        },
+                                        child: const Text("取消"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(top: 180),

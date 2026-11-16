@@ -252,7 +252,7 @@ class SongsList extends GetView<SongListController> {
         });
       },
       child: Obx(() {
-        final isCurrentSong = roamingController.mediaItem == song;
+        final isCurrentSong = roamingController.mediaItem.value.id == song.id;
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
           decoration: BoxDecoration(
