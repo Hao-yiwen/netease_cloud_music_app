@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
@@ -11,7 +12,6 @@ import 'package:netease_cloud_music_app/common/lyric_parser/LyricsLineModel.dart
 import 'package:netease_cloud_music_app/common/lyric_parser/parser_lrc.dart';
 import 'package:netease_cloud_music_app/common/utils/log_box.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/dto/comment_music.dart';
-import 'package:netease_cloud_music_app/http/api/roaming/dto/song_lyric.dart';
 import 'package:netease_cloud_music_app/http/api/roaming/roaming_api.dart';
 
 import '../../common/constants/keys.dart';
@@ -79,6 +79,7 @@ class RoamingController extends SuperController
   RxBool hasTran = false.obs;
 
   List<LyricsLineModel> lyricLineModels = <LyricsLineModel>[].obs;
+  final List<StreamSubscription<dynamic>> _subscriptions = [];
 
   @override
   void onInit() {
@@ -109,40 +110,39 @@ class RoamingController extends SuperController
 
     autoRouterDelegate?.addListener(listenRouter);
 
-    audioHandler.queue.listen((value) => mediaItems
+    _subscriptions.add(audioHandler.queue.listen((value) => mediaItems
       ..clear()
-      ..addAll(value));
+      ..addAll(value)));
 
-    audioHandler.mediaItem.listen((value) async {
+    _subscriptions.add(audioHandler.mediaItem.listen((value) async {
       lyricLineModels.clear();
+      comments.clear();
+      commentCount.value = 0;
       duration.value = Duration.zero;
       if (value == null) return;
       mediaItem.value = value;
-      // 获取歌词
       _getMusicLyric(value.id);
 
-      // 获取歌曲评论
       if (value.extras?['type'] == MediaType.playlist.name) {
         _getMusicComment();
       }
-    });
+    }));
 
-    AudioService.createPositionStream(
-            minPeriod: const Duration(microseconds: 800), steps: 1000)
-        .listen((event) {
-      if (event.inMicroseconds >
-          (mediaItem.value.duration?.inMicroseconds ?? 0)) {
-        {
-          duration.value = Duration.zero;
-          return;
-        }
+    _subscriptions.add(AudioService.createPositionStream(
+      minPeriod: const Duration(milliseconds: 200),
+      maxPeriod: const Duration(milliseconds: 500),
+    ).listen((event) {
+      final total = mediaItem.value.duration ?? Duration.zero;
+      if (total > Duration.zero && event > total) {
+        duration.value = Duration.zero;
+        return;
       }
       duration.value = event;
-    });
+    }));
 
-    audioHandler.playbackState.listen((value) {
+    _subscriptions.add(audioHandler.playbackState.listen((value) {
       playing.value = value.playing;
-    });
+    }));
   }
 
   listenRouter() {
@@ -200,12 +200,11 @@ class RoamingController extends SuperController
   // 防治重复点击
   bool intervalClick() {
     if (DateTime.now().difference(lastPopTime) >
-        const Duration(microseconds: 800)) {
+        const Duration(milliseconds: 300)) {
       lastPopTime = DateTime.now();
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   Future<void> changeRepeatMode() async {
@@ -244,92 +243,98 @@ class RoamingController extends SuperController
 
   @override
   void onClose() {
-    super.onClose();
-
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
     autoRouterDelegate?.removeListener(listenRouter);
+    super.onClose();
   }
 
   @override
-  void onDetached() {
-    // TODO: implement onDetached
-  }
+  void onDetached() {}
 
   @override
-  void onHidden() {
-    // TODO: implement onHidden
-  }
+  void onHidden() {}
 
   @override
-  void onInactive() {
-    // TODO: implement onInactive
-  }
+  void onInactive() {}
 
   @override
-  void onPaused() {
-    // TODO: implement onPaused
-  }
+  void onPaused() {}
 
   @override
-  void onResumed() {
-    // TODO: implement onResumed
-  }
+  void onResumed() {}
 
   Future<void> _getMusicComment() async {
+    final songId = mediaItem.value.id;
+    comments.clear();
+    commentCount.value = 0;
     try {
-      CommentMusic commentMusic =
-          await RoamingApi.getMusicComment(mediaItem.value.id);
-      if (commentMusic.code == 200) {
-        commentCount.value = commentMusic.total ?? 0;
-        if (commentMusic.topComments?.isNotEmpty ?? false) {
-          comments.add(CommentSection()
-            ..title = '置顶评论'
-            ..comments = commentMusic.topComments!);
-        }
-        if (commentMusic.hotComments?.isNotEmpty ?? false) {
-          comments.add(CommentSection()
-            ..title = '热门评论'
-            ..comments = commentMusic.hotComments!);
-        }
-        if (commentMusic.comments?.isNotEmpty ?? false) {
-          comments
-            ..clear()
-            ..add(CommentSection()
-              ..title = '精彩评论'
-              ..comments = commentMusic.comments!);
-        }
+      final commentMusic = await RoamingApi.getMusicComment(songId);
+      if (mediaItem.value.id != songId || commentMusic.code != 200) return;
+      commentCount.value = commentMusic.total ?? 0;
+      final sections = <CommentSection>[];
+      if (commentMusic.topComments?.isNotEmpty ?? false) {
+        sections.add(CommentSection()
+          ..title = '置顶评论'
+          ..comments = commentMusic.topComments!);
       }
+      if (commentMusic.hotComments?.isNotEmpty ?? false) {
+        sections.add(CommentSection()
+          ..title = '热门评论'
+          ..comments = commentMusic.hotComments!);
+      }
+      if (commentMusic.comments?.isNotEmpty ?? false) {
+        sections.add(CommentSection()
+          ..title = '最新评论'
+          ..comments = commentMusic.comments!);
+      }
+      comments.assignAll(sections);
     } catch (e) {
       LogBox.error(e);
+    }
+  }
+
+  void _publishLyrics(String songId, String lyric, String lyricTran) {
+    if (mediaItem.value.id != songId) return;
+    lyricLineModels.clear();
+    if (lyric.isEmpty) {
+      hasTran.value = false;
+      return;
+    }
+    final list = ParserLrc(lyric).parseLines();
+    final listTran = ParserLrc(lyricTran).parseLines();
+    hasTran.value = lyricTran.isNotEmpty;
+    if (lyricTran.isNotEmpty) {
+      lyricLineModels.addAll(list.map((line) {
+        final index = listTran
+            .indexWhere((element) => element.startTime == line.startTime);
+        if (index != -1) {
+          line.extText = listTran[index].mainText;
+        }
+        return line;
+      }).toList());
+    } else {
+      lyricLineModels.addAll(list);
     }
   }
 
   Future<void> _getMusicLyric(String id) async {
     try {
       hasTran.value = false;
-      String lyric = box.get('lyric_${mediaItem.value.id}') ?? '';
-      String lyricTran = box.get('lyricTran_${mediaItem.value.id}') ?? '';
-      SongLyric songLyric = await RoamingApi.getMusicLyric(id);
-      lyric = songLyric.lrc?.lyric ?? "";
-      lyricTran = songLyric.tlyric?.lyric ?? "";
-      box.put('lyric_${mediaItem.value.id}', lyric);
-      box.put('lyricTran_${mediaItem.value.id}', lyricTran);
-      if (lyric.isNotEmpty) {
-        var list = ParserLrc(lyric).parseLines();
-        var listTran = ParserLrc(lyricTran).parseLines();
-        if (lyricTran.isNotEmpty) {
-          hasTran.value = true;
-          lyricLineModels.addAll(list.map((e) {
-            int index = listTran
-                .indexWhere((element) => element.startTime == e.startTime);
-            if (index != -1) {
-              e.extText = listTran[index].mainText;
-            }
-            return e;
-          }).toList());
-        } else {
-          lyricLineModels.addAll(list);
-        }
+      final cached = box.get('lyric_$id');
+      final cachedTran = box.get('lyricTran_$id');
+      if (cached is String && cached.isNotEmpty) {
+        _publishLyrics(id, cached, cachedTran is String ? cachedTran : '');
       }
+      final songLyric = await RoamingApi.getMusicLyric(id);
+      if (mediaItem.value.id != id) return;
+      final lyric = songLyric.lrc?.lyric ?? '';
+      final lyricTran = songLyric.tlyric?.lyric ?? '';
+      box.put('lyric_$id', lyric);
+      box.put('lyricTran_$id', lyricTran);
+      _publishLyrics(id, lyric, lyricTran);
     } catch (e) {
       LogBox.error(e);
     }

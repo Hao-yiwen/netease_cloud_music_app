@@ -16,7 +16,7 @@ import '../../routes/routes.gr.dart';
 import '../../widgets/netease_cache_image.dart';
 import '../../widgets/shimmer_loading.dart';
 import '../../widgets/user_event_widget.dart';
-import 'constrants.dart';
+import 'user_tabs.dart';
 
 @RoutePage()
 class User extends StatefulWidget {
@@ -84,7 +84,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: TABS.length, vsync: this);
+    _tabController = TabController(length: userPageTabs.length, vsync: this);
     _pageViewController = PageController();
     _scrollController.addListener(_handleScroll);
   }
@@ -235,7 +235,7 @@ class _UserState extends State<User> with TickerProviderStateMixin {
         color: theme.scaffoldBackgroundColor,
         padding: EdgeInsets.only(bottom: 20.w),
         child: TabBar(
-          tabs: TABS.map((e) => Tab(text: e)).toList(),
+          tabs: userPageTabs.map((e) => Tab(text: e)).toList(),
           controller: _tabController,
           labelStyle: TextStyle(
             fontSize: 32.sp,

@@ -1,8 +1,8 @@
 name: netease_cloud_music_app
-description: "A new Flutter project."
+description: "网易云音乐 Flutter 第三方客户端。"
 publish_to: 'none'
 
-version: 1.0.0+3
+version: 1.0.3+4
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -43,15 +43,14 @@ dependencies:
   skeletonizer: ^3.0.0
   cached_network_image: ^4.0.7
   flutter_blurhash: ^0.9.1
-  package_info_plus: ^8.3.1
+  package_info_plus: ^10.2.2
   webview_flutter: ^4.14.1
   intl: ^0.20.3
   audio_service: ^0.18.19
   logger: ^2.8.0
   sliver_tools: ^0.2.12
-  chewie: ^1.13.1
+  chewie: ^1.17.4
   video_player: ^2.14.1
-  shimmer: ^3.0.0
   shared_preferences: ^2.5.6
 
 dev_dependencies:

@@ -67,8 +67,8 @@ class FoundController extends GetxController {
   }
 
   refreshMv() async {
-    await _getMvList();
-    update(); // 强制更新UI
+    await _getMvList(refresh: true);
+    update();
   }
 
   _getBanner() async {
@@ -83,9 +83,9 @@ class FoundController extends GetxController {
     }
   }
 
-  Future<void> _getMvList() async {
+  Future<void> _getMvList({bool refresh = false}) async {
     try {
-      mvList.value = await FoundApi.getAllMvList();
+      mvList.value = await FoundApi.getAllMvList(refresh: refresh);
     } catch (e) {
       LogBox.error(e);
     }

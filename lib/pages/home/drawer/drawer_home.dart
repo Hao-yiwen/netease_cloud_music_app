@@ -45,7 +45,7 @@ class _DrawerHomeState extends State<DrawerHome> {
         children: [
           GestureDetector(
             onTap: () {
-              HomeController.to.switchTab(TAB_ENUM.user.value);
+              HomeController.to.switchTab(HomeTab.user.value);
               Navigator.of(context).pop();
             },
             child: Row(

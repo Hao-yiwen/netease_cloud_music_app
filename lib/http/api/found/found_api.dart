@@ -5,17 +5,17 @@ import 'package:netease_cloud_music_app/http/api/found/dto/mv_list.dart';
 import '../../http_utils.dart';
 
 class FoundApi {
-  static Future<Banner> getBanner(int type) async {
+  static Future<Banner> getBanner(int type, {bool refresh = false}) async {
     final res = await HttpUtils.get('/banner', params: {
       "type": type,
-    });
+    }, refresh: refresh);
     return Banner.fromJson(res);
   }
 
   static Future<HomeBlock> getHomeBlock({bool isRefresh = false}) async {
     final res = await HttpUtils.get('/homepage/block/page', params: {
       "refresh": isRefresh,
-    });
+    }, refresh: isRefresh);
     if (res["data"] != null) {
       return HomeBlock.fromJson(res["data"]);
     } else {
@@ -23,10 +23,10 @@ class FoundApi {
     }
   }
 
-  static Future<MvList> getAllMvList() async {
+  static Future<MvList> getAllMvList({bool refresh = false}) async {
     final res = await HttpUtils.get('/mv/all', params: {
       "limit": 30,
-    });
+    }, refresh: refresh);
     return MvList.fromJson(res);
   }
 }

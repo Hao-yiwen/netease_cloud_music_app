@@ -1,1 +1,0 @@
-List<String> TABS = ["音乐", "动态"];

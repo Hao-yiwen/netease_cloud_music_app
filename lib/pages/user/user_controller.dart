@@ -127,7 +127,7 @@ class UserController extends GetxController {
     try {
       await UserApi.loginRefresh();
     } catch (e) {
-      if (context != null && !_isDisposed) {
+      if (context != null && context.mounted && !_isDisposed) {
         DialogUtils.showModal(
           context,
           "登录信息已过期，请重新登录",

@@ -25,6 +25,7 @@ class MainController extends GetxController {
   final Rx<MainControllerState> _state = MainControllerState.initial.obs;
   RxBool loading = false.obs;
   RxString errorMessage = ''.obs;
+  bool _bypassHttpCache = false;
 
   // 数据存储
   final Rx<RecommendSongsDto> recommendSongsDto = RecommendSongsDto().obs;
@@ -77,76 +78,90 @@ class MainController extends GetxController {
   }
 
   Future<void> refreshMainPage() async {
+    _bypassHttpCache = true;
     try {
       loading.value = true;
       errorMessage.value = '';
 
-      // 并行获取所有数据
       final results = await Future.wait([
         _safeApiCall(() => MainApi.getRecommendResource(), '推荐资源获取失败'),
         _safeApiCall(() => MainApi.getRecommendSongs(), '推荐歌曲获取失败'),
         _safeApiCall(() => MainApi.getLikeSongs(), '喜欢的音乐获取失败'),
         _safeApiCall(() => MainApi.getPersonalFm(), '私人FM获取失败'),
-        _safeApiCall(() => MainApi.getTopPlayList(), '顶级歌单获取失败'),
-        _safeApiCall(() => MainApi.getPersonalizedPlaylists(), '个性化歌单获取失败'),
+        _safeApiCall(() => MainApi.getTopPlayList(refresh: true), '顶级歌单获取失败'),
+        _safeApiCall(
+            () => MainApi.getPersonalizedPlaylists(refresh: true), '个性化歌单获取失败'),
         _safeApiCall(
             () => MainApi.getUserPlaylists(
                 HomeController.to.userData.value.profile?.userId ?? 0),
             '用户歌单获取失败'),
-        _safeApiCall(() => MainApi.getDjProgramRecommend(), '播客推荐获取失败'),
+        _safeApiCall(
+            () => MainApi.getDjProgramRecommend(refresh: true), '播客推荐获取失败'),
       ]);
 
-      // 处理获取到的数据
       await _processResults(results);
     } catch (e) {
       errorMessage.value = '刷新失败: $e';
-      LogBox.error(e);
+      LogBox.error(e, msg: '刷新首页失败');
     } finally {
+      _bypassHttpCache = false;
       loading.value = false;
     }
   }
 
-  // 安全的API调用包装方法
-  Future<T> _safeApiCall<T>(
+  Future<T?> _safeApiCall<T>(
       Future<T> Function() apiCall, String errorMessage) async {
     try {
       return await apiCall();
     } catch (e) {
-      LogBox.error('$errorMessage: $e');
-      throw errorMessage;
+      LogBox.error(e, msg: errorMessage);
+      return null;
     }
   }
 
-  // 处理API返回的结果
-  Future<void> _processResults(List<dynamic> results) async {
+  Future<void> _guardProcess(Future<void> Function() action) async {
     try {
-      // 处理推荐资源
-      await _processRecommendResource(results[0] as RecommendResourceDto);
-
-      // 处理推荐歌曲
-      await _processRecommendSongs(results[1] as RecommendSongsDto);
-
-      // 处理喜欢的歌曲
-      await _processLikeSongs(results[2] as LikeSongDto);
-
-      // 处理私人FM
-      await _processPersonalFm(results[3] as PersonalFmDto);
-
-      // 处理顶级歌单
-      await _processTopPlaylist(results[4] as TopPlaylistsDto);
-
-      // 处理个性化推荐歌单
-      _processPersonalizedPlaylists(results[5] as PersonalizedPlayLists);
-
-      // 处理用户歌单
-      _processUserPlaylists(results[6] as UserPlaylists);
-
-      // 处理播客推荐
-      _processDjProgram(results[7] as PersonalizedDjprogramDto);
+      await action();
     } catch (e) {
-      LogBox.error('处理数据失败: $e');
-      throw '数据处理失败';
+      LogBox.error(e, msg: '处理数据失败');
     }
+  }
+
+  Future<void> _processResults(List<dynamic> results) async {
+    await Future.wait([
+      _guardProcess(() async {
+        final dto = results[0];
+        if (dto is RecommendResourceDto) await _processRecommendResource(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[1];
+        if (dto is RecommendSongsDto) await _processRecommendSongs(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[2];
+        if (dto is LikeSongDto) await _processLikeSongs(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[3];
+        if (dto is PersonalFmDto) await _processPersonalFm(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[4];
+        if (dto is TopPlaylistsDto) await _processTopPlaylist(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[5];
+        if (dto is PersonalizedPlayLists) _processPersonalizedPlaylists(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[6];
+        if (dto is UserPlaylists) _processUserPlaylists(dto);
+      }),
+      _guardProcess(() async {
+        final dto = results[7];
+        if (dto is PersonalizedDjprogramDto) _processDjProgram(dto);
+      }),
+    ]);
   }
 
   // 处理推荐资源
@@ -161,7 +176,8 @@ class MainController extends GetxController {
   // 加载私人雷达歌曲
   Future<void> _loadPrivateRadarSongs(int privateRadarId) async {
     try {
-      final playlistDetail = await MainApi.getPlaylistDetail(privateRadarId);
+      final playlistDetail = await MainApi.getPlaylistDetail(privateRadarId,
+          refresh: _bypassHttpCache);
       if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
         privateRadarSongs.value =
             RoamingController.to.song2ToMedia(playlistDetail.playlist!.tracks!);
@@ -218,21 +234,20 @@ class MainController extends GetxController {
 
   // 获取相似歌曲
   Future<List<SimiSong>> _getSimiSongsForIds(List<int> songIds) async {
-    final List<SimiSong> allSimiSongs = [];
-
-    for (final id in songIds) {
+    final results = await Future.wait(songIds.map((id) async {
       try {
-        final simiSongsDto = await MainApi.getSimiSongs(id);
+        final simiSongsDto =
+            await MainApi.getSimiSongs(id, refresh: _bypassHttpCache);
         if (simiSongsDto.songs?.isNotEmpty ?? false) {
           final count = min(simiSongsDto.songs!.length, 6);
-          allSimiSongs.addAll(simiSongsDto.songs!.sublist(0, count));
+          return simiSongsDto.songs!.sublist(0, count);
         }
       } catch (e) {
-        LogBox.error('获取相似歌曲失败: $e');
+        LogBox.error(e, msg: '获取相似歌曲失败');
       }
-    }
-
-    return allSimiSongs;
+      return <SimiSong>[];
+    }));
+    return results.expand((songs) => songs).toList();
   }
 
   // 处理相似歌曲详情
@@ -241,7 +256,8 @@ class MainController extends GetxController {
 
     try {
       final ids = simiSongs.map((song) => song.id.toString()).join(',');
-      final songsDetailDto = await MainApi.getSongsDetail(ids);
+      final songsDetailDto =
+          await MainApi.getSongsDetail(ids, refresh: _bypassHttpCache);
 
       if (songsDetailDto.songs?.isNotEmpty ?? false) {
         final songs = songsDetailDto.songs!;
@@ -259,7 +275,8 @@ class MainController extends GetxController {
 
     try {
       final ids = dto.data!.map((item) => item.id.toString()).join(',');
-      final songsDetailDto = await MainApi.getSongsDetail(ids);
+      final songsDetailDto =
+          await MainApi.getSongsDetail(ids, refresh: _bypassHttpCache);
 
       if (songsDetailDto.songs?.isNotEmpty ?? false) {
         personalFmSongs.value =
@@ -295,8 +312,9 @@ class MainController extends GetxController {
     if (randomPlaylist.value.id == null) return;
 
     try {
-      final playlistSongs =
-          await MainApi.getPlaylistDetail(randomPlaylist.value.id!);
+      final playlistSongs = await MainApi.getPlaylistDetail(
+          randomPlaylist.value.id!,
+          refresh: _bypassHttpCache);
 
       if (playlistSongs.playlist?.tracks?.isNotEmpty ?? false) {
         final tracks = playlistSongs.playlist!.tracks!;
@@ -330,18 +348,15 @@ class MainController extends GetxController {
   // 公共方法
   Future<List<MediaItem>> getPlayListDetail(int id) async {
     try {
-      loading.value = true;
       final playlistDetail = await MainApi.getPlaylistDetail(id);
 
       if (playlistDetail.playlist?.tracks?.isNotEmpty ?? false) {
-        return RoamingController.to
-            .song2ToMedia(playlistDetail.playlist!.tracks!, playlistDetail: playlistDetail);
+        return RoamingController.to.song2ToMedia(
+            playlistDetail.playlist!.tracks!,
+            playlistDetail: playlistDetail);
       }
     } catch (e) {
-      LogBox.error('获取歌单详情失败: $e');
-      errorMessage.value = '获取歌单详情失败';
-    } finally {
-      loading.value = false;
+      LogBox.error(e, msg: '获取歌单详情失败');
     }
     return <MediaItem>[];
   }
