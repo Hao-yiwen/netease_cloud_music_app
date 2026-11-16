@@ -19,7 +19,10 @@ flutter pub get
 flutter analyze --no-fatal-infos --no-fatal-warnings
 flutter test
 flutter build apk --debug
+flutter build apk --release --target-platform android-arm64
 ```
+
+CI 的正式包使用最后一条命令，只包含 arm64。
 
 `test/` 里覆盖歌词时间、播放列表下标和 HTTP 缓存白名单。改这三块时请补对应用例。
 
