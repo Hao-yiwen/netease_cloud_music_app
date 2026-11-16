@@ -5,9 +5,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:netease_cloud_music_app/common/constants/url.dart';
+import 'package:netease_cloud_music_app/common/base_url_dialog.dart';
 import 'package:netease_cloud_music_app/common/utils/image_utils.dart';
-import 'package:netease_cloud_music_app/http/http_utils.dart';
 import '../../http/api/login/login_api.dart';
 import '../../widgets/custom_field.dart';
 import 'login_controller.dart';
@@ -266,45 +265,7 @@ class _LoginState extends State<Login> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         GestureDetector(
-                            onDoubleTap: () async {
-                              final pageContext = context;
-                              final baseUrl = await UrlConstants.BASE_URL;
-                              if (!pageContext.mounted) return;
-                              showDialog(
-                                context: pageContext,
-                                builder: (BuildContext dialogContext) {
-                                  final urlController =
-                                      TextEditingController(text: baseUrl);
-                                  return AlertDialog(
-                                    title: const Text("更改 BASE_URL"),
-                                    content: TextField(
-                                      controller: urlController,
-                                      decoration: const InputDecoration(
-                                          hintText: "輸入新的 BASE_URL"),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          final url = urlController.text.trim();
-                                          if (url.isEmpty) return;
-                                          await UrlConstants.setBaseUrl(url);
-                                          await HttpUtils.init(baseUrl: url);
-                                          if (!dialogContext.mounted) return;
-                                          Navigator.of(dialogContext).pop();
-                                        },
-                                        child: const Text("確定"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(dialogContext).pop();
-                                        },
-                                        child: const Text("取消"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
+                            onDoubleTap: () => showBaseUrlDialog(context),
                             child: Padding(
                               padding: const EdgeInsets.only(top: 180),
                               child: Image.asset(
@@ -314,7 +275,22 @@ class _LoginState extends State<Login> {
                               ),
                             )
                         ),
-                        SizedBox(height: 330.w),
+                        TextButton(
+                          onPressed: () => showBaseUrlDialog(context),
+                          child: const Text('修改接口地址'),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            '短信和密码登录经常被网易云拦截，扫码更稳。',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 22.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 250.w),
                         ...(
                             switch(loginType){
                               LoginType.mobile => mobileLogin(),

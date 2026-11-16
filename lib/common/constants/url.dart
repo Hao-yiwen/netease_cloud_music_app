@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../base_url.dart';
+
 class UrlConstants {
     static final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
     static const NETEASE_INFO_LIST = "https://fn.music.163.com/g/xrn/12cdffe6499557a8b53a8c5c0cca4b01?userid=265031418&dlt=0846&app_version=9.1.50";
@@ -13,7 +15,8 @@ class UrlConstants {
     }
 
     static Future<void> setBaseUrl(String url) async {
-        await asyncPrefs.setString('BASE_URL', url);
-        _baseUrl = url;
+        final normalized = normalizeBaseUrl(url);
+        await asyncPrefs.setString('BASE_URL', normalized);
+        _baseUrl = normalized;
     }
 }

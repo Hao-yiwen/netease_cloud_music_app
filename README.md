@@ -54,40 +54,42 @@ flutter devices
 flutter run -d <your-device>
 ```
 
-4. 使用手机号码和短信验证码登录。也可以在登录页切换邮箱或扫码。
+4. 打开 App 后优先用扫码登录。短信和邮箱密码仍在登录页，但网易云经常拦截这两种方式。
 
 更完整的构建、分析和测试说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
+## 安装后怎么用
+
+1. 从仓库的 Latest Release 下载 `netease-<版本>-arm64.apk`，装到 arm64 真机。
+2. 打开后点右上角切换到扫码，用官方网易云 App 扫码。这是目前社区还能走通的登录方式。
+3. 如果提示连不上接口，点登录页的「修改接口地址」，或打开侧边栏里的「接口地址」，填入自己的服务根地址，例如 `http://192.168.1.8:3000/`。
+
+短信验证码和邮箱密码仍保留。网易云对这两条路返回 `8821`（需要行为验证码）或 `-462`（人机验证）时，App 会说明原因。公网上的 Vercel 接口更容易触发这些码，换成自己的服务器后再试。
+
 ## 网易云音乐 API
 
-应用不直连网易云官方域名，而是请求兼容 [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 的服务。
+应用不直连网易云官方域名，而是请求兼容 [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 的服务。扫码登录的修复在维护中的二开 [NeteaseCloudMusicApiEnhanced](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced)。
 
 默认地址写在 `lib/common/constants/url.dart` 的 `UrlConstants.BASE_URL`：
 
 `https://neteasecloudmusicapi-one-tan.vercel.app/`
 
-2026-11-16 在维护环境实测该地址可访问，`/search` 与 `/banner` 返回 `code: 200`。该服务部署在第三方 Vercel，可能限流、过期或变更，不能当作长期保证。
-
-### 使用默认服务
-
-直接 `flutter run`。登录页使用手机号 + 短信验证码，依赖上述 API 的 `/captcha/sent`、`/login/cellphone` 等接口。
+2026-11-16 在维护环境实测该地址的 `/search` 与 `/banner` 返回 `code: 200`。登录不保证可用：维护者在 2026 年仍确认密码登录会被拦，短信登录在公网部署上也会碰到人机验证。该服务部署在第三方 Vercel，可能限流、过期或变更。
 
 ### 自建并切换
 
-1. 部署 API（Node.js 18+）：
+1. 部署仍在维护登录的二开（Node.js 22+）：
 
 ```bash
-git clone https://github.com/Binaryify/NeteaseCloudMusicApi.git
-cd NeteaseCloudMusicApi
-npm install
+git clone https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced.git
+cd api-enhanced
+pnpm i
 node app.js
 ```
 
-默认监听 `http://127.0.0.1:3000`。真机调试时请改成电脑局域网 IP，并保证手机与电脑同一网络。Android 模拟器访问宿主机可用 `http://10.0.2.2:3000`。
+默认监听 `http://127.0.0.1:3000`。真机请改成电脑局域网 IP，并和手机处在同一网络。Android 模拟器访问宿主机用 `http://10.0.2.2:3000`。开发机调试 Android 时也可以 `adb reverse tcp:3000 tcp:3000`，再把接口地址设为 `http://127.0.0.1:3000/`。
 
-2. 在 App 侧边栏设置里修改 Base URL，或在首次启动前写入 SharedPreferences 键 `BASE_URL`（需以 `/` 结尾）。代码入口：`UrlConstants.setBaseUrl`。
-
-3. 若接口返回 460 / 301 等风控码，按 NeteaseCloudMusicApi 文档配置 `realIP` 或登录后再请求。
+2. 在登录页或侧边栏修改接口地址。App 会补上 `http://` 和结尾的 `/`，并写入 SharedPreferences 键 `BASE_URL`。
 
 本仓库不包含、也不代理网易云账号数据。
 
@@ -110,11 +112,11 @@ flutter build ios --debug --no-codesign
 
 ## 安装包
 
-master 上的构建会按 `pubspec.yaml` 的版本名发布正式 Release，并标成仓库的 Latest。当前版本是 `v1.0.3`，安装包文件名是 `netease-1.0.3-arm64.apk`。pull request 只上传 artifact，不发 Release。这个包面向近年真机，不包含 32 位和模拟器 x86_64。
+master 上的构建会按 `pubspec.yaml` 的版本名发布正式 Release，并标成仓库的 Latest。当前版本是 `v1.0.4`，安装包文件名是 `netease-1.0.4-arm64.apk`。pull request 只上传 artifact，不发 Release。这个包面向近年真机，不包含 32 位和模拟器 x86_64。安装包从 GitHub Release 获取；这是第三方客户端，不提供应用商店上架。
 
 ### 已知问题
 
-- 第三方 API / 登录验证码依赖外部服务，可用性需自行确认
+- 短信和密码登录依赖网易云风控，公网接口上经常失败；扫码和自建 NeteaseCloudMusicApiEnhanced 是目前可用的办法
 - 通知栏上的喜欢按钮还没有接到红心接口
 - 首页仍会并发请求多份推荐数据，未登录时部分卡片为空是预期结果
 

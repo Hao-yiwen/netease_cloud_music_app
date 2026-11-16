@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../common/constants/other.dart';
 import '../../common/utils/log_box.dart';
 import '../../http/api/login/login_api.dart';
+import '../../http/login_failure.dart';
 import '../user/user_controller.dart';
 
 class LoginController extends GetxController{
@@ -31,7 +32,9 @@ class LoginController extends GetxController{
           await LoginApi.loginWithPhone(phone: phone, captcha: captcha);
       _closeLoading();
       if (res.code != 200) {
-        WidgetUtil.showToast(res.message ?? '未知错误');
+        WidgetUtil.showToast(
+          describeApiLogin(code: res.code, message: res.realMsg) ?? '登录没有成功',
+        );
         return;
       }
       UserController.to.getUserState();
@@ -41,7 +44,7 @@ class LoginController extends GetxController{
     } catch (e) {
       LogBox.error(e, msg: '手机号登录失败');
       _closeLoading();
-      WidgetUtil.showToast('登录失败，请检查网络');
+      WidgetUtil.showToast(describeLoginFailure(e));
     }
   }
 
@@ -58,7 +61,9 @@ class LoginController extends GetxController{
       _closeLoading();
       LogBox.info('邮箱登录返回码: ${res.code}');
       if (res.code != 200) {
-        WidgetUtil.showToast(res.message ?? '未知错误');
+        WidgetUtil.showToast(
+          describeApiLogin(code: res.code, message: res.realMsg) ?? '登录没有成功',
+        );
         return;
       }
       UserController.to.getUserState();
@@ -68,7 +73,7 @@ class LoginController extends GetxController{
     } on Exception catch (e) {
       LogBox.error(e, msg: '邮箱登录失败');
       _closeLoading();
-      WidgetUtil.showToast('登录失败，请检查网络');
+      WidgetUtil.showToast(describeLoginFailure(e));
     }
   }
 
@@ -83,14 +88,17 @@ class LoginController extends GetxController{
       final res = await LoginApi.captcha(phone);
       _closeLoading();
       if (res.code != 200) {
-        WidgetUtil.showToast(res.message ?? '未知错误');
+        WidgetUtil.showToast(
+          describeApiLogin(code: res.code, message: res.realMsg) ??
+              '验证码没有发出',
+        );
         return;
       }
       WidgetUtil.showToast('验证码发送成功');
     } catch (e) {
       LogBox.error(e, msg: '验证码发送失败');
       _closeLoading();
-      WidgetUtil.showToast('验证码发送失败，请检查网络');
+      WidgetUtil.showToast(describeLoginFailure(e));
     }
   }
 
@@ -98,6 +106,7 @@ class LoginController extends GetxController{
     final myValue = _readSignal(flag);
     if (myValue == null) return;
     var attempts = 0;
+    var reportedFailure = false;
     while (!isClosed && attempts < 90) {
       final current = _readSignal(flag);
       if (current == null || current != myValue) return;
@@ -120,6 +129,10 @@ class LoginController extends GetxController{
         }
       } catch (e) {
         LogBox.error(e, msg: '轮询扫码登录失败');
+        if (!reportedFailure) {
+          reportedFailure = true;
+          WidgetUtil.showToast(describeLoginFailure(e));
+        }
       }
       await Future.delayed(const Duration(seconds: 2));
     }
