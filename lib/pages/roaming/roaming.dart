@@ -78,12 +78,8 @@ class _RoamingState extends State<Roaming> {
   @override
   void initState() {
     super.initState();
-    // 确保 MediaItem 信息在 Android 端正确设置
-    audioHandler.mediaItem.listen((mediaItem) {
-      if (mediaItem != null) {
-        AudioServiceBackground.setMediaItem(mediaItem);
-      }
-    });
+    // MediaItem 由 BaseAudioHandler.mediaItem 流同步到系统媒体会话，
+    // 无需再调用已废弃的 AudioServiceBackground.setMediaItem。
   }
 
   @override

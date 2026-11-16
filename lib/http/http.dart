@@ -88,7 +88,9 @@ class Http {
     final cacheOptions = CacheOptions(
       store: cacheStore,
       policy: CachePolicy.request,
-      hitCacheOnErrorExcept: [401, 403],
+      // v4: 用 hitCacheOnErrorCodes / hitCacheOnNetworkFailure 替代 hitCacheOnErrorExcept
+      hitCacheOnErrorCodes: const [500, 502, 503, 504],
+      hitCacheOnNetworkFailure: true,
       priority: CachePriority.high,
       maxStale: const Duration(days: 7),
       allowPostMethod: false,

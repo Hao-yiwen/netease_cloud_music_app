@@ -9,13 +9,25 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+// 统一子项目 compileSdk / Java / Kotlin JVM target，兼容仍声明旧 SDK 的插件
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 34
-                buildToolsVersion "34.0.0"
+                compileSdk = 36
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+            }
+        }
+        if (project.plugins.hasPlugin("org.jetbrains.kotlin.android") ||
+                project.plugins.hasPlugin("kotlin-android")) {
+            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+                }
             }
         }
     }

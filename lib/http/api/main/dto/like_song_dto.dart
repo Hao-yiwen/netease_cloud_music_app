@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netease_cloud_music_app/http/api/bean.dart';
 

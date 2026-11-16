@@ -13,11 +13,9 @@ import 'package:netease_cloud_music_app/pages/found/found_controller.dart';
 import 'package:netease_cloud_music_app/pages/found/item_type.dart';
 import 'package:netease_cloud_music_app/pages/home/home_controller.dart';
 import 'package:netease_cloud_music_app/pages/main/main_controller.dart';
-import 'package:netease_cloud_music_app/pages/main/shimmer_loading.dart';
 import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import 'package:netease_cloud_music_app/widgets/songs_list_widget.dart';
 import 'package:netease_cloud_music_app/widgets/play_list_card.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../http/api/main/dto/playlist_dto.dart';
@@ -332,7 +330,7 @@ class _FoundState extends State<Found> with TickerProviderStateMixin {
                             child: DotsIndicator(
                               dotsCount:
                                   controller.banner.value.banners!.length,
-                              position: _currentCarouselIndex,
+                              position: _currentCarouselIndex.toDouble(),
                               decorator: DotsDecorator(
                                 activeColor: Colors.red,
                                 size: const Size.square(6.0),

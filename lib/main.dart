@@ -17,7 +17,6 @@ import 'package:netease_cloud_music_app/pages/message/message_controller.dart';
 import 'package:netease_cloud_music_app/pages/mv_player/mv_player_controller.dart';
 import 'package:netease_cloud_music_app/pages/search/searchpage_controller.dart';
 import 'package:netease_cloud_music_app/pages/splash/splash_controller.dart';
-import 'package:netease_cloud_music_app/pages/user/user_binding.dart';
 import 'package:netease_cloud_music_app/pages/user/user_controller.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
 import 'package:netease_cloud_music_app/routes/routes.gr.dart';

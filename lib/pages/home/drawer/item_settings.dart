@@ -1,5 +1,3 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -9,7 +7,6 @@ import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
 import 'package:netease_cloud_music_app/common/service/theme_service.dart';
 
 import '../../../common/constants/url.dart';
-import '../../../http/api/login/login_api.dart';
 import '../../../routes/routes.dart';
 import '../../../routes/routes.gr.dart';
 import '../../user/user_controller.dart';
@@ -96,9 +93,9 @@ List<DrawerItem> getListSettings(BuildContext context) {
                 fit: BoxFit.contain,
                 child: Obx(() {
                   return Switch(
-                      trackOutlineColor: MaterialStateProperty.resolveWith(
-                        (final Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
+                      trackOutlineColor: WidgetStateProperty.resolveWith(
+                        (final Set<WidgetState> states) {
+                          if (states.contains(WidgetState.selected)) {
                             return null;
                           }
                           return Colors.transparent;

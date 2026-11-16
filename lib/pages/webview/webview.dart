@@ -83,7 +83,8 @@ class _WebViewPageState extends State<WebViewPage> {
               ),
             ),
       body: PopScope(
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
           if (await _controller.canGoBack()) {
             _controller.goBack();
           } else {
