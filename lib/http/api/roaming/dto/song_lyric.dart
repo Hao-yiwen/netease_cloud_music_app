@@ -18,6 +18,7 @@ class SongLyric extends ServerStatusBean {
   factory SongLyric.fromJson(Map<String, dynamic> json) =>
       _$SongLyricFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SongLyricToJson(this);
 }
 

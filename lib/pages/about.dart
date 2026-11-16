@@ -26,8 +26,8 @@ class _AboutState extends State<About> {
 
   @override
   Widget build(BuildContext context) {
-    var _listTop = [
-      AboutItem(text: "当前版本", trailing: Text(_appVersion ?? "")),
+    var listTop = [
+      AboutItem(text: "当前版本", trailing: Text(_appVersion)),
       AboutItem(
           text: "新版更新",
           badge: "",
@@ -36,7 +36,7 @@ class _AboutState extends State<About> {
           }),
     ];
 
-    var _listContent = [
+    var listContent = [
       AboutItem(text: "专栏菜单", badge: "99"),
       AboutItem(text: "联系我们", badge: ""),
       AboutItem(text: "给软件评分", badge: ""),
@@ -66,11 +66,11 @@ class _AboutState extends State<About> {
                         height: 200.w,
                       ),
                     ),
-                    _buildCardContent(list: _listTop),
+                    _buildCardContent(list: listTop),
                     SizedBox(
                       height: 20.w,
                     ),
-                    _buildCardContent(list: _listContent),
+                    _buildCardContent(list: listContent),
                     SizedBox(
                       height: 50.w,
                     ),
@@ -127,7 +127,7 @@ class _AboutState extends State<About> {
                 : (badge != null && badge != ''
                     ? Row(
                         children: [
-                          _buildBadge(badge as String),
+                          _buildBadge(badge),
                           SizedBox(
                             width: 10.w,
                           ),

@@ -24,22 +24,22 @@ SongLyric _$SongLyricFromJson(Map<String, dynamic> json) => SongLyric()
       : Lyrics.fromJson(json['tlyric'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$SongLyricToJson(SongLyric instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'sgc': instance.sgc,
-      'sfy': instance.sfy,
-      'qfy': instance.qfy,
-      'lrc': instance.lrc,
-      'klyric': instance.klyric,
-      'tlyric': instance.tlyric,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'sgc': instance.sgc,
+  'sfy': instance.sfy,
+  'qfy': instance.qfy,
+  'lrc': instance.lrc,
+  'klyric': instance.klyric,
+  'tlyric': instance.tlyric,
+};
 
 Lyrics _$LyricsFromJson(Map<String, dynamic> json) => Lyrics()
   ..lyric = json['lyric'] as String?
   ..version = (json['version'] as num?)?.toInt();
 
 Map<String, dynamic> _$LyricsToJson(Lyrics instance) => <String, dynamic>{
-      'lyric': instance.lyric,
-      'version': instance.version,
-    };
+  'lyric': instance.lyric,
+  'version': instance.version,
+};

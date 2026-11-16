@@ -15,11 +15,11 @@ Banner _$BannerFromJson(Map<String, dynamic> json) => Banner()
       .toList();
 
 Map<String, dynamic> _$BannerToJson(Banner instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'banners': instance.banners,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'banners': instance.banners,
+};
 
 BannerItem _$BannerItemFromJson(Map<String, dynamic> json) => BannerItem()
   ..bannerId = json['bannerId'] as String?

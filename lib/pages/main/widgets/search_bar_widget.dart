@@ -7,7 +7,7 @@ import 'package:netease_cloud_music_app/pages/main/constants.dart';
 class SearchBarWidget extends StatelessWidget {
   final VoidCallback onTap;
 
-  const SearchBarWidget({Key? key, required this.onTap}) : super(key: key);
+  const SearchBarWidget({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class SearchBarWidget extends StatelessWidget {
       height: MainConstants.headerHeight.w,
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

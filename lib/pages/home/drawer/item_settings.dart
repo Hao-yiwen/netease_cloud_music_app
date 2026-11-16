@@ -19,7 +19,7 @@ List<DrawerItem> getTopItem(BuildContext context, {int? messageCount}) {
         text: "我的消息",
         badge: (messageCount ?? 0).toString(),
         onTap: () {
-          GetIt.instance<AppRouter>().pushNamed(Routes.message);
+          GetIt.instance<AppRouter>().pushPath(Routes.message);
         }),
     DrawerItem(
       icon: TablerIcons.currency_ethereum,
@@ -147,7 +147,7 @@ List<DrawerItem> getListSettings(BuildContext context) {
         icon: TablerIcons.info_circle,
         text: "关于",
         onTap: () {
-          GetIt.instance<AppRouter>().pushNamed(Routes.about);
+          GetIt.instance<AppRouter>().pushPath(Routes.about);
         }),
   ];
 }

@@ -52,11 +52,11 @@ class PlayList extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.w),
       decoration: BoxDecoration(
         color: isCurrentItem
-            ? Color(0xFF8E9FFF).withOpacity(0.15) // 使用一个柔和的蓝紫色作为背景
+            ? Color(0xFF8E9FFF).withValues(alpha: 0.15) // 使用一个柔和的蓝紫色作为背景
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12.w),
         border: isCurrentItem
-            ? Border.all(color: Color(0xFF8E9FFF).withOpacity(0.5))
+            ? Border.all(color: Color(0xFF8E9FFF).withValues(alpha: 0.5))
             : null,
       ),
       child: Material(
@@ -104,7 +104,7 @@ class PlayList extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: theme.textTheme.bodyMedium?.color
-                              ?.withOpacity(0.8),
+                              ?.withValues(alpha: 0.8),
                           fontSize: 24.sp,
                         ),
                       ),

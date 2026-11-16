@@ -41,9 +41,9 @@ class SongsListWidget extends StatelessWidget {
                 // list to map to get index
                 children: songsMatrix[pageIndex].asMap().entries.map((entry) {
                   return SongCell(
-                    title: entry.value.title ?? '',
+                    title: entry.value.title,
                     artist: entry.value.artist ?? '',
-                    picUrl: entry.value.extras?['image'] ?? '',
+                    picUrl: '${entry.value.extras?['image'] ?? ''}',
                     onTapItem: () {
                       RoamingController.to
                           .playByIndex(entry.key, 'songs', mediaItem: songs);
@@ -159,10 +159,10 @@ class SongCell extends StatelessWidget {
   final String title;
   final String artist;
   final String picUrl;
-  String? tag;
+  final String? tag;
   final Function onTapItem;
 
-  SongCell(
+  const SongCell(
       {super.key,
       required this.title,
       required this.artist,
@@ -234,10 +234,10 @@ class PodcastCell extends StatelessWidget {
   final String title;
   final String artist;
   final String picUrl;
-  String? tag;
+  final String? tag;
   final Function onTapItem;
 
-  PodcastCell(
+  const PodcastCell(
       {super.key,
       required this.title,
       required this.artist,

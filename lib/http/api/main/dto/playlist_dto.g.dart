@@ -21,14 +21,14 @@ Playlist _$PlaylistFromJson(Map<String, dynamic> json) => Playlist()
       : UserProfile.fromJson(json['creator'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$PlaylistToJson(Playlist instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'userId': instance.userId,
-      'createTime': instance.createTime,
-      'updateTime': instance.updateTime,
-      'decription': instance.decription,
-      'coverImgUrl': instance.coverImgUrl,
-      'tags': instance.tags,
-      'playCount': instance.playCount,
-      'creator': instance.creator,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'userId': instance.userId,
+  'createTime': instance.createTime,
+  'updateTime': instance.updateTime,
+  'decription': instance.decription,
+  'coverImgUrl': instance.coverImgUrl,
+  'tags': instance.tags,
+  'playCount': instance.playCount,
+  'creator': instance.creator,
+};

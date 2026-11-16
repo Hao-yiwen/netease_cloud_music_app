@@ -10,12 +10,11 @@ class WebViewPage extends StatefulWidget {
   final String title;
   final bool isHideTitle;
 
-  WebViewPage(
-      {Key? key,
+  const WebViewPage(
+      {super.key,
       required this.url,
       required this.title,
-      this.isHideTitle = false})
-      : super(key: key);
+      this.isHideTitle = false});
 
   @override
   _WebViewPageState createState() => _WebViewPageState();

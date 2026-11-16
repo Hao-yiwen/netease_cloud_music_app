@@ -13,6 +13,7 @@ class SearchMvs extends ServerStatusBean{
 
   factory SearchMvs.fromJson(Map<String, dynamic> json) => _$SearchMvsFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SearchMvsToJson(this);
 }
 

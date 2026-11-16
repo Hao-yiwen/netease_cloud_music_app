@@ -15,7 +15,6 @@ import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 import '../../routes/routes.dart';
 import '../../routes/routes.gr.dart';
 import '../../widgets/bottom_player_bar.dart';
-import '../main/main_controller.dart';
 
 @RoutePage()
 class SearchDetail extends StatefulWidget {

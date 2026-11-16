@@ -1,10 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:netease_cloud_music_app/common/music_handler.dart';
 import 'package:netease_cloud_music_app/common/service/theme_binding.dart';
@@ -32,6 +33,12 @@ Future<void> main() async {
 
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarContrastEnforced: false,
+  ));
   await HttpUtils.init(baseUrl: await UrlConstants.BASE_URL);
   await _initGetService(GetIt.instance);
 }

@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 
 /// 计算出生年份
 int calculateBirthYear(String birthday) {

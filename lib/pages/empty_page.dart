@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 
 @RoutePage()
 class EmptyPage extends StatelessWidget {
+  const EmptyPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container();

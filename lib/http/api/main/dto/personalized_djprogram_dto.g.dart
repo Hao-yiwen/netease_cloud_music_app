@@ -7,23 +7,23 @@ part of 'personalized_djprogram_dto.dart';
 // **************************************************************************
 
 PersonalizedDjprogramDto _$PersonalizedDjprogramDtoFromJson(
-        Map<String, dynamic> json) =>
-    PersonalizedDjprogramDto()
-      ..code = dynamicToInt(json['code'])
-      ..message = json['message'] as String?
-      ..msg = json['msg'] as String?
-      ..result = (json['result'] as List<dynamic>?)
-          ?.map((e) => DjProgram.fromJson(e as Map<String, dynamic>))
-          .toList();
+  Map<String, dynamic> json,
+) => PersonalizedDjprogramDto()
+  ..code = dynamicToInt(json['code'])
+  ..message = json['message'] as String?
+  ..msg = json['msg'] as String?
+  ..result = (json['result'] as List<dynamic>?)
+      ?.map((e) => DjProgram.fromJson(e as Map<String, dynamic>))
+      .toList();
 
 Map<String, dynamic> _$PersonalizedDjprogramDtoToJson(
-        PersonalizedDjprogramDto instance) =>
-    <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'result': instance.result,
-    };
+  PersonalizedDjprogramDto instance,
+) => <String, dynamic>{
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'result': instance.result,
+};
 
 DjProgram _$DjProgramFromJson(Map<String, dynamic> json) => DjProgram()
   ..id = (json['id'] as num?)?.toInt()
@@ -33,12 +33,12 @@ DjProgram _$DjProgramFromJson(Map<String, dynamic> json) => DjProgram()
   ..copywriter = json['copywriter'] as String?;
 
 Map<String, dynamic> _$DjProgramToJson(DjProgram instance) => <String, dynamic>{
-      'id': instance.id,
-      'type': instance.type,
-      'name': instance.name,
-      'picUrl': instance.picUrl,
-      'copywriter': instance.copywriter,
-    };
+  'id': instance.id,
+  'type': instance.type,
+  'name': instance.name,
+  'picUrl': instance.picUrl,
+  'copywriter': instance.copywriter,
+};
 
 Program _$ProgramFromJson(Map<String, dynamic> json) => Program()
   ..mainSong = json['mainSong'] == null
@@ -51,13 +51,13 @@ Program _$ProgramFromJson(Map<String, dynamic> json) => Program()
   ..createTime = (json['createTime'] as num?)?.toInt();
 
 Map<String, dynamic> _$ProgramToJson(Program instance) => <String, dynamic>{
-      'mainSong': instance.mainSong,
-      'blurCoverUrl': instance.blurCoverUrl,
-      'coverUrl': instance.coverUrl,
-      'id': instance.id,
-      'name': instance.name,
-      'createTime': instance.createTime,
-    };
+  'mainSong': instance.mainSong,
+  'blurCoverUrl': instance.blurCoverUrl,
+  'coverUrl': instance.coverUrl,
+  'id': instance.id,
+  'name': instance.name,
+  'createTime': instance.createTime,
+};
 
 MainSong _$MainSongFromJson(Map<String, dynamic> json) => MainSong()
   ..name = json['name'] as String?
@@ -65,7 +65,7 @@ MainSong _$MainSongFromJson(Map<String, dynamic> json) => MainSong()
   ..duration = (json['duration'] as num?)?.toInt();
 
 Map<String, dynamic> _$MainSongToJson(MainSong instance) => <String, dynamic>{
-      'name': instance.name,
-      'id': instance.id,
-      'duration': instance.duration,
-    };
+  'name': instance.name,
+  'id': instance.id,
+  'duration': instance.duration,
+};

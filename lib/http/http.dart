@@ -295,7 +295,7 @@ class UserLoginStateController {
 
       // 解析 JSON
       final Map<String, dynamic> jsonMap = jsonDecode(accountInfo);
-      if (jsonMap == null || jsonMap.isEmpty) {
+      if (jsonMap.isEmpty) {
         LogBox.info("账户数据解析为空");
         return;
       }

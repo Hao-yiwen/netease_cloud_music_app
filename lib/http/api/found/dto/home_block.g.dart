@@ -15,11 +15,11 @@ HomeBlock _$HomeBlockFromJson(Map<String, dynamic> json) => HomeBlock()
       .toList();
 
 Map<String, dynamic> _$HomeBlockToJson(HomeBlock instance) => <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'blocks': instance.blocks,
-    };
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'blocks': instance.blocks,
+};
 
 BlockItem _$BlockItemFromJson(Map<String, dynamic> json) => BlockItem()
   ..blockCode = json['blockCode'] as String?
@@ -35,14 +35,14 @@ BlockItem _$BlockItemFromJson(Map<String, dynamic> json) => BlockItem()
       .toList();
 
 Map<String, dynamic> _$BlockItemToJson(BlockItem instance) => <String, dynamic>{
-      'blockCode': instance.blockCode,
-      'showType': instance.showType,
-      'action': instance.action,
-      'actionType': instance.actionType,
-      'uiElement': instance.uiElement,
-      'canClose': instance.canClose,
-      'creatives': instance.creatives,
-    };
+  'blockCode': instance.blockCode,
+  'showType': instance.showType,
+  'action': instance.action,
+  'actionType': instance.actionType,
+  'uiElement': instance.uiElement,
+  'canClose': instance.canClose,
+  'creatives': instance.creatives,
+};
 
 Creative _$CreativeFromJson(Map<String, dynamic> json) => Creative()
   ..creativeType = json['creativeType'] as String?
@@ -58,14 +58,14 @@ Creative _$CreativeFromJson(Map<String, dynamic> json) => Creative()
       .toList();
 
 Map<String, dynamic> _$CreativeToJson(Creative instance) => <String, dynamic>{
-      'creativeType': instance.creativeType,
-      'creativeId': instance.creativeId,
-      'action': instance.action,
-      'actionType': instance.actionType,
-      'uiElement': instance.uiElement,
-      'logInfo': instance.logInfo,
-      'resources': instance.resources,
-    };
+  'creativeType': instance.creativeType,
+  'creativeId': instance.creativeId,
+  'action': instance.action,
+  'actionType': instance.actionType,
+  'uiElement': instance.uiElement,
+  'logInfo': instance.logInfo,
+  'resources': instance.resources,
+};
 
 Resource _$ResourceFromJson(Map<String, dynamic> json) => Resource()
   ..uiElement = json['uiElement'] == null
@@ -78,13 +78,13 @@ Resource _$ResourceFromJson(Map<String, dynamic> json) => Resource()
   ..logInfo = json['logInfo'] as String?;
 
 Map<String, dynamic> _$ResourceToJson(Resource instance) => <String, dynamic>{
-      'uiElement': instance.uiElement,
-      'resourceType': instance.resourceType,
-      'resourceId': instance.resourceId,
-      'action': instance.action,
-      'actionType': instance.actionType,
-      'logInfo': instance.logInfo,
-    };
+  'uiElement': instance.uiElement,
+  'resourceType': instance.resourceType,
+  'resourceId': instance.resourceId,
+  'action': instance.action,
+  'actionType': instance.actionType,
+  'logInfo': instance.logInfo,
+};
 
 UIElement _$UIElementFromJson(Map<String, dynamic> json) => UIElement()
   ..mainTitle = json['mainTitle'] == null
@@ -99,34 +99,35 @@ UIElement _$UIElementFromJson(Map<String, dynamic> json) => UIElement()
   ..image = json['image'] == null
       ? null
       : Image.fromJson(json['image'] as Map<String, dynamic>)
-  ..labelTexts =
-      (json['labelTexts'] as List<dynamic>?)?.map((e) => e as String).toList();
+  ..labelTexts = (json['labelTexts'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList();
 
 Map<String, dynamic> _$UIElementToJson(UIElement instance) => <String, dynamic>{
-      'mainTitle': instance.mainTitle,
-      'subTitle': instance.subTitle,
-      'button': instance.button,
-      'image': instance.image,
-      'labelTexts': instance.labelTexts,
-    };
+  'mainTitle': instance.mainTitle,
+  'subTitle': instance.subTitle,
+  'button': instance.button,
+  'image': instance.image,
+  'labelTexts': instance.labelTexts,
+};
 
 Image _$ImageFromJson(Map<String, dynamic> json) => Image()
   ..imageUrl = json['imageUrl'] as String?
   ..purePicture = json['purePicture'] as bool?;
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
-      'imageUrl': instance.imageUrl,
-      'purePicture': instance.purePicture,
-    };
+  'imageUrl': instance.imageUrl,
+  'purePicture': instance.purePicture,
+};
 
 Title _$TitleFromJson(Map<String, dynamic> json) => Title()
   ..title = json['title'] as String?
   ..canShowTitleLogo = json['canShowTitleLogo'] as bool?;
 
 Map<String, dynamic> _$TitleToJson(Title instance) => <String, dynamic>{
-      'title': instance.title,
-      'canShowTitleLogo': instance.canShowTitleLogo,
-    };
+  'title': instance.title,
+  'canShowTitleLogo': instance.canShowTitleLogo,
+};
 
 Button _$ButtonFromJson(Map<String, dynamic> json) => Button()
   ..action = json['action'] as String?
@@ -134,7 +135,7 @@ Button _$ButtonFromJson(Map<String, dynamic> json) => Button()
   ..text = json['text'] as String?;
 
 Map<String, dynamic> _$ButtonToJson(Button instance) => <String, dynamic>{
-      'action': instance.action,
-      'actionType': instance.actionType,
-      'text': instance.text,
-    };
+  'action': instance.action,
+  'actionType': instance.actionType,
+  'text': instance.text,
+};

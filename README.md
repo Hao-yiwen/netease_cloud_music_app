@@ -13,7 +13,8 @@
 
 - **状态管理**: GetX
 - **依赖注入**: GetIt
-- **路由管理**: AutoRoute（项目中仍保留 go_router 依赖）
+- **路由管理**: AutoRoute 11
+- **本地缓存**: hive_ce（替代已停止维护的 hive）
 - **后端接口**: [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
 ## 环境要求
@@ -55,7 +56,38 @@ flutter run -d <your-device>
 
 4. 使用手机号码和短信验证码登录。
 
-> 说明：默认 API 部署在 Vercel（`UrlConstants.BASE_URL`）。如遇高延迟或接口不可用，建议本地部署 [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，并在应用设置中修改 Base URL。
+## 网易云音乐 API
+
+应用不直连网易云官方域名，而是请求兼容 [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 的服务。
+
+默认地址写在 `lib/common/constants/url.dart` 的 `UrlConstants.BASE_URL`：
+
+`https://neteasecloudmusicapi-one-tan.vercel.app/`
+
+2026-11-16 在维护环境实测该地址可访问，`/search` 与 `/banner` 返回 `code: 200`。该服务部署在第三方 Vercel，可能限流、过期或变更，不能当作长期保证。
+
+### 使用默认服务
+
+直接 `flutter run`。登录页使用手机号 + 短信验证码，依赖上述 API 的 `/captcha/sent`、`/login/cellphone` 等接口。
+
+### 自建并切换
+
+1. 部署 API（Node.js 18+）：
+
+```bash
+git clone https://github.com/Binaryify/NeteaseCloudMusicApi.git
+cd NeteaseCloudMusicApi
+npm install
+node app.js
+```
+
+默认监听 `http://127.0.0.1:3000`。真机调试时请改成电脑局域网 IP，并保证手机与电脑同一网络。Android 模拟器访问宿主机可用 `http://10.0.2.2:3000`。
+
+2. 在 App 侧边栏设置里修改 Base URL，或在首次启动前写入 SharedPreferences 键 `BASE_URL`（需以 `/` 结尾）。代码入口：`UrlConstants.setBaseUrl`。
+
+3. 若接口返回 460 / 301 等风控码，按 NeteaseCloudMusicApi 文档配置 `realIP` 或登录后再请求。
+
+本仓库不包含、也不代理网易云账号数据。
 
 ### 常用验证命令
 

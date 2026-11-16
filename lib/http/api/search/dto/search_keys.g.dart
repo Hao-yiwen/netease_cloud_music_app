@@ -6,11 +6,12 @@ part of 'search_keys.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SearchKeys _$SearchKeysFromJson(Map<String, dynamic> json) => SearchKeys(
-      result: json['result'] == null
-          ? null
-          : _SearchResult.fromJson(json['result'] as Map<String, dynamic>),
-    )
+SearchKeys _$SearchKeysFromJson(Map<String, dynamic> json) =>
+    SearchKeys(
+        result: json['result'] == null
+            ? null
+            : _SearchResult.fromJson(json['result'] as Map<String, dynamic>),
+      )
       ..code = dynamicToInt(json['code'])
       ..message = json['message'] as String?
       ..msg = json['msg'] as String?;
@@ -31,16 +32,14 @@ _SearchResult _$SearchResultFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$SearchResultToJson(_SearchResult instance) =>
-    <String, dynamic>{
-      'allMatch': instance.allMatch,
-    };
+    <String, dynamic>{'allMatch': instance.allMatch};
 
 MatchItem _$MatchItemFromJson(Map<String, dynamic> json) => MatchItem(
-      keyword: json['keyword'] as String?,
-      type: (json['type'] as num?)?.toInt(),
-    );
+  keyword: json['keyword'] as String?,
+  type: (json['type'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$MatchItemToJson(MatchItem instance) => <String, dynamic>{
-      'keyword': instance.keyword,
-      'type': instance.type,
-    };
+  'keyword': instance.keyword,
+  'type': instance.type,
+};

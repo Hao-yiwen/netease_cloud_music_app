@@ -15,6 +15,7 @@ class LoginStatusDto extends ServerStatusBean {
   factory LoginStatusDto.fromJson(Map<String, dynamic> json) =>
       _$LoginStatusDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LoginStatusDtoToJson(this);
 }
 

@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:netease_cloud_music_app/widgets/netease_cache_image.dart';
 
 class MusicCard extends StatelessWidget {
   const MusicCard({
@@ -50,7 +49,7 @@ class MusicCard extends StatelessWidget {
               image: NetworkImage(cardPic!),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.3),
+                Colors.black.withValues(alpha: 0.3),
                 BlendMode.colorBurn,
               ),
             )

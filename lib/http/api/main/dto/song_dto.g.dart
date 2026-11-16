@@ -24,16 +24,16 @@ SongDto _$SongDtoFromJson(Map<String, dynamic> json) => SongDto()
       : VideoInfo.fromJson(json['videoInfo'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$SongDtoToJson(SongDto instance) => <String, dynamic>{
-      'name': instance.name,
-      'id': instance.id,
-      'alia': instance.alia,
-      'ar': instance.ar,
-      'dt': instance.dt,
-      'fee': instance.fee,
-      'al': instance.al,
-      'mv': instance.mv,
-      'videoInfo': instance.videoInfo,
-    };
+  'name': instance.name,
+  'id': instance.id,
+  'alia': instance.alia,
+  'ar': instance.ar,
+  'dt': instance.dt,
+  'fee': instance.fee,
+  'al': instance.al,
+  'mv': instance.mv,
+  'videoInfo': instance.videoInfo,
+};
 
 SongsDetailDto _$SongsDetailDtoFromJson(Map<String, dynamic> json) =>
     SongsDetailDto()
@@ -60,12 +60,12 @@ Al _$AlFromJson(Map<String, dynamic> json) => Al()
   ..pic = (json['pic'] as num?)?.toInt();
 
 Map<String, dynamic> _$AlToJson(Al instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'picUrl': instance.picUrl,
-      'pic_str': instance.pic_str,
-      'pic': instance.pic,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'picUrl': instance.picUrl,
+  'pic_str': instance.pic_str,
+  'pic': instance.pic,
+};
 
 VideoInfo _$VideoInfoFromJson(Map<String, dynamic> json) => VideoInfo()
   ..video = json['video'] == null
@@ -74,9 +74,9 @@ VideoInfo _$VideoInfoFromJson(Map<String, dynamic> json) => VideoInfo()
   ..moreThanOne = json['moreThanOne'] as bool?;
 
 Map<String, dynamic> _$VideoInfoToJson(VideoInfo instance) => <String, dynamic>{
-      'video': instance.video,
-      'moreThanOne': instance.moreThanOne,
-    };
+  'video': instance.video,
+  'moreThanOne': instance.moreThanOne,
+};
 
 Video _$VideoFromJson(Map<String, dynamic> json) => Video()
   ..vid = json['vid'] as String?
@@ -86,9 +86,9 @@ Video _$VideoFromJson(Map<String, dynamic> json) => Video()
   ..coverUrl = json['coverUrl'] as String?;
 
 Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
-      'vid': instance.vid,
-      'type': instance.type,
-      'title': instance.title,
-      'playTime': instance.playTime,
-      'coverUrl': instance.coverUrl,
-    };
+  'vid': instance.vid,
+  'type': instance.type,
+  'title': instance.title,
+  'playTime': instance.playTime,
+  'coverUrl': instance.coverUrl,
+};

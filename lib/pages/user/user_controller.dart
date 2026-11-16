@@ -93,7 +93,7 @@ class UserController extends GetxController {
   Future<void> logout() async {
     try {
       await HomeController.to.box.delete(LOGIN_DATA);
-      GetIt.instance<AppRouter>().replaceNamed(Routes.login);
+      GetIt.instance<AppRouter>().replacePath(Routes.login);
       await LoginApi.logout();
     } catch (e) {
       LogBox.error(e);

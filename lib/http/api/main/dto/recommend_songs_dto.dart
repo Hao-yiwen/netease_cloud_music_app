@@ -16,5 +16,6 @@ class RecommendSongsDto extends ServerStatusBean {
   factory RecommendSongsDto.fromJson(Map<String, dynamic> json) =>
       _$RecommendSongsDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$RecommendSongsDtoToJson(this);
 }

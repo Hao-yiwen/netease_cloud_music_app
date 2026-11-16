@@ -7,27 +7,27 @@ part of 'recommend_resource_dto.dart';
 // **************************************************************************
 
 RecommendResourceDto _$RecommendResourceDtoFromJson(
-        Map<String, dynamic> json) =>
-    RecommendResourceDto()
-      ..code = dynamicToInt(json['code'])
-      ..message = json['message'] as String?
-      ..msg = json['msg'] as String?
-      ..featureFirst = json['featureFirst'] as bool?
-      ..haveRcmdSongs = json['haveRcmdSongs'] as bool?
-      ..recommend = (json['recommend'] as List<dynamic>?)
-          ?.map((e) => RecommendPlaylist.fromJson(e as Map<String, dynamic>))
-          .toList();
+  Map<String, dynamic> json,
+) => RecommendResourceDto()
+  ..code = dynamicToInt(json['code'])
+  ..message = json['message'] as String?
+  ..msg = json['msg'] as String?
+  ..featureFirst = json['featureFirst'] as bool?
+  ..haveRcmdSongs = json['haveRcmdSongs'] as bool?
+  ..recommend = (json['recommend'] as List<dynamic>?)
+      ?.map((e) => RecommendPlaylist.fromJson(e as Map<String, dynamic>))
+      .toList();
 
 Map<String, dynamic> _$RecommendResourceDtoToJson(
-        RecommendResourceDto instance) =>
-    <String, dynamic>{
-      'code': instance.code,
-      'message': instance.message,
-      'msg': instance.msg,
-      'featureFirst': instance.featureFirst,
-      'haveRcmdSongs': instance.haveRcmdSongs,
-      'recommend': instance.recommend,
-    };
+  RecommendResourceDto instance,
+) => <String, dynamic>{
+  'code': instance.code,
+  'message': instance.message,
+  'msg': instance.msg,
+  'featureFirst': instance.featureFirst,
+  'haveRcmdSongs': instance.haveRcmdSongs,
+  'recommend': instance.recommend,
+};
 
 RecommendPlaylist _$RecommendPlaylistFromJson(Map<String, dynamic> json) =>
     RecommendPlaylist()

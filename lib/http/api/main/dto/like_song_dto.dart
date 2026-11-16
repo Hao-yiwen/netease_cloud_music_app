@@ -11,5 +11,6 @@ class LikeSongDto extends ServerStatusBean{
 
   factory LikeSongDto.fromJson(Map<String, dynamic> json) => _$LikeSongDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$LikeSongDtoToJson(this);
 }

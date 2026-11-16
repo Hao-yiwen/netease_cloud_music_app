@@ -13,7 +13,6 @@ import 'package:netease_cloud_music_app/pages/roaming/play_album_cover.dart';
 import 'package:netease_cloud_music_app/pages/roaming/roaming_controller.dart';
 import 'package:netease_cloud_music_app/pages/roaming/widgets/play_list.dart';
 import 'package:netease_cloud_music_app/routes/routes.dart';
-import 'package:audio_service/audio_service.dart';
 
 import '../../common/constants/app_strings.dart';
 import '../../common/music_handler.dart';
@@ -178,7 +177,7 @@ class _RoamingState extends State<Roaming> {
               SizedBox(width: 60.w),
               GestureDetector(
                 onTap: () =>
-                    GetIt.instance<AppRouter>().pushNamed(Routes.comment),
+                    GetIt.instance<AppRouter>().pushPath(Routes.comment),
                 child: Image.asset(ImageUtils.getImagePath('detail_icn_cmt'),
                     width: 60.w, height: 60.w),
               ),

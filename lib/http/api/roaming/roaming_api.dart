@@ -17,7 +17,7 @@ class RoamingApi {
   }
 
   // 获取音乐评论
-  static Future<CommentMusic> getMusicComment(dynamic? id,
+  static Future<CommentMusic> getMusicComment(dynamic id,
       {int limit = 20, int offset = 0}) async {
     final res = await HttpUtils.get('/comment/music', params: {
       'id': (id is String) ? id : id.toString(),

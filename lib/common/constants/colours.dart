@@ -29,10 +29,10 @@ class Colours {
   static const Color dark_headline1_color = Color.fromARGB(255, 254, 254, 254);
 
   static const Color body1_txt_color = Color.fromARGB(255, 49, 49, 50);
-  static Color dark_body1_txt_color = Colors.white.withOpacity(0.85);
+  static Color dark_body1_txt_color = Colors.white.withValues(alpha: 0.85);
 
   static const Color body2_txt_color = Color.fromARGB(255, 51, 51, 53);
-  static Color dark_body2_txt_color = Colors.white.withOpacity(0.85);
+  static Color dark_body2_txt_color = Colors.white.withValues(alpha: 0.85);
 
   static const Color subtitle_color = Color(0xFFafafaf);
 
@@ -55,10 +55,10 @@ class Colours {
   static const Color text_dark_label_gray = Color.fromARGB(255, 207, 207, 207);
 
   static const Color subtitle_text = Color.fromARGB(220, 111, 111, 111);
-  static Color dark_subtitle_text = Colors.white.withOpacity(0.65);
+  static Color dark_subtitle_text = Colors.white.withValues(alpha: 0.65);
 
   static const Color icon_color = Color.fromARGB(255, 39, 39, 39);
-  static Color dark_icon_color = Colors.white.withOpacity(0.85);
+  static Color dark_icon_color = Colors.white.withValues(alpha: 0.85);
 
   /// 深色背景
   static const Color back1 = Color(0xff1D1F22);
@@ -117,5 +117,5 @@ class Colours {
   static const Color c_30353e = Color(0xff30353e);
 
   static Color load_image_placeholder() =>
-      Get.isDarkMode ? white.withOpacity(0.1) : color_245;
+      Get.isDarkMode ? white.withValues(alpha: 0.1) : color_245;
 }

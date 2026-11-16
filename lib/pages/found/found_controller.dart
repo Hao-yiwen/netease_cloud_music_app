@@ -113,7 +113,7 @@ class FoundController extends GetxController {
   Future<List<MediaItem>> getSongDetail(String ids) async {
     try {
       SongsDetailDto list = await MainApi.getSongsDetail(ids);
-      if (list?.songs?.isNotEmpty ?? false) {
+      if (list.songs?.isNotEmpty ?? false) {
         return RoamingController.to.song2ToMedia(list.songs!);
       }
     } catch (e) {

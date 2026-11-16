@@ -1,5 +1,13 @@
 # 项目进展
 
+## 1.0.2 - 2026-11-16 深度适配
+
+- 依赖升至当前可解析的维护版本：auto_route 11、get_it 9、hive_ce、easy_refresh 4、cached_network_image 4、dots_indicator 5
+- 移除未使用的 go_router / connectivity_plus，用 hive_ce 替换停更的 hive
+- Android edge-to-edge、通知与媒体前台服务权限；iOS 后台音频说明
+- 替换 withOpacity、废弃导航 API；analyze 无 error / warning
+- README 补充 NeteaseCloudMusicApi 自建步骤
+
 ## 1.0.1 - 2026-11-16 维护性升级
 
 - 对齐 Flutter 3.50 / Dart 3.14 稳定工具链

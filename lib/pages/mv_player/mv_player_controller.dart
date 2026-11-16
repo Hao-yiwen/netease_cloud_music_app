@@ -7,10 +7,6 @@ class MvPlayerController extends GetxController {
   RxBool loading = false.obs;
   Rx<MvDetail> mvDetail = MvDetail().obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<void> getMvDetail(int id) async {
     try {

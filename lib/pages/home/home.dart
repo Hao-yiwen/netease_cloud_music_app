@@ -77,9 +77,7 @@ class _HomeState extends State<Home> {
         child: const DrawerHome(),
       );
 
-  Widget _buildBottomSheet() => RoamingController.to.mediaItem.value.id == null
-      ? const SizedBox()
-      : const BottomPlayerBar();
+  Widget _buildBottomSheet() => const BottomPlayerBar();
 
   Widget _buildBottomNav(TabsRouter tabsRouter) => Obx(() {
         return BottomNavigationBar(

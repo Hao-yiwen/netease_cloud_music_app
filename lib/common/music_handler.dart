@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:netease_cloud_music_app/common/audio_player_handler.dart';
 import 'package:netease_cloud_music_app/common/constants/other.dart';
@@ -18,11 +18,9 @@ import '../http/api/roaming/roaming_api.dart';
 import 'constants/keys.dart';
 import 'constants/platform_utils.dart';
 
-/**
- * @date 2024/0914
- * @desc 音乐播放handler
- * @refrence 参考bujuan音乐播放逻辑
- */
+/// @date 2024/0914
+/// @desc 音乐播放handler
+/// @refrence 参考bujuan音乐播放逻辑
 Future<List<MediaItem>> getCachePlayList(RootIsolateData data) async {
   BackgroundIsolateBinaryMessenger.ensureInitialized(data.rootIsolateToken);
   List<MediaItem> items = data.playList?.map((e) {
@@ -315,6 +313,7 @@ class MusicHandler extends BaseAudioHandler
     _previousSongUrl = await _preloadSongUrl(prevSong);
   }
 
+  @override
   Future<void> readySongUrl({bool isNext = true, bool playIt = true}) async {
     try {
       if (queue.value.isEmpty) return;
@@ -380,7 +379,7 @@ class MusicHandler extends BaseAudioHandler
   @override
   Future<void> skipToNext() async {
     _setCurIndex(next: true);
-    LogBox.info('下一首' + _currentIndex.toString());
+    LogBox.info('下一首$_currentIndex');
     await readySongUrl();
     if (RoamingController.to.fm.value) {
       if (_currentIndex == queue.value.length - 1) {
@@ -527,6 +526,8 @@ Map<String, dynamic>? castMap(Map? map) {
 
 enum MediaType { local, playlist, fm, radio, neteaseCache }
 
+// just_audio 的流式音源仍标记为 experimental，播放链路依赖该 API。
+// ignore: experimental_member_use
 class StreamSource extends StreamAudioSource {
   final String uri;
   final String fileType;
@@ -534,6 +535,7 @@ class StreamSource extends StreamAudioSource {
   StreamSource(this.uri, this.fileType);
 
   @override
+  // ignore: experimental_member_use
   Future<StreamAudioResponse> request([int? start, int? end]) async {
     try {
       final file = File(uri);
@@ -545,6 +547,7 @@ class StreamSource extends StreamAudioSource {
       final contentLength = end - start;
       final stream = file.openRead(start, end);
 
+      // ignore: experimental_member_use
       return StreamAudioResponse(
           sourceLength: fileLength,
           contentLength: contentLength,

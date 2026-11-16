@@ -11,6 +11,7 @@ class SearchKeys extends ServerStatusBean{
 
   factory SearchKeys.fromJson(Map<String, dynamic> json) => _$SearchKeysFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SearchKeysToJson(this);
 }
 

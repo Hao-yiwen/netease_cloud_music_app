@@ -11,6 +11,7 @@ class Banner extends ServerStatusBean{
 
   factory Banner.fromJson(Map<String, dynamic> json) => _$BannerFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$BannerToJson(this);
 }
 

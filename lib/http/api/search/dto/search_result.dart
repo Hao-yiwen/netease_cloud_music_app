@@ -13,6 +13,7 @@ class SearchResult extends ServerStatusBean{
 
   factory SearchResult.fromJson(Map<String, dynamic> json) => _$SearchResultFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SearchResultToJson(this);
 }
 

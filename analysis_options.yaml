@@ -16,6 +16,8 @@ analyzer:
     - windows/**
     - macos/**
     - linux/**
+    - "**/*.g.dart"
+    - "**/*.gr.dart"
 include: package:flutter_lints/flutter.yaml
 
 linter:
