@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:netease_cloud_music_app/common/constants/app_strings.dart';
 import 'package:netease_cloud_music_app/common/service/theme_service.dart';
 
+import '../../../common/base_url_dialog.dart';
 import '../../../common/constants/url.dart';
 import '../../../routes/routes.dart';
 import '../../../routes/routes.gr.dart';
@@ -82,6 +83,11 @@ List<DrawerItem> getListSettings(BuildContext context) {
     DrawerItem(
       icon: TablerIcons.settings,
       text: AppStrings.setting,
+    ),
+    DrawerItem(
+      icon: TablerIcons.link,
+      text: '接口地址',
+      onTap: () => showBaseUrlDialog(context),
     ),
     DrawerItem(
         icon: TablerIcons.moon_stars,
