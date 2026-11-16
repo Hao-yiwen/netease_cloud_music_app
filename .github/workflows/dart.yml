@@ -20,12 +20,13 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          # AGP 9's release lint calls List.removeLast(), which JDK 17 does not provide.
+          java-version: '21'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: '3.50.0'
           channel: 'stable'
       
       - name: Install dependencies
@@ -46,12 +47,13 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          # AGP 9's release lint calls List.removeLast(), which JDK 17 does not provide.
+          java-version: '21'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: '3.50.0'
           channel: 'stable'
 
       - name: Install dependencies

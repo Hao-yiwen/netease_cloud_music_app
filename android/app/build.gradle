@@ -25,15 +25,11 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.example.netease_cloud_music_app"
-    compileSdk = 34
+    compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
      buildFeatures {
         buildConfig true
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     compileOptions {
@@ -46,8 +42,8 @@ android {
         applicationId = "com.example.netease_cloud_music_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = 23
-        targetSdk = 34
+        minSdkVersion = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
@@ -62,6 +58,12 @@ android {
 
     dependencies {
         implementation "com.google.android.play:core:1.10.3"
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

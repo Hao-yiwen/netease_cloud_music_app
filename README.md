@@ -1,12 +1,12 @@
 # 网易云音乐 Flutter 版
 
-![Flutter](https://img.shields.io/badge/flutter-v3.24.1-blue)
-![iOS](https://img.shields.io/badge/iOS-12.0+-lightgrey)
-![Android](https://img.shields.io/badge/Android-6.0+-brightgreen)
+![Flutter](https://img.shields.io/badge/flutter-v3.50.0-blue)
+![iOS](https://img.shields.io/badge/iOS-15.0+-lightgrey)
+![Android](https://img.shields.io/badge/Android-7.0+-brightgreen)
 
 ## 项目概述
 
-基于 Flutter 开发的网易云音乐第三方客户端，完整还原官方 App 用户体验。使用 Flutter SDK 3.24.1，基于网易云音乐 9.1.55 版本开发。
+基于 Flutter 开发的网易云音乐第三方客户端，完整还原官方 App 用户体验。使用 Flutter SDK 3.50.0，基于网易云音乐 9.1.55 版本开发。
 
 ### 技术栈
 
