@@ -110,7 +110,7 @@ flutter build ios --debug --no-codesign
 
 ## 安装包
 
-master 上的构建会把 arm64 安装包发到 nightly Release，文件名是 `netease-<版本>-<提交>-arm64.apk`。pull request 只上传同名 artifact，不打标签。这个包面向近年真机，不包含 32 位和模拟器 x86_64。
+master 上的构建会按 `pubspec.yaml` 的版本名发布正式 Release，并标成仓库的 Latest。当前版本是 `v1.0.3`，安装包文件名是 `netease-1.0.3-arm64.apk`。pull request 只上传 artifact，不发 Release。这个包面向近年真机，不包含 32 位和模拟器 x86_64。
 
 ### 已知问题
 

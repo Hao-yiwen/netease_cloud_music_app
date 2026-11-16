@@ -11,7 +11,7 @@ on:
 
 concurrency:
   group: android-${{ github.workflow }}-${{ github.ref }}
-  # master 上的构建会发 nightly 包，不中途取消。pull request 只保留最新一次。
+  # master 上的构建会发布当前版本的正式包，不中途取消。pull request 只保留最新一次。
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -82,6 +82,7 @@ jobs:
           echo "bytes=${bytes}" >> "$GITHUB_OUTPUT"
           {
             echo "### Android arm64"
+            echo "- 版本 \`${version}\`"
             echo "- \`${name}\`"
             echo "- $(numfmt --to=iec "${bytes}")"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -105,18 +106,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Tag nightly
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        id: tag
+      - name: Read version
+        id: version
         run: |
-          tag="nightly.$(date -Iseconds | sed 's/[T:+]/-/g')"
-          time="$(date '+%Y/%m/%d %H:%M')"
-          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-          echo "time=${time}" >> "$GITHUB_OUTPUT"
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag -a "$tag" -m "Published version ${tag}" "${GITHUB_SHA}"
-          git push origin "$tag"
+          set -euo pipefail
+          raw="$(awk '/^version:/{print $2; exit}' pubspec.yaml)"
+          name="${raw%%+*}"
+          echo "raw=${raw}" >> "$GITHUB_OUTPUT"
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${name}" >> "$GITHUB_OUTPUT"
 
       - name: Download APK
         uses: actions/download-artifact@v4
@@ -124,25 +122,24 @@ jobs:
           name: android-arm64
           path: artifacts
 
-      - name: Publish nightly
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/*.apk
-          prerelease: true
-          make_latest: false
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: ${{ steps.tag.outputs.time }}
-          body: |
-            arm64 安装包，来自 `${{ github.sha }}`。
-            只包含 `android-arm64`，可直接装到近年的真机。
+      - name: Name release asset
+        run: |
+          set -euo pipefail
+          src="$(find artifacts -name '*.apk' -print -quit)"
+          test -n "$src"
+          mv "$src" "artifacts/netease-${{ steps.version.outputs.name }}-arm64.apk"
 
-      - name: Publish release
-        if: github.event_name == 'release'
+      - name: Publish version
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*.apk
+          files: artifacts/netease-${{ steps.version.outputs.name }}-arm64.apk
+          fail_on_unmatched_files: true
+          overwrite_files: true
           prerelease: false
-          make_latest: true
+          make_latest: "true"
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.version.outputs.tag }}
           body: |
-            arm64 安装包，来自 `${{ github.sha }}`。
+            版本 `${{ steps.version.outputs.raw }}`，提交 `${{ github.sha }}`。
+            arm64 安装包 `netease-${{ steps.version.outputs.name }}-arm64.apk`，可直接装到近年的真机。
